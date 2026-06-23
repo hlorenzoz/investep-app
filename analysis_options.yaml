@@ -1,0 +1,32 @@
+# Configuración del analizador estático de Dart.
+# `flutter analyze` debe pasar SIN warnings antes de dar por terminado un cambio
+# (ver AGENTS.md §4).
+
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    # Tratamos como ERROR (no warning) lo que rompe convenciones del proyecto.
+    invalid_annotation_target: error
+    todo: ignore
+  exclude:
+    - "**/*.g.dart" # código generado (build_runner)
+    - "**/*.freezed.dart"
+
+linter:
+  rules:
+    - always_declare_return_types
+    - prefer_single_quotes
+    - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
+    - prefer_const_declarations
+    - prefer_final_locals
+    - require_trailing_commas
+    - unawaited_futures
+    - avoid_print # nunca print: usar un logger que NO loguee datos sensibles
+    - sort_child_properties_last
+    - use_super_parameters
