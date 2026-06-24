@@ -34,8 +34,7 @@ abstract final class AppConfig {
     }
     try {
       final uri = Uri.parse(supabaseUrl);
-      return uri.hasAbsolutePath &&
-          (uri.scheme == 'http' || uri.scheme == 'https');
+      return uri.isAbsolute && (uri.scheme == 'http' || uri.scheme == 'https');
     } catch (_) {
       return false;
     }
