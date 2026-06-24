@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/app_config.dart';
@@ -14,9 +15,19 @@ import '../storage/secure_session_store.dart';
 final apiClientProvider = Provider<Dio>((ref) {
   final sessionStore = ref.watch(secureSessionStoreProvider);
 
+  String resolvedBaseUrl = AppConfig.apiBaseUrl;
+  if (kIsWeb) {
+    final uri = Uri.tryParse(resolvedBaseUrl);
+    if (uri != null &&
+        (uri.host == 'localhost' || uri.host == '127.0.0.1') &&
+        uri.port == 8787) {
+      resolvedBaseUrl = '/api';
+    }
+  }
+
   final dio = Dio(
     BaseOptions(
-      baseUrl: AppConfig.apiBaseUrl,
+      baseUrl: resolvedBaseUrl,
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 20),
       headers: {'Accept': 'application/json'},
