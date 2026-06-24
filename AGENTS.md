@@ -277,3 +277,53 @@ No hay registro (sign-up) público en la aplicación cliente. Los usuarios de pr
 4. Crear un usuario de prueba personalizado: `just create-user <EMAIL>`
 5. Usar el email y password generados para iniciar sesión en la app Flutter.
 
+
+## 11. Guía de Ruteo de Skills locales (`.agents/skills/`)
+
+Este repositorio tiene instaladas **skills personalizadas** que extienden las capacidades de los agentes de IA para tareas repetitivas o complejas. Cuando detectes uno de estos contextos, **leé el archivo `SKILL.md` correspondiente antes de escribir código**.
+
+A continuación se detalla el catálogo y el criterio de ruteo para cada una:
+
+### 11.1 Desarrollo y Arquitectura en Flutter (Core)
+*   **[flutter-apply-architecture-best-practices](file:///.agents/skills/flutter-apply-architecture-best-practices/SKILL.md)**: Usala al estructurar nuevas features o refactorizar código para respetar la arquitectura clean/feature-first (separación UI/Presentation, Logic/Providers y Data).
+*   **[flutter-build-responsive-layout](file:///.agents/skills/flutter-build-responsive-layout/SKILL.md)**: Usala cuando un widget o pantalla deba adaptarse a diferentes tamaños de pantalla (móvil, tablet, escritorio) mediante `LayoutBuilder`, `MediaQuery` o flexbox.
+*   **[flutter-setup-declarative-routing](file:///.agents/skills/flutter-setup-declarative-routing/SKILL.md)**: Usala al agregar, modificar o depurar pantallas y flujos de navegación que involucren `go_router`.
+*   **[flutter-setup-localization](file:///.agents/skills/flutter-setup-localization/SKILL.md)**: Usala cuando debas configurar o dar soporte a traducciones o internacionalización multilenguaje (`intl`, `l10n`).
+*   **[flutter-implement-json-serialization](file:///.agents/skills/flutter-implement-json-serialization/SKILL.md)**: Usala al codificar modelos de datos en Dart que requieran serialización manual `fromJson` y `toJson`.
+*   **[flutter-use-http-package](file:///.agents/skills/flutter-use-http-package/SKILL.md)**: Criterio secundario para peticiones de red directas (recordá priorizar el cliente `Dio` configurado en el core).
+*   **[flutter-fix-layout-issues](file:///.agents/skills/flutter-fix-layout-issues/SKILL.md)**: Usala si te encontrás con desbordamientos visuales o errores de constraints ("RenderFlex overflowed", viewport sin altura, etc.).
+
+### 11.2 Componentes, Vistas y Pruebas
+*   **[flutter-add-widget-preview](file:///.agents/skills/flutter-add-widget-preview/SKILL.md)**: Usala al crear componentes UI reutilizables para dejarlos registrados en el catálogo interactivo (`previews.dart`).
+*   **[flutter-add-widget-test](file:///.agents/skills/flutter-add-widget-test/SKILL.md)**: Usala para implementar pruebas unitarias de renderizado y comportamiento de componentes mediante `WidgetTester`.
+*   **[flutter-add-integration-test](file:///.agents/skills/flutter-add-integration-test/SKILL.md)**: Usala cuando necesites cablear y automatizar flujos completos de pruebas de integración nativos con Flutter Driver.
+
+### 11.3 Flujo de Trabajo del Repositorio y Pull Requests
+*   **[preparing-pr](file:///.agents/skills/preparing-pr/SKILL.md)**: Usala siempre antes de abrir un PR o dar por terminado un lote de cambios para ejecutar linters, formateadores locales y pre-commits.
+*   **[adding-copyright-headers](file:///.agents/skills/adding-copyright-headers/SKILL.md)**: Usala al crear nuevos archivos para asegurar que tengan la licencia y cabecera de derechos de autor adecuada.
+*   **[adding-changelog-entries](file:///.agents/skills/adding-changelog-entries/SKILL.md)**: Usala al documentar las modificaciones introducidas en los archivos `CHANGELOG.md` del ecosistema.
+*   **[adding-release-notes](file:///.agents/skills/adding-release-notes/SKILL.md)**: Usala al añadir explicaciones sobre nuevas features o bugfixes al archivo `NEXT_RELEASE_NOTES.md`.
+*   **[updating-package-versions](file:///.agents/skills/updating-package-versions/SKILL.md)**: Usala al resolver problemas de resolución o dependencias cruzadas dentro del monorrepo.
+
+### 11.4 Soporte de Ecosistema GenUI y Firebase
+*   **[create-catalog-item](file:///.agents/skills/create-catalog-item/SKILL.md)**: Usala cuando debas modelar una nueva clase de datos o un widget a partir de esquemas JSON en proyectos que integren `genui`.
+*   **[genui-helper](file:///.agents/skills/genui-helper/SKILL.md)**: Usala para alinear el desarrollo a los estándares de desarrollo, tests y referencias del repositorio GenUI.
+*   **[integrate-genui-firebase](file:///.agents/skills/integrate-genui-firebase/SKILL.md)**: Usala si estás integrando la interfaz generativa `genui` con la lógica de Firebase AI.
+
+### 11.5 Mantenimiento, Calidad y Documentación
+*   **[update-llms-text](file:///.agents/skills/update-llms-text/SKILL.md)**: Usala cuando necesites actualizar, agregar recursos o corregir información en el archivo de contexto `llms.txt`.
+*   **[proofread-markdown](file:///.agents/skills/proofread-markdown/SKILL.md)**: Usala para revisar estilo, redacción y consistencia gramatical de guías y especificaciones markdown.
+*   **[authoring-skills](file:///.agents/skills/authoring-skills/SKILL.md)**: Usala al escribir, modificar o extender las propias directivas de las skills de IA dentro de `.agents/skills/`.
+*   **[dart-log-failure-parser](file:///.agents/skills/dart-log-failure-parser/SKILL.md)**: Usala al analizar fallos crípticos o logs de error extensos generados por el motor de pruebas de Dart/Flutter.
+*   **[flutter-pr-checks-finder](file:///.agents/skills/flutter-pr-checks-finder/SKILL.md)**: Usala para rastrear y recuperar logs de fallas en ejecuciones remotas de CI/LUCI.
+
+### 11.6 Tareas especializadas del SDK de Flutter / Engine
+*   **[find-release](file:///.agents/skills/find-release/SKILL.md)**: Usala para determinar en qué versión o canal de Flutter/Dart se encuentra incorporado un commit de Git (SHA).
+*   **[flutter-cherry-pick](file:///.agents/skills/flutter-cherry-pick/SKILL.md)**: Usala al coordinar el traslado de fixes específicos a las ramas estables o candidatas de lanzamiento.
+*   **[analyze-github-flake](file:///.agents/skills/analyze-github-flake/SKILL.md)**: Usala para investigar reportes de issues inestables (flaky) en el repositorio central de Flutter.
+*   **[closing-obsolete-issues](file:///.agents/skills/closing-obsolete-issues/SKILL.md)**: Usala si estás gestionando el mantenimiento del tracker cerrando issues obsoletos o duplicados.
+*   **[rebuilding-flutter-tool](file:///.agents/skills/rebuilding-flutter-tool/SKILL.md)**: Usala cuando requieras recompilar o forzar un rebuild de la herramienta CLI de Flutter.
+*   **[updating-android-sdk](file:///.agents/skills/updating-android-sdk/SKILL.md)**: Usala para gestionar APIs nativas de Android y paquetes CIPD del framework.
+*   **[upgrade-browser](file:///.agents/skills/upgrade-browser/SKILL.md)**: Usala si es necesario actualizar la versión del navegador (Chrome o Firefox) en las pruebas de motor web.
+*   **[validate-pr](file:///.agents/skills/validate-pr/SKILL.md)**: Usala para levantar y verificar documentación web local de la comunidad de Flutter.
+

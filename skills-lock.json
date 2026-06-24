@@ -1,11 +1,41 @@
 {
   "version": 1,
   "skills": {
+    "adding-changelog-entries": {
+      "source": "flutter/devtools",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/adding-changelog-entries/SKILL.md",
+      "computedHash": "8082ad8e78ec35b0ab55cbaed1729c126a165f8f3c0f5845a8e92a02e35508b5"
+    },
+    "adding-copyright-headers": {
+      "source": "flutter/devtools",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/adding-copyright-headers/SKILL.md",
+      "computedHash": "e68e30790486f0ac7d593cb4e7c0004e5de3617da3310ab86daff987cac63a00"
+    },
+    "adding-release-notes": {
+      "source": "flutter/devtools",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/adding-release-notes/SKILL.md",
+      "computedHash": "a1ba6096df4fae7107304a80aa191f6a6635e6f7a3488801cf41c215ffdc35bb"
+    },
     "analyze-github-flake": {
       "source": "flutter/flutter",
       "sourceType": "github",
       "skillPath": ".agents/skills/analyze-github-flake/SKILL.md",
       "computedHash": "8cc81e3d71934acd888176e9177d3d6ccb1c5d37e84c9f1afc65753707679b28"
+    },
+    "authoring-skills": {
+      "source": "flutter/devtools",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/authoring-skills/SKILL.md",
+      "computedHash": "6627564f12f5be9ddc7de0323c872732941a5506fced162ee3023230ea9842a5"
+    },
+    "closing-obsolete-issues": {
+      "source": "flutter/devtools",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/closing-obsolete-issues/SKILL.md",
+      "computedHash": "064a82645cf1a9ba10f3e863f70831511a21a434d90e00ca77f710a1314c4637"
     },
     "create-catalog-item": {
       "source": "flutter/genui",
@@ -109,6 +139,12 @@
       "skillPath": "packages/genui/skills/integrate-genui-firebase/SKILL.md",
       "computedHash": "912de7adb6c3ba97e4c3c468b4240cda93c265cd9e83b2cfbf5f69da3357e4ee"
     },
+    "preparing-pr": {
+      "source": "flutter/devtools",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/preparing-pr/SKILL.md",
+      "computedHash": "be0dcecd46acb3a215830430ff8ede46149883632a40e635f93a6aaa45629f4d"
+    },
     "proofread-markdown": {
       "source": "flutter/website",
       "sourceType": "github",
@@ -132,6 +168,12 @@
       "sourceType": "github",
       "skillPath": ".agents/skills/updating-android-sdk/SKILL.md",
       "computedHash": "42e28053f6b9267cdf0a3b0bce7d7ff6b2416dd890516aac3885b4f996bb3f5c"
+    },
+    "updating-package-versions": {
+      "source": "flutter/devtools",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/updating-package-versions/SKILL.md",
+      "computedHash": "0a5c4a5a98e702ad7932739235a11893072be7f12da21d7171d448ac11084854"
     },
     "upgrade-browser": {
       "source": "flutter/flutter",
