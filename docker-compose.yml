@@ -1,0 +1,28 @@
+# Entorno DEVEL: Servidor Nginx sirviendo la app Flutter Web
+# Conectado a la red de Supabase/API para consistencia y comunicación interna si se requiere.
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - DART_FLAGS=--dart-define-from-file=config/devel.json
+    container_name: investep-web
+    ports:
+      - "8080:80"
+    networks:
+      - supabase
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: rebuild
+          path: ./lib
+        - action: rebuild
+          path: ./pubspec.yaml
+        - action: rebuild
+          path: ./config
+
+networks:
+  supabase:
+    name: supabase_network_investep-app-api
+    external: true

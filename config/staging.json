@@ -1,0 +1,5 @@
+{
+  "API_BASE_URL": "https://investep-app-api-staging.<SUBDOMINIO>.workers.dev",
+  "SUPABASE_URL": "https://dmetfwaxotdxtpnlmczi.supabase.co",
+  "SUPABASE_ANON_KEY": "sb_publishable_Rg25KpaXESVyGBiQndXFBg_MCX3mK7A"
+}

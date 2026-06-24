@@ -24,4 +24,20 @@ abstract final class AppConfig {
   /// Indica si la configuración mínima de Supabase está presente.
   static bool get hasSupabaseConfig =>
       supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
+
+  /// Valida que la URL de Supabase y la anon key sean válidas y no sean placeholders.
+  static bool get isValidSupabaseConfig {
+    if (!hasSupabaseConfig) return false;
+    if (supabaseUrl.contains('<') || supabaseUrl.contains('>')) return false;
+    if (supabaseAnonKey.contains('<') || supabaseAnonKey.contains('>')) {
+      return false;
+    }
+    try {
+      final uri = Uri.parse(supabaseUrl);
+      return uri.hasAbsolutePath &&
+          (uri.scheme == 'http' || uri.scheme == 'https');
+    } catch (_) {
+      return false;
+    }
+  }
 }

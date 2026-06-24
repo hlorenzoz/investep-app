@@ -1,0 +1,5 @@
+{
+  "API_BASE_URL": "https://investep-app-api-production.<SUBDOMINIO>.workers.dev",
+  "SUPABASE_URL": "https://<PROD_REF>.supabase.co",
+  "SUPABASE_ANON_KEY": "<PROD_ANON_KEY>"
+}

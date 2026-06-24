@@ -46,6 +46,19 @@ build target="apk":
 hooks:
     pre-commit run --all-files
 
+# Levanta el cliente web en un contenedor Docker (puerto 8080, desarrollo local).
+docker-up:
+    docker compose up -d --build
+
+# Apaga el contenedor Docker del cliente web.
+docker-down:
+    docker compose down
+
+# Monitorea cambios y rebuildea el contenedor Docker automáticamente.
+watch:
+    docker compose watch
+
+
 # --- Pendientes de cablear cuando estén las herramientas (ver AGENTS.md §9) ---
 
 # Regenera el cliente Dart contra el spec OpenAPI de investep-app-api.

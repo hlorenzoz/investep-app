@@ -197,6 +197,7 @@ flutter run \
 - ✅ **Glassmorphism:** widget propio `GlassCard` (`BackdropFilter` nativo), sin librería externa.
 - ✅ **Navegación:** `go_router`.
 - ✅ **Recetas del Justfile y config de pre-commit:** ver §7 y `.pre-commit-config.yaml`.
+- ✅ **Entorno Supabase e inicialización:** definidos `SUPABASE_URL` / `SUPABASE_ANON_KEY` (vía `--dart-define` / `--dart-define-from-file`) e inicializados en `lib/main.dart` con validación preventiva de placeholders.
 
 **Pendientes de confirmar / cablear:**
 
@@ -204,5 +205,75 @@ flutter run \
   `just openapi`). Hasta entonces, `dio` es sólo el transporte base.
 - ⏳ **`riverpod_generator`:** sumarlo cuando el ecosistema 3.x resuelva estable sobre el
   SDK objetivo (hoy choca por `analyzer`/`macros`). Migración sin reescribir lógica.
-- ⏳ **Entorno Supabase:** definir `SUPABASE_URL` / `SUPABASE_ANON_KEY` (vía `--dart-define`)
-  e inicializar Supabase en el arranque cuando entre la feature de auth.
+
+
+## 10. Conexión con la API de Investep
+
+Cualquier agente que trabaje en esta base de código debe comprender la siguiente arquitectura de red y autenticación:
+
+### 10.1 Arquitectura de Autenticación en Dos Patas
+La API REST de Investep **no tiene un endpoint de login**. La autenticación se realiza de la siguiente manera:
+
+1. **Pata 1 (Login en el Cliente):** El cliente Flutter se conecta directamente a Supabase Auth llamando a `signInWithPassword(email, password)` usando la **anon/publishable key** pública. Supabase retorna un token de acceso JWT (`accessToken`).
+   - *Regla Crítica:* El cliente **nunca** utiliza la `service-role` key de Supabase (esta es solo para el servidor y tiene privilegios administrativos).
+2. **Pata 2 (Validación del Token con la API):** El cliente Flutter realiza un request `GET /auth/me` a la API REST agregando el header `Authorization: Bearer <accessToken>`. La API valida dicho token con Supabase y responde con los datos del usuario en caso de éxito.
+
+### 10.2 Tabla de Entornos por Rama
+
+Las configuraciones se manejan mediante archivos JSON en la carpeta `config/` y se inyectan usando el parámetro de compilación `--dart-define-from-file=config/<env>.json`.
+
+| Rama / Entorno | Archivo Config | API base URL | Supabase URL | Supabase anon key | Estado |
+|---|---|---|---|---|---|
+| **devel** (local) | `config/devel.json` | `http://localhost:8787` | `http://127.0.0.1:54321` | Anon key local de Supabase (`sb_publishable_...`) | **Confirmado** (listo para usar localmente) |
+| **staging** | `config/staging.json` | `https://investep-app-api-staging.<SUBDOMINIO>.workers.dev` | `https://dmetfwaxotdxtpnlmczi.supabase.co` | Anon key de staging (`sb_publishable_...`) | **Placeholder** (Requiere completar `<SUBDOMINIO>`) |
+| **main** (production) | `config/main.json` | `https://investep-app-api-production.<SUBDOMINIO>.workers.dev` | `https://<PROD_REF>.supabase.co` | Anon key de producción | **Placeholder** (Por definir tras despliegue de prod) |
+
+*Nota:* Para evitar crashes en tiempo de ejecución, la app valida que las URLs y keys no contengan caracteres como `<` o `>` antes de inicializar Supabase.
+
+### 10.3 Contratos y Shape de Error de la API
+
+#### `GET /auth/me`
+- **Request Header:** `Authorization: Bearer <access_token>`
+- **200 OK (Éxito):**
+  ```json
+  {
+    "user": {
+      "id": "8f3b1d2e-0a4c-4e6f-9b2a-1c2d3e4f5a6b",
+      "email": "user@example.com",
+      "mustResetPassword": false
+    }
+  }
+  ```
+- **401 Unauthorized (Error de validación de token):**
+  ```json
+  {
+    "error": {
+      "code": "UNAUTHORIZED",
+      "message": "Token inválido o expirado.",
+      "details": []
+    }
+  }
+  ```
+
+#### Formato Único de Error de la API
+Todos los errores emitidos por la API REST siguen la estructura `{ error: { code, message, details? } }`. Los códigos de error comunes son:
+- `VALIDATION_ERROR` (422)
+- `UNAUTHORIZED` (401)
+- `FORBIDDEN` (403)
+- `NOT_FOUND` (404)
+- `CONFLICT` (409)
+- `INTERNAL_ERROR` (500)
+
+### 10.4 Notas de Conectividad por Plataforma (Desarrollo Local)
+- **iOS Simulator / Web:** La API local es accesible vía `http://localhost:8787` y Supabase local vía `http://127.0.0.1:54321`.
+- **Android Emulator:** La máquina local se mapea a la IP de puente loopback `10.0.2.2`. Por lo tanto, se debe cambiar la configuración a `http://10.0.2.2:8787` y `http://10.0.2.2:54321`.
+- **Dispositivo Físico:** Se debe configurar la IP local de LAN de la computadora host (ej. `http://192.168.1.XX:8787`).
+
+### 10.5 Obtención de Credenciales de Prueba (Provisionamiento)
+No hay registro (sign-up) público en la aplicación cliente. Los usuarios de prueba se crean directamente en el backend mediante comandos CLI:
+1. Dirigirse al repositorio del backend (`investep-app-api`).
+2. Levantar el entorno local: `just up`
+3. Crear el primer usuario administrador: `just create-first-user`
+4. Crear un usuario de prueba personalizado: `just create-user <EMAIL>`
+5. Usar el email y password generados para iniciar sesión en la app Flutter.
+
