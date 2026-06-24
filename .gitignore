@@ -60,3 +60,4 @@ app.*.map.json
 *.mobileprovision
 
 .agents/skills/
+.atl/
