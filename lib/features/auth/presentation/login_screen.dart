@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../app/theme/app_colors.dart';
@@ -276,6 +277,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             fontWeight: mustReset ? FontWeight.bold : FontWeight.normal,
           ),
           const SizedBox(height: 24),
+          if (mustReset) ...[
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.negative,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () => context.push('/change-password'),
+              icon: const Icon(LucideIcons.lock, size: 18),
+              label: const Text('Cambiar contraseña ahora'),
+            ),
+            const SizedBox(height: 12),
+          ],
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.accent,
