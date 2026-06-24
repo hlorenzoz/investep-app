@@ -21,6 +21,8 @@ services:
           path: ./pubspec.yaml
         - action: rebuild
           path: ./config
+        - action: rebuild
+          path: ./nginx.conf
 
 networks:
   supabase:
