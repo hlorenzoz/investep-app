@@ -6,7 +6,61 @@
   "serviceUnavailableTitle": "Service unavailable",
   "retry": "Retry",
   "passwordChangedRelogin": "Password updated, please sign in again",
+
   "commonCancel": "Cancel",
   "commonClose": "Close",
-  "commonContinue": "Continue"
+  "commonContinue": "Continue",
+  "loadingGeneric": "Loading...",
+
+  "setupLater": "Set up later",
+  "back": "Back",
+  "next": "Next",
+  "confirm": "Confirm",
+  "stepLabel": "Step",
+  "stepOf": "of",
+
+  "capitalTitle": "Your initial capital",
+  "capitalSubtitle": "How much will you start investing with?",
+  "amountLabel": "Amount",
+  "currencyLabel": "Currency",
+
+  "brokerTitle": "Choose your broker",
+  "brokerSearchHint": "Search broker",
+  "alreadyConfigured": "Already configured",
+  "brokersLoadError": "We couldn't load the brokers",
+
+  "accountTypeTitle": "Account type",
+  "accountTypeEquity": "Equity",
+  "accountTypeOptions": "Options",
+
+  "planTitle": "Choose a plan",
+  "planTargetMonthly": "Target monthly profit",
+  "plansEmpty": "No plans available for this account type",
+
+  "depositTitle": "Initial deposit",
+  "depositModePercent": "% of capital",
+  "depositModeAmount": "Amount",
+  "depositAvailable": "Available",
+  "depositInvalid": "Deposit must be greater than 0 and not exceed the available amount",
+
+  "summaryTitle": "Review and confirm",
+  "summaryEditHint": "Tap a field to edit it",
+  "summaryBroker": "Broker",
+  "summaryAccountType": "Account type",
+  "summaryPlan": "Plan",
+  "summaryDeposit": "Deposit",
+  "summaryCurrency": "Currency",
+  "summaryRemaining": "Remaining available",
+
+  "dashboardTitle": "My capital",
+  "dashboardEmptyTitle": "Set up your capital",
+  "dashboardEmptySubtitle": "Define your initial capital and add your broker accounts.",
+  "configureCapitalCta": "Set up my capital",
+  "addBrokerAccount": "Add broker account",
+  "completeSetupBanner": "Complete your setup",
+  "dashboardLoadError": "We couldn't load your capital",
+  "capitalTotalLabel": "Total capital",
+  "allocatedLabel": "Allocated",
+  "availableLabel": "Available",
+  "ofCapital": "of capital"
 }

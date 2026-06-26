@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_exception.dart';
+import '../../../core/network/retry.dart';
 import '../domain/allocation.dart';
 import '../domain/capital.dart';
 import '../domain/capital_overview.dart';
@@ -24,21 +25,15 @@ class CapitalRepository {
   static const _maxAttempts = 3;
 
   /// `GET /capital` → capital + allocations + totales. Backoff ante transitorios.
-  Future<CapitalOverview> getCapital() async {
-    var attempt = 0;
-    while (true) {
-      attempt++;
-      try {
+  Future<CapitalOverview> getCapital() {
+    return retryWithBackoff(
+      () async {
         final res = await _dio.get<Map<String, dynamic>>('/capital');
         return CapitalOverview.fromJson(res.data!);
-      } on DioException catch (e) {
-        final error = ApiException.fromDioException(e);
-        if (!error.isRetryable || attempt >= _maxAttempts) {
-          throw error;
-        }
-        await Future<void>.delayed(_retryBaseDelay * (1 << (attempt - 1)));
-      }
-    }
+      },
+      baseDelay: _retryBaseDelay,
+      maxAttempts: _maxAttempts,
+    );
   }
 
   /// `PUT /capital { totalCapital, currency? }`. 409 = capital < asignado o

@@ -1,9 +1,21 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../config/app_config.dart';
 import '../providers/supabase_provider.dart';
+
+/// Manejo central del 401: token ausente/inválido/expirado → limpiamos la sesión
+/// local. Eso dispara `onAuthStateChange(null)` → `AuthGate` → redirect a
+/// `/login`. Aplica a CUALQUIER endpoint de negocio (brokers/plans/capital/...),
+/// no sólo a `/auth/me`. Un 503 (transitorio) NO desloguea: lo reintentan los
+/// repos con backoff.
+Future<void> handleAuthError(SupabaseClient client, int? statusCode) async {
+  if (statusCode == 401) {
+    await client.auth.signOut();
+  }
+}
 
 /// Cliente HTTP base contra `investep-app-api` (REST).
 ///
@@ -46,6 +58,12 @@ final apiClientProvider = Provider<Dio>((ref) {
           options.headers['Authorization'] = 'Bearer $token';
         }
         handler.next(options);
+      },
+      onError: (e, handler) async {
+        // 401 en cualquier endpoint → re-login. Seguimos propagando el error
+        // para que el repo lo mapee a ApiException(401).
+        await handleAuthError(supabaseClient, e.response?.statusCode);
+        handler.next(e);
       },
     ),
   );

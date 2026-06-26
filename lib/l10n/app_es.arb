@@ -2,31 +2,65 @@
   "@@locale": "es",
 
   "appTitle": "Investep",
-  "@appTitle": {
-    "description": "Nombre de la app"
-  },
-
   "splashChecking": "Verificando tu sesión...",
-  "@splashChecking": {
-    "description": "Mensaje del splash mientras se valida la sesión contra /auth/me"
-  },
-
   "serviceUnavailableTitle": "Servicio no disponible",
-  "@serviceUnavailableTitle": {
-    "description": "Título cuando la API responde 503/500 (transitorio)"
-  },
-
   "retry": "Reintentar",
-  "@retry": {
-    "description": "Botón para reintentar una operación fallida"
-  },
-
   "passwordChangedRelogin": "Contraseña actualizada, volvé a iniciar sesión",
-  "@passwordChangedRelogin": {
-    "description": "Snackbar tras cambiar la contraseña: la sesión se cerró y hay que re-loguear"
-  },
 
   "commonCancel": "Cancelar",
   "commonClose": "Cerrar",
-  "commonContinue": "Continuar"
+  "commonContinue": "Continuar",
+  "loadingGeneric": "Cargando...",
+
+  "setupLater": "Configurar más tarde",
+  "back": "Atrás",
+  "next": "Siguiente",
+  "confirm": "Confirmar",
+  "stepLabel": "Paso",
+  "stepOf": "de",
+
+  "capitalTitle": "Tu capital inicial",
+  "capitalSubtitle": "¿Con cuánto vas a empezar a invertir?",
+  "amountLabel": "Monto",
+  "currencyLabel": "Moneda",
+
+  "brokerTitle": "Elegí tu broker",
+  "brokerSearchHint": "Buscar broker",
+  "alreadyConfigured": "Ya configurado",
+  "brokersLoadError": "No pudimos cargar los brokers",
+
+  "accountTypeTitle": "Tipo de cuenta",
+  "accountTypeEquity": "Acciones",
+  "accountTypeOptions": "Opciones",
+
+  "planTitle": "Elegí un plan",
+  "planTargetMonthly": "Ganancia mensual objetivo",
+  "plansEmpty": "No hay planes para este tipo de cuenta",
+
+  "depositTitle": "Depósito inicial",
+  "depositModePercent": "% del capital",
+  "depositModeAmount": "Monto",
+  "depositAvailable": "Disponible",
+  "depositInvalid": "El depósito debe ser mayor a 0 y no superar el disponible",
+
+  "summaryTitle": "Revisá y confirmá",
+  "summaryEditHint": "Tocá un campo para editarlo",
+  "summaryBroker": "Broker",
+  "summaryAccountType": "Tipo de cuenta",
+  "summaryPlan": "Plan",
+  "summaryDeposit": "Depósito",
+  "summaryCurrency": "Moneda",
+  "summaryRemaining": "Disponible restante",
+
+  "dashboardTitle": "Mi capital",
+  "dashboardEmptyTitle": "Configurá tu capital",
+  "dashboardEmptySubtitle": "Definí tu capital inicial y agregá tus cuentas de broker.",
+  "configureCapitalCta": "Configurar mi capital",
+  "addBrokerAccount": "Agregar cuenta de broker",
+  "completeSetupBanner": "Completá tu configuración",
+  "dashboardLoadError": "No pudimos cargar tu capital",
+  "capitalTotalLabel": "Capital total",
+  "allocatedLabel": "Asignado",
+  "availableLabel": "Disponible",
+  "ofCapital": "del capital"
 }

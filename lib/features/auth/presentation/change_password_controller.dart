@@ -64,8 +64,8 @@ class ChangePasswordController extends Notifier<ChangePasswordState> {
       state = const ChangePasswordSuccess();
     } on ApiException catch (e) {
       if (e.status == 401) {
-        // Token inválido/expirado → limpiar sesión y volver al login.
-        await supabaseClient.auth.signOut();
+        // Token inválido/expirado. La limpieza de sesión (signOut) la centraliza
+        // el interceptor de Dio (handleAuthError); acá sólo reflejamos el estado.
         state = ChangePasswordSessionExpired(e.message);
       } else if (e.status == 422) {
         // Body malformado: bug del cliente. No debería pasar porque siempre

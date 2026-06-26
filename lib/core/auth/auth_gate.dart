@@ -55,6 +55,7 @@ class GateAuthenticated extends AuthGateState {
 class AuthGate extends Notifier<AuthGateState> {
   StreamSubscription<supabase.AuthState>? _sub;
   bool _evaluating = false;
+  bool _dirty = false;
   bool _disposed = false;
 
   @override
@@ -91,46 +92,57 @@ class AuthGate extends Notifier<AuthGateState> {
 
   /// Evalúa la sesión actual contra `GET /auth/me` y decide el destino.
   ///
-  /// El guard `_evaluating` evita corridas concurrentes (el evento de stream y
-  /// una llamada manual no disparan dos `getMe`).
+  /// El guard `_evaluating` evita corridas concurrentes. Si llega un evento de
+  /// auth (signedIn/tokenRefreshed) mientras hay una evaluación en vuelo, se
+  /// marca `_dirty` para re-evaluar al terminar y NO perder ese evento.
   Future<void> evaluate() async {
-    if (_evaluating) return;
+    if (_evaluating) {
+      _dirty = true;
+      return;
+    }
     _evaluating = true;
     try {
-      final client = ref.read(supabaseClientProvider);
-      if (client.auth.currentSession == null) {
-        _set(const GateNoSession());
-        return;
-      }
-
-      _set(const GateChecking());
-      final repo = ref.read(authRepositoryProvider);
-      try {
-        final user = await repo.getMe();
-        // Recordamos el email para precargarlo en el login tras change-password.
-        ref.read(lastEmailProvider.notifier).set(user.email);
-        _set(
-          user.mustResetPassword
-              ? GateNeedsPasswordReset(user)
-              : GateAuthenticated(user),
-        );
-      } on ApiException catch (e) {
-        if (e.status == 401) {
-          // Token muerto → limpiar sesión y volver al login.
-          await client.auth.signOut();
-          _set(const GateNoSession());
-        } else if (e.isRetryable) {
-          // 503/500 → transitorio: NO desloguear, ofrecer reintento.
-          _set(GateRetrying503(e.message));
-        } else {
-          // 4xx inesperado: lo más seguro es re-login.
-          _set(const GateNoSession());
-        }
-      } catch (_) {
-        _set(const GateNoSession());
-      }
+      do {
+        _dirty = false;
+        await _runOnce();
+      } while (_dirty && !_disposed);
     } finally {
       _evaluating = false;
+    }
+  }
+
+  Future<void> _runOnce() async {
+    final client = ref.read(supabaseClientProvider);
+    if (client.auth.currentSession == null) {
+      _set(const GateNoSession());
+      return;
+    }
+
+    _set(const GateChecking());
+    final repo = ref.read(authRepositoryProvider);
+    try {
+      final user = await repo.getMe();
+      // Recordamos el email para precargarlo en el login tras change-password.
+      ref.read(lastEmailProvider.notifier).set(user.email);
+      _set(
+        user.mustResetPassword
+            ? GateNeedsPasswordReset(user)
+            : GateAuthenticated(user),
+      );
+    } on ApiException catch (e) {
+      if (e.status == 401) {
+        // Token muerto. La limpieza de sesión (signOut) la centraliza el
+        // interceptor de Dio (handleAuthError); acá sólo reflejamos el gating.
+        _set(const GateNoSession());
+      } else if (e.isRetryable) {
+        // 503/500 → transitorio: NO desloguear, ofrecer reintento.
+        _set(GateRetrying503(e.message));
+      } else {
+        // 4xx inesperado: lo más seguro es re-login.
+        _set(const GateNoSession());
+      }
+    } catch (_) {
+      _set(const GateNoSession());
     }
   }
 

@@ -98,31 +98,31 @@ abstract class AppLocalizations {
     Locale('es'),
   ];
 
-  /// Nombre de la app
+  /// No description provided for @appTitle.
   ///
   /// In es, this message translates to:
   /// **'Investep'**
   String get appTitle;
 
-  /// Mensaje del splash mientras se valida la sesión contra /auth/me
+  /// No description provided for @splashChecking.
   ///
   /// In es, this message translates to:
   /// **'Verificando tu sesión...'**
   String get splashChecking;
 
-  /// Título cuando la API responde 503/500 (transitorio)
+  /// No description provided for @serviceUnavailableTitle.
   ///
   /// In es, this message translates to:
   /// **'Servicio no disponible'**
   String get serviceUnavailableTitle;
 
-  /// Botón para reintentar una operación fallida
+  /// No description provided for @retry.
   ///
   /// In es, this message translates to:
   /// **'Reintentar'**
   String get retry;
 
-  /// Snackbar tras cambiar la contraseña: la sesión se cerró y hay que re-loguear
+  /// No description provided for @passwordChangedRelogin.
   ///
   /// In es, this message translates to:
   /// **'Contraseña actualizada, volvé a iniciar sesión'**
@@ -145,6 +145,276 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Continuar'**
   String get commonContinue;
+
+  /// No description provided for @loadingGeneric.
+  ///
+  /// In es, this message translates to:
+  /// **'Cargando...'**
+  String get loadingGeneric;
+
+  /// No description provided for @setupLater.
+  ///
+  /// In es, this message translates to:
+  /// **'Configurar más tarde'**
+  String get setupLater;
+
+  /// No description provided for @back.
+  ///
+  /// In es, this message translates to:
+  /// **'Atrás'**
+  String get back;
+
+  /// No description provided for @next.
+  ///
+  /// In es, this message translates to:
+  /// **'Siguiente'**
+  String get next;
+
+  /// No description provided for @confirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar'**
+  String get confirm;
+
+  /// No description provided for @stepLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Paso'**
+  String get stepLabel;
+
+  /// No description provided for @stepOf.
+  ///
+  /// In es, this message translates to:
+  /// **'de'**
+  String get stepOf;
+
+  /// No description provided for @capitalTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu capital inicial'**
+  String get capitalTitle;
+
+  /// No description provided for @capitalSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Con cuánto vas a empezar a invertir?'**
+  String get capitalSubtitle;
+
+  /// No description provided for @amountLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Monto'**
+  String get amountLabel;
+
+  /// No description provided for @currencyLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Moneda'**
+  String get currencyLabel;
+
+  /// No description provided for @brokerTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Elegí tu broker'**
+  String get brokerTitle;
+
+  /// No description provided for @brokerSearchHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar broker'**
+  String get brokerSearchHint;
+
+  /// No description provided for @alreadyConfigured.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya configurado'**
+  String get alreadyConfigured;
+
+  /// No description provided for @brokersLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No pudimos cargar los brokers'**
+  String get brokersLoadError;
+
+  /// No description provided for @accountTypeTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipo de cuenta'**
+  String get accountTypeTitle;
+
+  /// No description provided for @accountTypeEquity.
+  ///
+  /// In es, this message translates to:
+  /// **'Acciones'**
+  String get accountTypeEquity;
+
+  /// No description provided for @accountTypeOptions.
+  ///
+  /// In es, this message translates to:
+  /// **'Opciones'**
+  String get accountTypeOptions;
+
+  /// No description provided for @planTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Elegí un plan'**
+  String get planTitle;
+
+  /// No description provided for @planTargetMonthly.
+  ///
+  /// In es, this message translates to:
+  /// **'Ganancia mensual objetivo'**
+  String get planTargetMonthly;
+
+  /// No description provided for @plansEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay planes para este tipo de cuenta'**
+  String get plansEmpty;
+
+  /// No description provided for @depositTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Depósito inicial'**
+  String get depositTitle;
+
+  /// No description provided for @depositModePercent.
+  ///
+  /// In es, this message translates to:
+  /// **'% del capital'**
+  String get depositModePercent;
+
+  /// No description provided for @depositModeAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Monto'**
+  String get depositModeAmount;
+
+  /// No description provided for @depositAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'Disponible'**
+  String get depositAvailable;
+
+  /// No description provided for @depositInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'El depósito debe ser mayor a 0 y no superar el disponible'**
+  String get depositInvalid;
+
+  /// No description provided for @summaryTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Revisá y confirmá'**
+  String get summaryTitle;
+
+  /// No description provided for @summaryEditHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Tocá un campo para editarlo'**
+  String get summaryEditHint;
+
+  /// No description provided for @summaryBroker.
+  ///
+  /// In es, this message translates to:
+  /// **'Broker'**
+  String get summaryBroker;
+
+  /// No description provided for @summaryAccountType.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipo de cuenta'**
+  String get summaryAccountType;
+
+  /// No description provided for @summaryPlan.
+  ///
+  /// In es, this message translates to:
+  /// **'Plan'**
+  String get summaryPlan;
+
+  /// No description provided for @summaryDeposit.
+  ///
+  /// In es, this message translates to:
+  /// **'Depósito'**
+  String get summaryDeposit;
+
+  /// No description provided for @summaryCurrency.
+  ///
+  /// In es, this message translates to:
+  /// **'Moneda'**
+  String get summaryCurrency;
+
+  /// No description provided for @summaryRemaining.
+  ///
+  /// In es, this message translates to:
+  /// **'Disponible restante'**
+  String get summaryRemaining;
+
+  /// No description provided for @dashboardTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi capital'**
+  String get dashboardTitle;
+
+  /// No description provided for @dashboardEmptyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Configurá tu capital'**
+  String get dashboardEmptyTitle;
+
+  /// No description provided for @dashboardEmptySubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Definí tu capital inicial y agregá tus cuentas de broker.'**
+  String get dashboardEmptySubtitle;
+
+  /// No description provided for @configureCapitalCta.
+  ///
+  /// In es, this message translates to:
+  /// **'Configurar mi capital'**
+  String get configureCapitalCta;
+
+  /// No description provided for @addBrokerAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregar cuenta de broker'**
+  String get addBrokerAccount;
+
+  /// No description provided for @completeSetupBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'Completá tu configuración'**
+  String get completeSetupBanner;
+
+  /// No description provided for @dashboardLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No pudimos cargar tu capital'**
+  String get dashboardLoadError;
+
+  /// No description provided for @capitalTotalLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Capital total'**
+  String get capitalTotalLabel;
+
+  /// No description provided for @allocatedLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Asignado'**
+  String get allocatedLabel;
+
+  /// No description provided for @availableLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Disponible'**
+  String get availableLabel;
+
+  /// No description provided for @ofCapital.
+  ///
+  /// In es, this message translates to:
+  /// **'del capital'**
+  String get ofCapital;
 }
 
 class _AppLocalizationsDelegate

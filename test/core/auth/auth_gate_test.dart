@@ -102,17 +102,21 @@ void main() {
       },
     );
 
-    test('401 → signOut + GateNoSession (token muerto)', () async {
-      when(() => repo.getMe()).thenAnswer(
-        (_) async =>
-            throw const ApiException(401, 'UNAUTHORIZED', 'Token muerto'),
-      );
+    test(
+      '401 → GateNoSession (el signOut lo centraliza el interceptor)',
+      () async {
+        when(() => repo.getMe()).thenAnswer(
+          (_) async =>
+              throw const ApiException(401, 'UNAUTHORIZED', 'Token muerto'),
+        );
 
-      await notifier().evaluate();
+        await notifier().evaluate();
 
-      expect(state(), isA<GateNoSession>());
-      verify(() => goTrue.signOut()).called(1);
-    });
+        expect(state(), isA<GateNoSession>());
+        // El signOut ahora vive en el interceptor de Dio (handleAuthError), no acá.
+        verifyNever(() => goTrue.signOut());
+      },
+    );
 
     test('503 → GateRetrying503 SIN signOut (no desloguear)', () async {
       when(() => repo.getMe()).thenAnswer(

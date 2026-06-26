@@ -58,19 +58,23 @@ void main() {
     verify(() => goTrue.signOut()).called(1);
   });
 
-  test('401 → signOut + SessionExpired (volver a login)', () async {
-    when(() => repo.changePassword(any())).thenAnswer(
-      (_) async =>
-          throw const ApiException(401, 'UNAUTHORIZED', 'Token inválido'),
-    );
+  test(
+    '401 → SessionExpired (el signOut lo centraliza el interceptor)',
+    () async {
+      when(() => repo.changePassword(any())).thenAnswer(
+        (_) async =>
+            throw const ApiException(401, 'UNAUTHORIZED', 'Token inválido'),
+      );
 
-    await notifier().submit('nuevaClave123');
+      await notifier().submit('nuevaClave123');
 
-    final state = currentState();
-    expect(state, isA<ChangePasswordSessionExpired>());
-    expect((state as ChangePasswordSessionExpired).message, 'Token inválido');
-    verify(() => goTrue.signOut()).called(1);
-  });
+      final state = currentState();
+      expect(state, isA<ChangePasswordSessionExpired>());
+      expect((state as ChangePasswordSessionExpired).message, 'Token inválido');
+      // El signOut en 401 ahora lo hace el interceptor de Dio, no el controller.
+      verifyNever(() => goTrue.signOut());
+    },
+  );
 
   test('400 → Failure con el message del server, SIN signOut', () async {
     when(() => repo.changePassword(any())).thenAnswer(

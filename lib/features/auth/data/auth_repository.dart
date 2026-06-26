@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_exception.dart';
+import '../../../core/network/retry.dart';
 import '../domain/auth_user.dart';
 
 /// Capa de datos de autenticación contra la API REST de Investep.
@@ -31,22 +32,15 @@ class AuthRepository {
   /// respuesta). Es idempotente, así que el retry es seguro. Un 401 (token
   /// muerto) NO se reintenta: se propaga como [ApiException] para que la capa
   /// superior dispare el re-login.
-  Future<AuthUser> getMe() async {
-    var attempt = 0;
-    while (true) {
-      attempt++;
-      try {
+  Future<AuthUser> getMe() {
+    return retryWithBackoff(
+      () async {
         final res = await _dio.get<Map<String, dynamic>>('/auth/me');
         return AuthUser.fromJson(res.data!);
-      } on DioException catch (e) {
-        final error = ApiException.fromDioException(e);
-        if (!error.isRetryable || attempt >= _maxAttempts) {
-          throw error;
-        }
-        // Backoff exponencial: ~base, 2x, 4x ...
-        await Future<void>.delayed(_retryBaseDelay * (1 << (attempt - 1)));
-      }
-    }
+      },
+      baseDelay: _retryBaseDelay,
+      maxAttempts: _maxAttempts,
+    );
   }
 
   /// `POST /auth/change-password` con body `{ newPassword }`.

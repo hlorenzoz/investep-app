@@ -1,44 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../../l10n/gen/app_localizations.dart';
+import '../../../shared/format/money.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../capital/domain/account_type.dart';
+import '../../capital/domain/allocation.dart';
+import '../../capital/domain/capital_overview.dart';
+import '../../capital/presentation/capital_controller.dart';
+import '../../setup/presentation/setup_deferred_provider.dart';
+import '../../setup/presentation/setup_mode.dart';
 
-/// Pantalla placeholder de cartera. Demuestra el lenguaje visual de la app
-/// (degradado de fondo + superficies glass + iconografía Lucide nativa).
-///
-/// NO contiene datos reales: la carga de cartera se hará vía el cliente OpenAPI
-/// contra `investep-app-api`, en solo lectura. Esto es sólo el scaffold visual.
+/// Dashboard de capital. Consume `GET /capital`:
+/// - sin capital → empty-state con CTA al wizard (initialSetup) + banner si se
+///   pospuso la configuración.
+/// - con capital sin cuentas → CTA para agregar la primera cuenta.
+/// - con allocations → lista (broker, tipo, plan, depósito, % del capital) +
+///   total asignado/disponible, y FAB para agregar otra cuenta (addBroker).
 class PortfolioScreen extends ConsumerWidget {
   const PortfolioScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final capitalAsync = ref.watch(capitalControllerProvider);
+    final overview = capitalAsync.value;
+    final showFab = overview != null && overview.hasCapital;
+
     return Container(
       decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: const Row(
+          title: Row(
             children: [
-              Icon(LucideIcons.wallet, size: 22),
-              SizedBox(width: 10),
-              Text('Cartera'),
+              const Icon(LucideIcons.wallet, size: 22),
+              const SizedBox(width: 10),
+              Text(l10n.dashboardTitle),
             ],
           ),
         ),
-        body: const SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _BalanceCard(),
-                SizedBox(height: 16),
-                _PlaceholderCard(),
-              ],
+        floatingActionButton: showFab
+            ? FloatingActionButton.extended(
+                onPressed: () =>
+                    context.go('/setup', extra: SetupMode.addBroker),
+                icon: const Icon(LucideIcons.plus),
+                label: Text(l10n.addBrokerAccount),
+              )
+            : null,
+        body: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
+              child: capitalAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => _ErrorState(message: l10n.dashboardLoadError),
+                data: (overview) => _Content(overview: overview),
+              ),
             ),
           ),
         ),
@@ -47,62 +69,344 @@ class PortfolioScreen extends ConsumerWidget {
   }
 }
 
-class _BalanceCard extends StatelessWidget {
-  const _BalanceCard();
+class _Content extends ConsumerWidget {
+  const _Content({required this.overview});
+
+  final CapitalOverview overview;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (!overview.hasCapital) {
+      final deferred = ref.watch(setupDeferredProvider);
+      return _EmptyState(showBanner: deferred);
+    }
+    if (!overview.hasAllocations) {
+      return const _EmptyAllocations();
+    }
+    return _CapitalList(overview: overview);
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.showBanner});
+
+  final bool showBanner;
 
   @override
   Widget build(BuildContext context) {
-    return const GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Saldo total agregado',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-          ),
-          SizedBox(height: 8),
-          Text(
-            '—',
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 34,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(height: 12),
-          Row(
+    final l10n = AppLocalizations.of(context);
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        if (showBanner) ...[
+          _Banner(text: l10n.completeSetupBanner),
+          const SizedBox(height: 16),
+        ],
+        GlassCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(LucideIcons.trendingUp, size: 16, color: AppColors.positive),
-              SizedBox(width: 6),
+              const Icon(
+                LucideIcons.pieChart,
+                size: 48,
+                color: AppColors.accentSoft,
+              ),
+              const SizedBox(height: 16),
               Text(
-                'Conectá tus brókers para ver tus posiciones',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                l10n.dashboardEmptyTitle,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.dashboardEmptySubtitle,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () =>
+                    context.go('/setup', extra: SetupMode.initialSetup),
+                icon: const Icon(LucideIcons.settings, size: 18),
+                label: Text(l10n.configureCapitalCta),
               ),
             ],
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class _EmptyAllocations extends StatelessWidget {
+  const _EmptyAllocations();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        GlassCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Icon(
+                LucideIcons.building2,
+                size: 48,
+                color: AppColors.accentSoft,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.dashboardEmptySubtitle,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () =>
+                    context.go('/setup', extra: SetupMode.addBroker),
+                icon: const Icon(LucideIcons.plus, size: 18),
+                label: Text(l10n.addBrokerAccount),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CapitalList extends StatelessWidget {
+  const _CapitalList({required this.overview});
+
+  final CapitalOverview overview;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final currency = overview.capital!.currency;
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
+      children: [
+        GlassCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _summaryRow(
+                l10n.capitalTotalLabel,
+                formatMoney(overview.capital!.totalCapital, currency),
+                emphasized: true,
+              ),
+              const Divider(height: 24, color: AppColors.glassBorder),
+              _summaryRow(
+                l10n.allocatedLabel,
+                formatMoney(overview.totalAllocated, currency),
+              ),
+              const SizedBox(height: 8),
+              _summaryRow(
+                l10n.availableLabel,
+                formatMoney(overview.available, currency),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        for (final a in overview.allocations)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _AllocationTile(
+              allocation: a,
+              totalCapital: overview.capital!.totalCapital,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _summaryRow(String label, String value, {bool emphasized = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: emphasized ? 20 : 15,
+            fontWeight: emphasized ? FontWeight.w700 : FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AllocationTile extends StatelessWidget {
+  const _AllocationTile({required this.allocation, required this.totalCapital});
+
+  final Allocation allocation;
+  final num totalCapital;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final pct = totalCapital > 0
+        ? (allocation.initialDeposit / totalCapital * 100)
+        : 0;
+    final typeLabel = allocation.accountType == AccountType.equity
+        ? l10n.accountTypeEquity
+        : l10n.accountTypeOptions;
+
+    return GlassCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                LucideIcons.building2,
+                color: AppColors.accentSoft,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                allocation.brokerSlug,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.accent.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  typeLabel,
+                  style: const TextStyle(
+                    color: AppColors.accentSoft,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${l10n.planTargetMonthly}: ${allocation.targetMonthlyPct}%',
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                ),
+              ),
+              Text(
+                '${pct.toStringAsFixed(1)}% ${l10n.ofCapital}',
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            formatMoney(allocation.initialDeposit, allocation.currency),
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-class _PlaceholderCard extends StatelessWidget {
-  const _PlaceholderCard();
+class _Banner extends StatelessWidget {
+  const _Banner({required this.text});
+
+  final String text;
 
   @override
   Widget build(BuildContext context) {
-    return const GlassCard(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.accent.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.glassBorder),
+      ),
       child: Row(
         children: [
-          Icon(LucideIcons.chartPie, size: 28, color: AppColors.accentSoft),
-          SizedBox(width: 16),
+          const Icon(LucideIcons.info, color: AppColors.accentSoft, size: 20),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Aquí irán las posiciones, órdenes y transacciones (solo lectura).',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              text,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ErrorState extends ConsumerWidget {
+  const _ErrorState({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              LucideIcons.serverCrash,
+              color: AppColors.negative,
+              size: 48,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.textPrimary),
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton.icon(
+              onPressed: () => ref.invalidate(capitalControllerProvider),
+              icon: const Icon(LucideIcons.refreshCw, size: 18),
+              label: Text(l10n.retry),
+            ),
+          ],
+        ),
       ),
     );
   }

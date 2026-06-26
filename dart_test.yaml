@@ -1,0 +1,4 @@
+# Declaración de tags de test. Alchemist etiqueta los golden tests con `golden`
+# (deterministas, host-only). Excluirlos en runs web: `flutter test -x golden`.
+tags:
+  golden:

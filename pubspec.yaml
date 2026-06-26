@@ -59,6 +59,10 @@ dependencies:
   # --- Iconografía: Lucide, renderizado nativo (icon font compilada en el binario) ---
   lucide_icons_flutter: ^3.1.14+2
 
+  # --- Logos de broker: pueden ser SVG (el seed usa .svg) y el Image de Flutter
+  # no rinde SVG. Soporta network y data: URIs. Con fallback al ícono Lucide. ---
+  flutter_svg: ^2.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
