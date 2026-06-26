@@ -31,97 +31,100 @@ class MainShell extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final glassTheme = context.glass;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isMobile = constraints.maxWidth < 600;
+    return Container(
+      decoration: BoxDecoration(gradient: glassTheme.backgroundGradient),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isMobile = constraints.maxWidth < 600;
 
-        if (isMobile) {
-          return Scaffold(
-            backgroundColor: Colors.transparent,
-            body: navigationShell,
-            bottomNavigationBar: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: glassTheme.glassBorder, width: 0.5),
+          if (isMobile) {
+            return Scaffold(
+              backgroundColor: Colors.transparent,
+              body: navigationShell,
+              bottomNavigationBar: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(color: glassTheme.glassBorder, width: 0.5),
+                  ),
+                ),
+                child: NavigationBar(
+                  selectedIndex: navigationShell.currentIndex,
+                  onDestinationSelected: _onDestinationSelected,
+                  destinations: [
+                    NavigationDestination(
+                      icon: const Icon(LucideIcons.pieChart),
+                      label: l10n.navPortfolio,
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(LucideIcons.graduationCap),
+                      label: l10n.navAcademy,
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(LucideIcons.settings),
+                      label: l10n.navSettings,
+                    ),
+                  ],
                 ),
               ),
-              child: NavigationBar(
-                selectedIndex: navigationShell.currentIndex,
-                onDestinationSelected: _onDestinationSelected,
-                destinations: [
-                  NavigationDestination(
-                    icon: const Icon(LucideIcons.pieChart),
-                    label: l10n.navPortfolio,
+            );
+          } else {
+            return Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        right: BorderSide(color: glassTheme.glassBorder, width: 0.5),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: NavigationRail(
+                            selectedIndex: navigationShell.currentIndex < 2
+                                ? navigationShell.currentIndex
+                                : null,
+                            onDestinationSelected: _onDestinationSelected,
+                            labelType: NavigationRailLabelType.all,
+                            destinations: [
+                              NavigationRailDestination(
+                                icon: const Icon(LucideIcons.pieChart),
+                                label: Text(l10n.navPortfolio),
+                              ),
+                              NavigationRailDestination(
+                                icon: const Icon(LucideIcons.graduationCap),
+                                label: Text(l10n.navAcademy),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: NavigationRail(
+                            selectedIndex: navigationShell.currentIndex == 2 ? 0 : null,
+                            onDestinationSelected: (_) => _onDestinationSelected(2),
+                            labelType: NavigationRailLabelType.all,
+                            destinations: [
+                              NavigationRailDestination(
+                                icon: const Icon(LucideIcons.settings),
+                                label: Text(l10n.navSettings),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  NavigationDestination(
-                    icon: const Icon(LucideIcons.graduationCap),
-                    label: l10n.navAcademy,
-                  ),
-                  NavigationDestination(
-                    icon: const Icon(LucideIcons.settings),
-                    label: l10n.navSettings,
+                  Expanded(
+                    child: navigationShell,
                   ),
                 ],
               ),
-            ),
-          );
-        } else {
-          return Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      right: BorderSide(color: glassTheme.glassBorder, width: 0.5),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: NavigationRail(
-                          selectedIndex: navigationShell.currentIndex < 2
-                              ? navigationShell.currentIndex
-                              : null,
-                          onDestinationSelected: _onDestinationSelected,
-                          labelType: NavigationRailLabelType.all,
-                          destinations: [
-                            NavigationRailDestination(
-                              icon: const Icon(LucideIcons.pieChart),
-                              label: Text(l10n.navPortfolio),
-                            ),
-                            NavigationRailDestination(
-                              icon: const Icon(LucideIcons.graduationCap),
-                              label: Text(l10n.navAcademy),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: NavigationRail(
-                          selectedIndex: navigationShell.currentIndex == 2 ? 0 : null,
-                          onDestinationSelected: (_) => _onDestinationSelected(2),
-                          labelType: NavigationRailLabelType.all,
-                          destinations: [
-                            NavigationRailDestination(
-                              icon: const Icon(LucideIcons.settings),
-                              label: Text(l10n.navSettings),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: navigationShell,
-                ),
-              ],
-            ),
-          );
-        }
-      },
+            );
+          }
+        },
+      ),
     );
   }
 }
