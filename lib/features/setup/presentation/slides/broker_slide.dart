@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_theme.dart';
 import '../../../../l10n/gen/app_localizations.dart';
 import '../../../brokers/domain/broker.dart';
 import '../../../brokers/presentation/broker_logo.dart';
@@ -37,6 +38,7 @@ class _BrokerSlideState extends ConsumerState<BrokerSlide> {
     final allocations =
         ref.watch(capitalControllerProvider).value?.allocations ??
         const <Allocation>[];
+    final glassTheme = context.glass;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -44,10 +46,10 @@ class _BrokerSlideState extends ConsumerState<BrokerSlide> {
       children: [
         Text(
           l10n.brokerTitle,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: glassTheme.textPrimary,
           ),
         ),
         const SizedBox(height: 16),
@@ -119,25 +121,48 @@ class _BrokerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final glassTheme = context.glass;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     // Deshabilitado sólo si TODAS las combinaciones (equity+options) ya existen.
     final fullyConfigured = configuredTypes.length >= AccountType.values.length;
 
     return Card(
       color: selected
-          ? AppColors.accent.withValues(alpha: 0.25)
-          : Colors.white.withValues(alpha: 0.04),
+          ? (isDark
+              ? AppColors.accent.withValues(alpha: 0.25)
+              : Colors.black.withValues(alpha: 0.08))
+          : glassTheme.glassFill,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: glassTheme.glassBorder),
+      ),
+      elevation: 0,
       child: ListTile(
         enabled: !fullyConfigured,
         leading: BrokerLogo(broker: broker),
-        title: Text(broker.name),
+        title: Text(
+          broker.name,
+          style: TextStyle(
+            color: fullyConfigured
+                ? glassTheme.textSecondary.withValues(alpha: 0.5)
+                : glassTheme.textPrimary,
+          ),
+        ),
         subtitle: configuredTypes.isNotEmpty
             ? Text(
                 l10n.alreadyConfigured,
-                style: const TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(
+                  color: fullyConfigured
+                      ? glassTheme.textSecondary.withValues(alpha: 0.5)
+                      : glassTheme.textSecondary,
+                ),
               )
             : null,
         trailing: selected
-            ? const Icon(LucideIcons.circleCheck, color: AppColors.accent)
+            ? Icon(
+                LucideIcons.circleCheck,
+                color: isDark ? AppColors.accent : Colors.black,
+              )
             : null,
         onTap: fullyConfigured ? null : onTap,
       ),
@@ -153,20 +178,21 @@ class _BrokersError extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final glassTheme = context.glass;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
         children: [
-          const Icon(
+          Icon(
             LucideIcons.serverCrash,
-            color: AppColors.negative,
+            color: glassTheme.negative,
             size: 48,
           ),
           const SizedBox(height: 12),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textPrimary),
+            style: TextStyle(color: glassTheme.textPrimary),
           ),
           const SizedBox(height: 16),
           OutlinedButton.icon(

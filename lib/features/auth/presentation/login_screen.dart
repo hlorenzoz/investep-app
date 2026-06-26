@@ -58,7 +58,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isValidConfig = AppConfig.isValidSupabaseConfig;
 
     return Container(
-      decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
+      decoration: BoxDecoration(gradient: context.glass.backgroundGradient),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -97,6 +97,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildConfigWarningCard() {
+    final glassTheme = context.glass;
     return GlassCard(
       borderRadius: 16,
       blur: 20,
@@ -104,18 +105,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 LucideIcons.alertTriangle,
-                color: AppColors.negative,
+                color: glassTheme.negative,
                 size: 24,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'FALTA CONFIGURACIÓN',
                 style: TextStyle(
-                  color: AppColors.negative,
+                  color: glassTheme.negative,
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                 ),
@@ -123,12 +124,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ],
           ),
           const SizedBox(height: 10),
-          const Text(
+          Text(
             'No se detectó una configuración válida de Supabase. '
             'Asegurate de correr la app usando --dart-define-from-file o definiendo las variables necesarias.',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            style: TextStyle(color: glassTheme.textSecondary, fontSize: 13),
           ),
-          const Divider(height: 20, color: AppColors.glassBorder),
+          Divider(height: 20, color: glassTheme.glassBorder),
           _buildInfoRow('API Base URL', AppConfig.apiBaseUrl),
           const SizedBox(height: 4),
           _buildInfoRow('Supabase URL', AppConfig.supabaseUrl),
@@ -147,23 +148,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildInfoRow(String label, String value) {
+    final glassTheme = context.glass;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           '$label: ',
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: glassTheme.textPrimary,
             fontSize: 12,
           ),
         ),
         Expanded(
           child: Text(
             value.isEmpty ? '(No configurado)' : value,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'monospace',
-              color: AppColors.textSecondary,
+              color: glassTheme.textSecondary,
               fontSize: 12,
             ),
           ),
@@ -173,16 +175,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildLoginContent(LoginState state, bool isValidConfig) {
+    final glassTheme = context.glass;
     switch (state) {
       case LoginLoading():
-        return const GlassCard(
+        return GlassCard(
           child: Column(
             children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 20),
+              const CircularProgressIndicator(),
+              const SizedBox(height: 20),
               Text(
                 'Autenticando y validando...',
-                style: TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(color: glassTheme.textSecondary),
               ),
             ],
           ),
@@ -201,22 +204,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildErrorCard(String message) {
+    final glassTheme = context.glass;
     return GlassCard(
       borderRadius: 16,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(LucideIcons.xCircle, color: AppColors.negative, size: 24),
+          Icon(LucideIcons.xCircle, color: glassTheme.negative, size: 24),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Error de Autenticación',
                   style: TextStyle(
-                    color: AppColors.negative,
+                    color: glassTheme.negative,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
@@ -224,8 +228,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 4),
                 Text(
                   message,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: glassTheme.textSecondary,
                     fontSize: 13,
                   ),
                 ),
@@ -238,6 +242,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildLoginFormCard(bool isEnabled) {
+    final glassTheme = context.glass;
+    final theme = Theme.of(context);
     return GlassCard(
       borderRadius: 20,
       child: Form(
@@ -245,18 +251,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               'Iniciar Sesión',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: glassTheme.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Ingresá tus credenciales para validar el acceso.',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              style: TextStyle(color: glassTheme.textSecondary, fontSize: 13),
             ),
             const SizedBox(height: 24),
             TextFormField(
@@ -264,19 +270,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               enabled: isEnabled,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
+              style: TextStyle(color: glassTheme.textPrimary),
               decoration: InputDecoration(
                 labelText: 'Email',
-                prefixIcon: const Icon(LucideIcons.mail, size: 20),
+                labelStyle: TextStyle(color: glassTheme.textSecondary),
+                prefixIcon: Icon(LucideIcons.mail, size: 20, color: glassTheme.textSecondary),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.glassBorder),
+                  borderSide: BorderSide(color: glassTheme.glassBorder),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.accent),
+                  borderSide: BorderSide(color: theme.colorScheme.primary),
                 ),
               ),
               validator: (value) {
@@ -297,13 +305,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               obscureText: _obscurePassword,
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (_) => isEnabled ? _submit() : null,
+              style: TextStyle(color: glassTheme.textPrimary),
               decoration: InputDecoration(
                 labelText: 'Contraseña',
-                prefixIcon: const Icon(LucideIcons.lock, size: 20),
+                labelStyle: TextStyle(color: glassTheme.textSecondary),
+                prefixIcon: Icon(LucideIcons.lock, size: 20, color: glassTheme.textSecondary),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword ? LucideIcons.eye : LucideIcons.eyeOff,
                     size: 20,
+                    color: glassTheme.textSecondary,
                   ),
                   onPressed: () {
                     setState(() {
@@ -316,11 +327,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.glassBorder),
+                  borderSide: BorderSide(color: glassTheme.glassBorder),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.accent),
+                  borderSide: BorderSide(color: theme.colorScheme.primary),
                 ),
               ),
               validator: (value) {
@@ -336,13 +347,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const SizedBox(height: 24),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.accent,
-                foregroundColor: Colors.white,
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                disabledBackgroundColor: AppColors.accent.withValues(
+                shape: const StadiumBorder(),
+                disabledBackgroundColor: theme.colorScheme.primary.withValues(
                   alpha: 0.3,
                 ),
               ),

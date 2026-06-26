@@ -30,9 +30,10 @@ class EditAllocationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final overviewAsync = ref.watch(capitalControllerProvider);
+    final glassTheme = context.glass;
 
     return Container(
-      decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
+      decoration: BoxDecoration(gradient: glassTheme.backgroundGradient),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(title: Text(l10n.editAccount)),
@@ -45,7 +46,7 @@ class EditAllocationScreen extends ConsumerWidget {
                 error: (e, _) => Center(
                   child: Text(
                     l10n.dashboardLoadError,
-                    style: const TextStyle(color: AppColors.textPrimary),
+                    style: TextStyle(color: glassTheme.textPrimary),
                   ),
                 ),
                 data: (overview) {
@@ -60,7 +61,7 @@ class EditAllocationScreen extends ConsumerWidget {
                     return Center(
                       child: Text(
                         l10n.accountNotFound,
-                        style: const TextStyle(color: AppColors.textSecondary),
+                        style: TextStyle(color: glassTheme.textSecondary),
                       ),
                     );
                   }
@@ -116,22 +117,24 @@ class _EditForm extends ConsumerWidget {
       if (next is EditCompleted && context.mounted) context.pop();
     });
 
+    final glassTheme = context.glass;
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
       children: [
         // Broker + tipo de cuenta (read-only).
         Row(
           children: [
-            const Icon(
+            Icon(
               LucideIcons.building2,
-              color: AppColors.accentSoft,
+              color: Theme.of(context).colorScheme.secondary,
               size: 20,
             ),
             const SizedBox(width: 8),
             Text(
               allocation.brokerSlug,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: glassTheme.textPrimary,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
@@ -139,8 +142,8 @@ class _EditForm extends ConsumerWidget {
             const SizedBox(width: 8),
             Text(
               typeLabel,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: glassTheme.textSecondary,
                 fontSize: 13,
               ),
             ),
@@ -151,10 +154,10 @@ class _EditForm extends ConsumerWidget {
         // Plan.
         Text(
           l10n.planTitle,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: glassTheme.textPrimary,
           ),
         ),
         const SizedBox(height: 12),

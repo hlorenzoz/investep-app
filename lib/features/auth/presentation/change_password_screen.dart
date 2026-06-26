@@ -72,7 +72,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
     });
 
     return Container(
-      decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
+      decoration: BoxDecoration(gradient: context.glass.backgroundGradient),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -131,26 +131,28 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   /// Card para `ChangePasswordSessionExpired` (401): la sesión ya no es válida,
   /// así que no se puede cambiar la contraseña con ella. Volvemos al login.
   Widget _buildSessionExpiredCard(String message) {
+    final glassTheme = context.glass;
+    final theme = Theme.of(context);
     return GlassCard(
       borderRadius: 20,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Center(
+          Center(
             child: Icon(
               LucideIcons.shieldAlert,
-              color: AppColors.negative,
+              color: glassTheme.negative,
               size: 56,
             ),
           ),
           const SizedBox(height: 16),
-          const Center(
+          Center(
             child: Text(
               'Tu sesión expiró',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: glassTheme.textPrimary,
               ),
             ),
           ),
@@ -159,8 +161,8 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
             child: Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: glassTheme.textSecondary,
                 fontSize: 14,
               ),
             ),
@@ -168,12 +170,10 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
           const SizedBox(height: 24),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accent,
-              foregroundColor: Colors.white,
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              shape: const StadiumBorder(),
             ),
             onPressed: _goToLogin,
             icon: const Icon(LucideIcons.arrowRight, size: 18),
@@ -185,46 +185,46 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   }
 
   Widget _buildSuccessCard() {
+    final glassTheme = context.glass;
+    final theme = Theme.of(context);
     return GlassCard(
       borderRadius: 20,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Center(
+          Center(
             child: Icon(
               LucideIcons.badgeCheck,
-              color: AppColors.positive,
+              color: glassTheme.positive,
               size: 64,
             ),
           ),
           const SizedBox(height: 16),
-          const Center(
+          Center(
             child: Text(
               '¡Contraseña actualizada!',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.positive,
+                color: glassTheme.positive,
               ),
             ),
           ),
           const SizedBox(height: 8),
-          const Center(
+          Center(
             child: Text(
               'Iniciá sesión nuevamente con tu nueva contraseña.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              style: TextStyle(color: glassTheme.textSecondary, fontSize: 14),
             ),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accent,
-              foregroundColor: Colors.white,
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              shape: const StadiumBorder(),
             ),
             onPressed: _goToLogin,
             icon: const Icon(LucideIcons.arrowRight, size: 18),
@@ -236,22 +236,23 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   }
 
   Widget _buildErrorCard(String message) {
+    final glassTheme = context.glass;
     return GlassCard(
       borderRadius: 16,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(LucideIcons.xCircle, color: AppColors.negative, size: 24),
+          Icon(LucideIcons.xCircle, color: glassTheme.negative, size: 24),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'No se pudo cambiar la contraseña',
                   style: TextStyle(
-                    color: AppColors.negative,
+                    color: glassTheme.negative,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
@@ -259,8 +260,8 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                 const SizedBox(height: 4),
                 Text(
                   message,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: glassTheme.textSecondary,
                     fontSize: 13,
                   ),
                 ),
@@ -273,6 +274,8 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   }
 
   Widget _buildFormCard() {
+    final glassTheme = context.glass;
+    final theme = Theme.of(context);
     return GlassCard(
       borderRadius: 20,
       child: Form(
@@ -280,31 +283,34 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               'Definí tu nueva contraseña',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: glassTheme.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Tu contraseña expiró. Elegí una nueva para continuar.',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              style: TextStyle(color: glassTheme.textSecondary, fontSize: 13),
             ),
             const SizedBox(height: 24),
             TextFormField(
               controller: _passwordController,
               obscureText: _obscurePassword,
               textInputAction: TextInputAction.next,
+              style: TextStyle(color: glassTheme.textPrimary),
               decoration: InputDecoration(
                 labelText: 'Contraseña nueva',
-                prefixIcon: const Icon(LucideIcons.lock, size: 20),
+                labelStyle: TextStyle(color: glassTheme.textSecondary),
+                prefixIcon: Icon(LucideIcons.lock, size: 20, color: glassTheme.textSecondary),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword ? LucideIcons.eye : LucideIcons.eyeOff,
                     size: 20,
+                    color: glassTheme.textSecondary,
                   ),
                   onPressed: () {
                     setState(() => _obscurePassword = !_obscurePassword);
@@ -315,11 +321,11 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.glassBorder),
+                  borderSide: BorderSide(color: glassTheme.glassBorder),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.accent),
+                  borderSide: BorderSide(color: theme.colorScheme.primary),
                 ),
               ),
               validator: validateNewPassword,
@@ -330,13 +336,16 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
               obscureText: _obscureConfirm,
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (_) => _submit(),
+              style: TextStyle(color: glassTheme.textPrimary),
               decoration: InputDecoration(
                 labelText: 'Repetir contraseña',
-                prefixIcon: const Icon(LucideIcons.lock, size: 20),
+                labelStyle: TextStyle(color: glassTheme.textSecondary),
+                prefixIcon: Icon(LucideIcons.lock, size: 20, color: glassTheme.textSecondary),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscureConfirm ? LucideIcons.eye : LucideIcons.eyeOff,
                     size: 20,
+                    color: glassTheme.textSecondary,
                   ),
                   onPressed: () {
                     setState(() => _obscureConfirm = !_obscureConfirm);
@@ -347,11 +356,11 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.glassBorder),
+                  borderSide: BorderSide(color: glassTheme.glassBorder),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.accent),
+                  borderSide: BorderSide(color: theme.colorScheme.primary),
                 ),
               ),
               validator: (value) =>
@@ -360,12 +369,10 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
             const SizedBox(height: 24),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.accent,
-                foregroundColor: Colors.white,
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: const StadiumBorder(),
               ),
               onPressed: _submit,
               child: const Row(

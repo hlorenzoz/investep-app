@@ -63,6 +63,9 @@ dependencies:
   # no rinde SVG. Soporta network y data: URIs. Con fallback al ícono Lucide. ---
   flutter_svg: ^2.2.1
 
+  # --- Preferencias locales ---
+  shared_preferences: ^2.5.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -24,7 +24,7 @@ class SplashScreen extends ConsumerWidget {
     final gate = ref.watch(authGateProvider);
 
     return Container(
-      decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
+      decoration: BoxDecoration(gradient: context.glass.backgroundGradient),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
@@ -49,6 +49,7 @@ class _CheckingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final glassTheme = context.glass;
     return GlassCard(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -58,7 +59,7 @@ class _CheckingCard extends StatelessWidget {
           Text(
             l10n.splashChecking,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textSecondary),
+            style: TextStyle(color: glassTheme.textSecondary),
           ),
         ],
       ),
@@ -74,16 +75,19 @@ class _RetryCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final glassTheme = context.glass;
+    final theme = Theme.of(context);
+
     return GlassCard(
       borderRadius: 20,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Center(
+          Center(
             child: Icon(
               LucideIcons.serverCrash,
-              color: AppColors.negative,
+              color: glassTheme.negative,
               size: 56,
             ),
           ),
@@ -91,10 +95,10 @@ class _RetryCard extends ConsumerWidget {
           Center(
             child: Text(
               l10n.serviceUnavailableTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: glassTheme.textPrimary,
               ),
             ),
           ),
@@ -103,8 +107,8 @@ class _RetryCard extends ConsumerWidget {
             child: Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: glassTheme.textSecondary,
                 fontSize: 14,
               ),
             ),
@@ -112,8 +116,8 @@ class _RetryCard extends ConsumerWidget {
           const SizedBox(height: 24),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accent,
-              foregroundColor: Colors.white,
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),

@@ -8,6 +8,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/format/money.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/theme_selector.dart';
 import '../../capital/domain/account_type.dart';
 import '../../capital/domain/allocation.dart';
 import '../../capital/domain/capital_overview.dart';
@@ -30,19 +31,25 @@ class PortfolioScreen extends ConsumerWidget {
     final capitalAsync = ref.watch(capitalControllerProvider);
     final overview = capitalAsync.value;
     final showFab = overview != null && overview.hasCapital;
+    final glassTheme = context.glass;
 
     return Container(
-      decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
+      decoration: BoxDecoration(gradient: glassTheme.backgroundGradient),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(LucideIcons.wallet, size: 22),
               const SizedBox(width: 10),
               Text(l10n.dashboardTitle),
             ],
           ),
+          actions: const [
+            ThemeSelector(),
+            SizedBox(width: 16),
+          ],
         ),
         floatingActionButton: showFab
             ? FloatingActionButton.extended(
@@ -95,6 +102,9 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final glassTheme = context.glass;
+
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
@@ -106,27 +116,27 @@ class _EmptyState extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(
+              Icon(
                 LucideIcons.pieChart,
                 size: 48,
-                color: AppColors.accentSoft,
+                color: theme.colorScheme.secondary,
               ),
               const SizedBox(height: 16),
               Text(
                 l10n.dashboardEmptyTitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: glassTheme.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 l10n.dashboardEmptySubtitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
+                style: TextStyle(
+                  color: glassTheme.textSecondary,
                   fontSize: 14,
                 ),
               ),
@@ -151,6 +161,9 @@ class _EmptyAllocations extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final glassTheme = context.glass;
+
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
@@ -158,16 +171,16 @@ class _EmptyAllocations extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(
+              Icon(
                 LucideIcons.building2,
                 size: 48,
-                color: AppColors.accentSoft,
+                color: theme.colorScheme.secondary,
               ),
               const SizedBox(height: 16),
               Text(
                 l10n.dashboardEmptySubtitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(color: glassTheme.textSecondary),
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
@@ -193,6 +206,7 @@ class _CapitalList extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final currency = overview.capital!.currency;
+    final glassTheme = context.glass;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
@@ -202,17 +216,20 @@ class _CapitalList extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _summaryRow(
+                context,
                 l10n.capitalTotalLabel,
                 formatMoney(overview.capital!.totalCapital, currency),
                 emphasized: true,
               ),
-              const Divider(height: 24, color: AppColors.glassBorder),
+              Divider(height: 24, color: glassTheme.glassBorder),
               _summaryRow(
+                context,
                 l10n.allocatedLabel,
                 formatMoney(overview.totalAllocated, currency),
               ),
               const SizedBox(height: 8),
               _summaryRow(
+                context,
                 l10n.availableLabel,
                 formatMoney(overview.available, currency),
               ),
@@ -232,18 +249,19 @@ class _CapitalList extends StatelessWidget {
     );
   }
 
-  Widget _summaryRow(String label, String value, {bool emphasized = false}) {
+  Widget _summaryRow(BuildContext context, String label, String value, {bool emphasized = false}) {
+    final glassTheme = context.glass;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+          style: TextStyle(color: glassTheme.textSecondary, fontSize: 14),
         ),
         Text(
           value,
           style: TextStyle(
-            color: AppColors.textPrimary,
+            color: glassTheme.textPrimary,
             fontSize: emphasized ? 20 : 15,
             fontWeight: emphasized ? FontWeight.w700 : FontWeight.w600,
           ),
@@ -262,6 +280,9 @@ class _AllocationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final glassTheme = context.glass;
+
     final pct = totalCapital > 0
         ? (allocation.initialDeposit / totalCapital * 100)
         : 0;
@@ -279,16 +300,16 @@ class _AllocationTile extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(
+                Icon(
                   LucideIcons.building2,
-                  color: AppColors.accentSoft,
+                  color: theme.colorScheme.secondary,
                   size: 20,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   allocation.brokerSlug,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
+                  style: TextStyle(
+                    color: glassTheme.textPrimary,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -300,13 +321,13 @@ class _AllocationTile extends StatelessWidget {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.accent.withValues(alpha: 0.18),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.18),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     typeLabel,
-                    style: const TextStyle(
-                      color: AppColors.accentSoft,
+                    style: TextStyle(
+                      color: theme.colorScheme.secondary,
                       fontSize: 12,
                     ),
                   ),
@@ -319,15 +340,15 @@ class _AllocationTile extends StatelessWidget {
               children: [
                 Text(
                   '${l10n.planTargetMonthly}: ${allocation.targetMonthlyPct}%',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: glassTheme.textSecondary,
                     fontSize: 13,
                   ),
                 ),
                 Text(
                   '${pct.toStringAsFixed(1)}% ${l10n.ofCapital}',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: glassTheme.textSecondary,
                     fontSize: 13,
                   ),
                 ),
@@ -336,8 +357,8 @@ class _AllocationTile extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               formatMoney(allocation.initialDeposit, allocation.currency),
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: glassTheme.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -355,22 +376,25 @@ class _Banner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final glassTheme = context.glass;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.accent.withValues(alpha: 0.18),
+        color: theme.colorScheme.primary.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.glassBorder),
+        border: Border.all(color: glassTheme.glassBorder),
       ),
       child: Row(
         children: [
-          const Icon(LucideIcons.info, color: AppColors.accentSoft, size: 20),
+          Icon(LucideIcons.info, color: theme.colorScheme.secondary, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: glassTheme.textPrimary,
                 fontSize: 14,
               ),
             ),
@@ -389,22 +413,25 @@ class _ErrorState extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final glassTheme = context.glass;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               LucideIcons.serverCrash,
-              color: AppColors.negative,
+              color: glassTheme.negative,
               size: 48,
             ),
             const SizedBox(height: 16),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textPrimary),
+              style: TextStyle(color: glassTheme.textPrimary),
             ),
             const SizedBox(height: 16),
             OutlinedButton.icon(

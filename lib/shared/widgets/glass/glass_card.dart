@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_theme.dart';
 
 /// Superficie de cristal (glassmorphism) construida con `BackdropFilter` +
 /// `ImageFilter.blur` NATIVOS — sin librerías externas (ver AGENTS.md §4bis).
@@ -27,6 +28,7 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(borderRadius);
+    final glass = context.glass;
 
     return ClipRRect(
       borderRadius: radius,
@@ -35,9 +37,9 @@ class GlassCard extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: AppColors.glassFill,
+            color: glass.glassFill,
             borderRadius: radius,
-            border: Border.all(color: AppColors.glassBorder),
+            border: Border.all(color: glass.glassBorder),
           ),
           child: child,
         ),

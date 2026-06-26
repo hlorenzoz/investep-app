@@ -21,9 +21,10 @@ web:
 desktop target="macos":
     flutter run -d {{target}}
 
-# Corre los tests (unit + widget).
+# Corre los tests (unit + widget + integration).
 test:
     flutter test
+    @if [ -d "integration_test" ]; then flutter test integration_test; fi
 
 # Analiza el código y verifica formato. Debe pasar SIN warnings.
 analyze:

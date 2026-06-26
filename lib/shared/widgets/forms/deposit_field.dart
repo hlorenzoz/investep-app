@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../features/setup/presentation/wizard_data.dart';
 import '../../format/money.dart';
@@ -96,6 +97,7 @@ class _DepositFieldState extends State<DepositField> {
       available: widget.available,
     );
     final isPercent = data.mode == DepositMode.percentOfCapital;
+    final glassTheme = context.glass;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -103,17 +105,17 @@ class _DepositFieldState extends State<DepositField> {
       children: [
         Text(
           l10n.depositTitle,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: glassTheme.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           '${l10n.depositAvailable}: '
           '${formatMoney(widget.available, widget.currency)}',
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+          style: TextStyle(color: glassTheme.textSecondary, fontSize: 13),
         ),
         const SizedBox(height: 20),
         SegmentedButton<DepositMode>(
@@ -141,18 +143,20 @@ class _DepositFieldState extends State<DepositField> {
             FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
           ],
           onChanged: (raw) => _write(raw: raw),
+          style: TextStyle(color: glassTheme.textPrimary),
           decoration: InputDecoration(
             labelText: isPercent ? l10n.depositModePercent : l10n.amountLabel,
-            border: const OutlineInputBorder(),
+            labelStyle: TextStyle(color: glassTheme.textSecondary),
             suffixText: isPercent ? '%' : widget.currency,
+            suffixStyle: TextStyle(color: glassTheme.textSecondary),
           ),
         ),
         const SizedBox(height: 12),
         if (isPercent)
           Text(
             '= ${formatMoney(resolved, widget.currency)}',
-            style: const TextStyle(
-              color: AppColors.textPrimary,
+            style: TextStyle(
+              color: glassTheme.textPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -160,7 +164,7 @@ class _DepositFieldState extends State<DepositField> {
           const SizedBox(height: 8),
           Text(
             l10n.depositInvalid,
-            style: const TextStyle(color: AppColors.negative, fontSize: 13),
+            style: TextStyle(color: glassTheme.negative, fontSize: 13),
           ),
         ],
       ],

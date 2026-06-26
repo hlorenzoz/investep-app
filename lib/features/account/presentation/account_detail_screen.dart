@@ -38,7 +38,7 @@ class AccountDetailScreen extends ConsumerWidget {
     final allocation = _find(ref);
 
     return Container(
-      decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
+      decoration: BoxDecoration(gradient: context.glass.backgroundGradient),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -56,7 +56,7 @@ class AccountDetailScreen extends ConsumerWidget {
           child: Center(
             child: Text(
               l10n.accountDetailComingSoon,
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: context.glass.textSecondary),
             ),
           ),
         ),

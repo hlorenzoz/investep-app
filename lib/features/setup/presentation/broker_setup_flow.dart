@@ -34,7 +34,7 @@ class BrokerSetupFlow extends ConsumerWidget {
     final shell = _WizardShell(mode: mode);
 
     return Container(
-      decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
+      decoration: BoxDecoration(gradient: context.glass.backgroundGradient),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(

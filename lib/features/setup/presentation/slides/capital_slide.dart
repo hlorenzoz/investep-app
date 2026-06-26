@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_theme.dart';
 import '../../../../l10n/gen/app_localizations.dart';
 import '../setup_mode.dart';
 import '../wizard_controller.dart';
@@ -56,22 +57,24 @@ class _CapitalSlideState extends ConsumerState<CapitalSlide> {
         ? state.message
         : null;
 
+    final glassTheme = context.glass;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           l10n.capitalTitle,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: glassTheme.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           l10n.capitalSubtitle,
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+          style: TextStyle(color: glassTheme.textSecondary, fontSize: 13),
         ),
         const SizedBox(height: 24),
         TextField(
@@ -114,7 +117,7 @@ class _CapitalSlideState extends ConsumerState<CapitalSlide> {
           const SizedBox(height: 16),
           Text(
             error,
-            style: const TextStyle(color: AppColors.negative, fontSize: 13),
+            style: TextStyle(color: glassTheme.negative, fontSize: 13),
           ),
         ],
       ],

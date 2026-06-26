@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_theme.dart';
 import '../../../../l10n/gen/app_localizations.dart';
 import '../../../capital/domain/account_type.dart';
 import '../../../plans/presentation/plan_selector.dart';
@@ -22,16 +23,18 @@ class PlanSlide extends ConsumerWidget {
     final data = ref.watch(wizardControllerProvider(mode)).data;
     final accountType = data.accountType ?? AccountType.equity;
 
+    final glassTheme = context.glass;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           l10n.planTitle,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: glassTheme.textPrimary,
           ),
         ),
         const SizedBox(height: 20),

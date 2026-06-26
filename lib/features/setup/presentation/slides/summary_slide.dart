@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_theme.dart';
 import '../../../../l10n/gen/app_localizations.dart';
 import '../../../../shared/format/money.dart';
 import '../../../brokers/domain/broker.dart';
@@ -64,35 +65,40 @@ class SummarySlide extends ConsumerWidget {
         ? l10n.accountTypeEquity
         : l10n.accountTypeOptions;
 
+    final glassTheme = context.glass;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           l10n.summaryTitle,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: glassTheme.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           l10n.summaryEditHint,
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+          style: TextStyle(color: glassTheme.textSecondary, fontSize: 12),
         ),
         const SizedBox(height: 12),
         _row(
+          context,
           l10n.summaryBroker,
           brokerName ?? '#${data.brokerId}',
           onTap: () => controller.goTo(WizardSlide.broker),
         ),
         _row(
+          context,
           l10n.summaryAccountType,
           accountTypeLabel,
           onTap: () => controller.goTo(WizardSlide.accountType),
         ),
         _row(
+          context,
           l10n.summaryPlan,
           plan != null
               ? '${plan.label ?? 'Plan ${plan.id}'} · ${plan.targetMonthlyPct}%'
@@ -100,6 +106,7 @@ class SummarySlide extends ConsumerWidget {
           onTap: () => controller.goTo(WizardSlide.plan),
         ),
         _row(
+          context,
           l10n.summaryDeposit,
           formatMoney(data.resolvedDeposit, data.currency),
           onTap: () => controller.goTo(WizardSlide.deposit),
@@ -107,25 +114,27 @@ class SummarySlide extends ConsumerWidget {
         // La moneda sólo se edita en initialSetup (en el slide de capital); en
         // addBroker viene fija del capital existente.
         _row(
+          context,
           l10n.summaryCurrency,
           data.currency,
           onTap: mode == SetupMode.initialSetup
               ? () => controller.goTo(WizardSlide.capital)
               : null,
         ),
-        _row(l10n.summaryRemaining, formatMoney(remaining, data.currency)),
+        _row(context, l10n.summaryRemaining, formatMoney(remaining, data.currency)),
         if (error != null) ...[
           const SizedBox(height: 16),
           Text(
             error,
-            style: const TextStyle(color: AppColors.negative, fontSize: 13),
+            style: TextStyle(color: glassTheme.negative, fontSize: 13),
           ),
         ],
       ],
     );
   }
 
-  Widget _row(String label, String value, {VoidCallback? onTap}) {
+  Widget _row(BuildContext context, String label, String value, {VoidCallback? onTap}) {
+    final glassTheme = context.glass;
     final row = Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
       child: Row(
@@ -133,8 +142,8 @@ class SummarySlide extends ConsumerWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
+            style: TextStyle(
+              color: glassTheme.textSecondary,
               fontSize: 13,
             ),
           ),
@@ -147,8 +156,8 @@ class SummarySlide extends ConsumerWidget {
                   child: Text(
                     value,
                     textAlign: TextAlign.right,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
+                    style: TextStyle(
+                      color: glassTheme.textPrimary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

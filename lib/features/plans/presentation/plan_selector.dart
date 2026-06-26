@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../capital/domain/account_type.dart';
 import 'plans_provider.dart';
@@ -26,6 +27,8 @@ class PlanSelector extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final plansAsync = ref.watch(plansProvider(accountType));
+    final glassTheme = context.glass;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return plansAsync.when(
       loading: () => const Padding(
@@ -34,13 +37,13 @@ class PlanSelector extends ConsumerWidget {
       ),
       error: (e, _) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Text('$e', style: const TextStyle(color: AppColors.negative)),
+        child: Text('$e', style: TextStyle(color: glassTheme.negative)),
       ),
       data: (plans) {
         if (plans.isEmpty) {
           return Text(
             l10n.plansEmpty,
-            style: const TextStyle(color: AppColors.textSecondary),
+            style: TextStyle(color: glassTheme.textSecondary),
           );
         }
         return Column(
@@ -48,17 +51,31 @@ class PlanSelector extends ConsumerWidget {
             for (final plan in plans)
               Card(
                 color: selectedPlanId == plan.id
-                    ? AppColors.accent.withValues(alpha: 0.25)
-                    : Colors.white.withValues(alpha: 0.04),
+                    ? (isDark
+                        ? AppColors.accent.withValues(alpha: 0.25)
+                        : Colors.black.withValues(alpha: 0.08))
+                    : glassTheme.glassFill,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(color: glassTheme.glassBorder),
+                ),
+                elevation: 0,
                 child: ListTile(
-                  title: Text(plan.label ?? 'Plan ${plan.id}'),
+                  title: Text(
+                    plan.label ?? 'Plan ${plan.id}',
+                    style: TextStyle(
+                      color: glassTheme.textPrimary,
+                      fontWeight: selectedPlanId == plan.id ? FontWeight.bold : FontWeight.normal,
+                    ),
+                  ),
                   subtitle: Text(
                     '${l10n.planTargetMonthly}: ${plan.targetMonthlyPct}%',
+                    style: TextStyle(color: glassTheme.textSecondary),
                   ),
                   trailing: selectedPlanId == plan.id
-                      ? const Icon(
+                      ? Icon(
                           LucideIcons.circleCheck,
-                          color: AppColors.accent,
+                          color: isDark ? AppColors.accent : Colors.black,
                         )
                       : null,
                   onTap: () => onSelect(plan.id),
