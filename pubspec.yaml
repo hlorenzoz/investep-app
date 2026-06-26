@@ -38,8 +38,10 @@ dependencies:
   flutter_riverpod: ^3.3.2
 
   # --- Auth + sesión ---
+  # El SDK de Supabase persiste la sesión y auto-refresca el access token; el
+  # interceptor de Dio lee `currentSession.accessToken` en cada request, así que
+  # no guardamos una copia estática del token en el cliente.
   supabase_flutter: ^2.15.0
-  flutter_secure_storage: ^10.3.1 # token de sesión en almacenamiento seguro del SO
 
   # --- Cliente HTTP / API REST (base del cliente generado por OpenAPI) ---
   dio: ^5.9.2
@@ -56,6 +58,9 @@ dev_dependencies:
 
   # --- Lints estrictos ---
   flutter_lints: ^6.0.0
+
+  # --- Testing: mocks sin code generation (alineado con la postura no-codegen) ---
+  mocktail: ^1.0.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

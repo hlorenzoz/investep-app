@@ -97,6 +97,8 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
         );
       case ChangePasswordSuccess():
         return _buildSuccessCard();
+      case ChangePasswordSessionExpired(:final message):
+        return _buildSessionExpiredCard(message);
       case ChangePasswordInitial() || ChangePasswordFailure():
         return Column(
           children: [
@@ -108,6 +110,62 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
           ],
         );
     }
+  }
+
+  /// Card para `ChangePasswordSessionExpired` (401): la sesión ya no es válida,
+  /// así que no se puede cambiar la contraseña con ella. Volvemos al login.
+  Widget _buildSessionExpiredCard(String message) {
+    return GlassCard(
+      borderRadius: 20,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Center(
+            child: Icon(
+              LucideIcons.shieldAlert,
+              color: AppColors.negative,
+              size: 56,
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Center(
+            child: Text(
+              'Tu sesión expiró',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Center(
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.accent,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: _goToLogin,
+            icon: const Icon(LucideIcons.arrowRight, size: 18),
+            label: const Text('Ir a iniciar sesión'),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildSuccessCard() {

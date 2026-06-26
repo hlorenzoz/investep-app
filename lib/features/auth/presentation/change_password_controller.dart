@@ -1,9 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/network/api_exception.dart';
 import '../../../core/providers/supabase_provider.dart';
-import '../../../core/storage/secure_session_store.dart';
-import '../domain/password_policy.dart';
+import '../data/auth_repository.dart';
 
 /// Estados posibles del cambio de contraseña.
 sealed class ChangePasswordState {
@@ -27,18 +26,25 @@ class ChangePasswordFailure extends ChangePasswordState {
   const ChangePasswordFailure(this.message);
 }
 
+/// La sesión expiró/se invalidó (401): hay que volver al login.
+class ChangePasswordSessionExpired extends ChangePasswordState {
+  final String message;
+  const ChangePasswordSessionExpired(this.message);
+}
+
 /// Controlador Riverpod (sin code-gen) del cambio de contraseña.
 ///
-/// Flujo:
-/// 1. Actualiza la contraseña en Supabase y, en la MISMA operación, limpia el
-///    flag `must_reset_password` de `user_metadata` (que la API lee en
-///    `/auth/me`).
-/// 2. Cierra la sesión (Supabase + token local) para forzar un re-login con la
-///    contraseña nueva — más seguro que mantener vivos tokens emitidos contra
-///    la contraseña anterior.
+/// Flujo (ver AGENTS §4):
+/// 1. `POST /auth/change-password { newPassword }` (server-side). El backend
+///    cambia la contraseña Y baja el flag `must_reset_password` en `app_metadata`
+///    en una sola operación — el cliente YA NO escribe metadata.
+/// 2. En un 200 el backend revoca TODAS las sesiones (incluida la actual), así
+///    que el access token con el que llamamos queda muerto. Limpiamos la sesión
+///    local (`signOut`) y la vista vuelve al login para re-autenticarse con la
+///    contraseña nueva.
 ///
 /// La navegación NO vive acá: es responsabilidad de la vista reaccionar al
-/// estado (`ChangePasswordSuccess`).
+/// estado (`ChangePasswordSuccess` / `ChangePasswordSessionExpired`).
 class ChangePasswordController extends Notifier<ChangePasswordState> {
   @override
   ChangePasswordState build() => const ChangePasswordInitial();
@@ -46,23 +52,30 @@ class ChangePasswordController extends Notifier<ChangePasswordState> {
   Future<void> submit(String newPassword) async {
     state = const ChangePasswordLoading();
 
+    final repo = ref.read(authRepositoryProvider);
+    final supabaseClient = ref.read(supabaseClientProvider);
+
     try {
-      final supabaseClient = ref.read(supabaseClientProvider);
+      await repo.changePassword(newPassword);
 
-      await supabaseClient.auth.updateUser(
-        UserAttributes(
-          password: newPassword,
-          data: {mustResetPasswordMetadataKey: false},
-        ),
-      );
-
-      // Forzamos re-login con la nueva contraseña.
+      // 200 → sesión revocada globalmente. NO reutilizamos el token actual:
+      // limpiamos la sesión local (access + refresh) y forzamos re-login.
       await supabaseClient.auth.signOut();
-      await ref.read(secureSessionStoreProvider).clearSession();
-
       state = const ChangePasswordSuccess();
-    } on AuthException catch (e) {
-      state = ChangePasswordFailure(e.message);
+    } on ApiException catch (e) {
+      if (e.status == 401) {
+        // Token inválido/expirado → limpiar sesión y volver al login.
+        await supabaseClient.auth.signOut();
+        state = ChangePasswordSessionExpired(e.message);
+      } else if (e.status == 422) {
+        // Body malformado: bug del cliente. No debería pasar porque siempre
+        // mandamos { newPassword: String }.
+        state = ChangePasswordFailure('Error interno del cliente: ${e.message}');
+      } else {
+        // 400 (política / rechazo de Supabase) y 500/503 (reintentable):
+        // mostramos el message y dejamos reintentar desde el form.
+        state = ChangePasswordFailure(e.message);
+      }
     } catch (e) {
       state = ChangePasswordFailure('Ocurrió un error inesperado: $e');
     }

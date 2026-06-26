@@ -1,15 +1,12 @@
-/// Política de contraseñas y constante de contrato compartida con la API.
-///
-/// `mustResetPasswordMetadataKey` es la clave que la API lee de `user_metadata`
-/// de Supabase para decidir el flag `mustResetPassword` que retorna `/auth/me`.
-/// Al cambiar la contraseña la limpiamos a `false` en la misma operación.
-///
-/// OJO (deuda de seguridad consciente): este flag vive en `user_metadata`, que
-/// es editable por el propio usuario. El enforcement real debería moverse a
-/// `app_metadata` + un endpoint admin en `investep-app-api`. Ver follow-up.
-const String mustResetPasswordMetadataKey = 'must_reset_password';
+// Política de contraseñas del cliente (pre-validación del formulario).
+//
+// El flag `must_reset_password` ahora vive en `app_metadata` de Supabase
+// (sólo escribible server-side) y se baja con `POST /auth/change-password`.
+// El cliente YA NO escribe ese flag ni ninguna metadata de seguridad: el
+// servidor es la autoridad. Acá sólo queda la validación de longitud mínima
+// para evitar un 400 obvio de ida y vuelta — el server revalida igual.
 
-/// Longitud mínima exigida para una contraseña nueva.
+/// Longitud mínima exigida para una contraseña nueva (política del servidor).
 const int passwordMinLength = 8;
 
 /// Valida una contraseña nueva. Devuelve el mensaje de error, o `null` si es

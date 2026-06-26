@@ -1,11 +1,9 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
-import '../../../core/network/api_client.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/providers/supabase_provider.dart';
-import '../../../core/storage/secure_session_store.dart';
+import '../data/auth_repository.dart';
 import '../domain/auth_user.dart';
 
 /// Estados posibles de la autenticación.
@@ -31,6 +29,14 @@ class LoginFailure extends LoginState {
   const LoginFailure(this.message);
 }
 
+/// El gate (`GET /auth/me`) falló por un error transitorio (503/500): el backend
+/// o Supabase están caídos. La sesión Supabase SIGUE viva → NO se desloguea; se
+/// ofrece reintentar.
+class LoginGateRetryable extends LoginState {
+  final String message;
+  const LoginGateRetryable(this.message);
+}
+
 /// Controlador Riverpod sin code-gen que maneja el flujo de login.
 class LoginController extends Notifier<LoginState> {
   @override
@@ -41,83 +47,66 @@ class LoginController extends Notifier<LoginState> {
     state = const LoginInitial();
   }
 
-  /// Intenta autenticar al usuario usando el flujo de dos patas:
-  /// 1. Autenticación contra Supabase Auth.
-  /// 2. Guardar el token de acceso obtenido en el almacenamiento seguro.
-  /// 3. Validar el token contra el endpoint `/auth/me` de la API REST.
+  /// Flujo de login:
+  /// 1. Autenticación contra Supabase Auth (la API NO tiene endpoint de login).
+  /// 2. Gate contra `GET /auth/me` con el Bearer que adjunta el interceptor.
+  ///
+  /// El token NO se persiste a mano: el SDK de Supabase mantiene la sesión y el
+  /// interceptor lee `currentSession.accessToken` en cada request.
   Future<void> login(String email, String password) async {
     state = const LoginLoading();
 
     try {
       final supabaseClient = ref.read(supabaseClientProvider);
-      final sessionStore = ref.read(secureSessionStoreProvider);
 
-      // Pata 1: Iniciar sesión en Supabase
       final response = await supabaseClient.auth.signInWithPassword(
         email: email,
         password: password,
       );
 
-      final session = response.session;
-      if (session == null) {
+      if (response.session == null) {
         state = const LoginFailure(
           'Error: No se pudo obtener la sesión de Supabase.',
         );
         return;
       }
 
-      final accessToken = session.accessToken;
-
-      // Pata 2: Guardar el token en el almacenamiento seguro para que el interceptor de Dio lo lea
-      await sessionStore.saveSession(accessToken);
-
-      // Pata 3: Validar contra la API de Investep
-      final dio = ref.read(apiClientProvider);
-
-      // Realizamos el request. El interceptor agregará automáticamente el Header Authorization.
-      final apiResponse = await dio.get<Map<String, dynamic>>('/auth/me');
-
-      if (apiResponse.statusCode == 200) {
-        final userData = apiResponse.data as Map<String, dynamic>;
-        final user = AuthUser.fromJson(userData);
-        state = LoginSuccess(user);
-      } else {
-        // Limpiamos la sesión por seguridad
-        await sessionStore.clearSession();
-        state = LoginFailure(
-          'Error de API inesperado: ${apiResponse.statusCode}',
-        );
-      }
+      await _runGate();
     } on supabase.AuthException catch (e) {
       state = LoginFailure(e.message);
-    } on DioException catch (e) {
-      // Limpiamos la sesión si la validación falló
-      await ref.read(secureSessionStoreProvider).clearSession();
-
-      String errorMessage = 'Error de conexión con la API de Investep.';
-
-      if (e.response != null) {
-        final data = e.response!.data;
-        if (data is Map<String, dynamic> && data.containsKey('error')) {
-          try {
-            final errorMap = data['error'] as Map<String, dynamic>;
-            errorMessage = errorMap['message'] as String;
-          } catch (_) {
-            errorMessage = 'Error de API: ${e.response?.statusCode}';
-          }
-        } else {
-          errorMessage = 'Error de API: ${e.response?.statusCode}';
-        }
-      } else if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout) {
-        errorMessage = 'Tiempo de espera de conexión agotado con la API.';
-      }
-
-      state = LoginFailure(errorMessage);
     } catch (e) {
-      // Aseguramos limpiar la sesión ante errores inesperados
-      await ref.read(secureSessionStoreProvider).clearSession();
-      debugPrint('Error inesperado durante el login: $e');
+      state = LoginFailure('Ocurrió un error inesperado: $e');
+    }
+  }
+
+  /// Reintenta SÓLO el gate (`GET /auth/me`) reusando la sesión Supabase ya
+  /// activa — no re-hace el login. Lo usa la UI ante `LoginGateRetryable`.
+  Future<void> retryGate() async {
+    state = const LoginLoading();
+    await _runGate();
+  }
+
+  /// Valida la sesión contra la API y decide el destino:
+  /// - 200 → `LoginSuccess` (la vista decide gate de cambio de contraseña según
+  ///   `user.mustResetPassword`).
+  /// - 401 → token muerto: `signOut` + `LoginFailure` (re-login).
+  /// - 503/500 → backend caído: `LoginGateRetryable` SIN desloguear.
+  Future<void> _runGate() async {
+    final repo = ref.read(authRepositoryProvider);
+    try {
+      final user = await repo.getMe();
+      state = LoginSuccess(user);
+    } on ApiException catch (e) {
+      if (e.status == 401) {
+        await ref.read(supabaseClientProvider).auth.signOut();
+        state = LoginFailure(e.message);
+      } else if (e.isRetryable) {
+        // 503/500 → reintentar, NO desloguear (regla 401 ≠ 503).
+        state = LoginGateRetryable(e.message);
+      } else {
+        state = LoginFailure(e.message);
+      }
+    } catch (e) {
       state = LoginFailure('Ocurrió un error inesperado: $e');
     }
   }

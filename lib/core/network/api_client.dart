@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/app_config.dart';
-import '../storage/secure_session_store.dart';
+import '../providers/supabase_provider.dart';
 
 /// Cliente HTTP base contra `investep-app-api` (REST).
 ///
@@ -11,9 +11,13 @@ import '../storage/secure_session_store.dart';
 /// generan contra el spec OpenAPI que publica la API (ver AGENTS.md §4); NO
 /// escribas a mano modelos que ya estén en el contrato.
 ///
-/// El interceptor adjunta el token de sesión y evita loguear datos sensibles.
+/// El interceptor adjunta el token de sesión VIVO de Supabase
+/// (`currentSession.accessToken`). El SDK auto-refresca ese token en background,
+/// así que un 401 de la API significa que la sesión está realmente muerta
+/// (refresh fallido o revocada) → re-login; un 503 significa backend caído →
+/// reintentar. No guardamos una copia estática del token en el cliente.
 final apiClientProvider = Provider<Dio>((ref) {
-  final sessionStore = ref.watch(secureSessionStoreProvider);
+  final supabaseClient = ref.watch(supabaseClientProvider);
 
   String resolvedBaseUrl = AppConfig.apiBaseUrl;
   if (kIsWeb) {
@@ -36,8 +40,8 @@ final apiClientProvider = Provider<Dio>((ref) {
 
   dio.interceptors.add(
     InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        final token = await sessionStore.readSession();
+      onRequest: (options, handler) {
+        final token = supabaseClient.auth.currentSession?.accessToken;
         if (token != null && token.isNotEmpty) {
           options.headers['Authorization'] = 'Bearer $token';
         }
