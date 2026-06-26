@@ -63,3 +63,6 @@ app.*.map.json
 .atl/
 
 tmp/
+
+# Alchemist / Golden Tests failures
+**/failures/
