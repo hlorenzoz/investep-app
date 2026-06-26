@@ -168,4 +168,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ofCapital => 'of capital';
+
+  @override
+  String get accountDetailComingSoon => 'Coming soon';
+
+  @override
+  String get editAccount => 'Edit account';
+
+  @override
+  String get accountNotFound => 'Account not found';
+
+  @override
+  String get save => 'Save';
 }

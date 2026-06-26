@@ -62,5 +62,10 @@
   "capitalTotalLabel": "Capital total",
   "allocatedLabel": "Asignado",
   "availableLabel": "Disponible",
-  "ofCapital": "del capital"
+  "ofCapital": "del capital",
+
+  "accountDetailComingSoon": "Próximamente",
+  "editAccount": "Editar cuenta",
+  "accountNotFound": "Cuenta no encontrada",
+  "save": "Guardar"
 }

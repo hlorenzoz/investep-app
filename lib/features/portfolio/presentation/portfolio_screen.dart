@@ -269,73 +269,80 @@ class _AllocationTile extends StatelessWidget {
         ? l10n.accountTypeEquity
         : l10n.accountTypeOptions;
 
-    return GlassCard(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                LucideIcons.building2,
-                color: AppColors.accentSoft,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                allocation.brokerSlug,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: () => context.push('/account/${allocation.id}'),
+      child: GlassCard(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(
+                  LucideIcons.building2,
+                  color: AppColors.accentSoft,
+                  size: 20,
                 ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.accent.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  typeLabel,
+                const SizedBox(width: 8),
+                Text(
+                  allocation.brokerSlug,
                   style: const TextStyle(
-                    color: AppColors.accentSoft,
-                    fontSize: 12,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '${l10n.planTargetMonthly}: ${allocation.targetMonthlyPct}%',
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 13,
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withValues(alpha: 0.18),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    typeLabel,
+                    style: const TextStyle(
+                      color: AppColors.accentSoft,
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
-              ),
-              Text(
-                '${pct.toStringAsFixed(1)}% ${l10n.ofCapital}',
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 13,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            formatMoney(allocation.initialDeposit, allocation.currency),
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w600,
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${l10n.planTargetMonthly}: ${allocation.targetMonthlyPct}%',
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                  ),
+                ),
+                Text(
+                  '${pct.toStringAsFixed(1)}% ${l10n.ofCapital}',
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              formatMoney(allocation.initialDeposit, allocation.currency),
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

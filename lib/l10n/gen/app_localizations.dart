@@ -415,6 +415,30 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'del capital'**
   String get ofCapital;
+
+  /// No description provided for @accountDetailComingSoon.
+  ///
+  /// In es, this message translates to:
+  /// **'Próximamente'**
+  String get accountDetailComingSoon;
+
+  /// No description provided for @editAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar cuenta'**
+  String get editAccount;
+
+  /// No description provided for @accountNotFound.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta no encontrada'**
+  String get accountNotFound;
+
+  /// No description provided for @save.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get save;
 }
 
 class _AppLocalizationsDelegate

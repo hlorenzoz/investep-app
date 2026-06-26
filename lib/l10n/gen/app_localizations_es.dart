@@ -169,4 +169,16 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get ofCapital => 'del capital';
+
+  @override
+  String get accountDetailComingSoon => 'Próximamente';
+
+  @override
+  String get editAccount => 'Editar cuenta';
+
+  @override
+  String get accountNotFound => 'Cuenta no encontrada';
+
+  @override
+  String get save => 'Guardar';
 }

@@ -62,5 +62,10 @@
   "capitalTotalLabel": "Total capital",
   "allocatedLabel": "Allocated",
   "availableLabel": "Available",
-  "ofCapital": "of capital"
+  "ofCapital": "of capital",
+
+  "accountDetailComingSoon": "Coming soon",
+  "editAccount": "Edit account",
+  "accountNotFound": "Account not found",
+  "save": "Save"
 }

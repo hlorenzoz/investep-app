@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import '../core/auth/auth_gate.dart';
 import '../core/auth/gate_refresh_listenable.dart';
+import '../features/account/presentation/account_detail_screen.dart';
+import '../features/account/presentation/edit_allocation_screen.dart';
 import '../features/auth/presentation/change_password_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/splash_screen.dart';
@@ -72,6 +74,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/',
         name: 'portfolio',
         builder: (context, state) => const PortfolioScreen(),
+      ),
+      GoRoute(
+        path: '/account/:id',
+        name: 'account',
+        builder: (context, state) =>
+            AccountDetailScreen(allocationId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/account/:id/edit',
+        name: 'account_edit',
+        builder: (context, state) =>
+            EditAllocationScreen(allocationId: state.pathParameters['id']!),
       ),
     ],
   );

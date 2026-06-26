@@ -18,6 +18,13 @@ class DepositInput {
     DepositMode.amount => amount ?? 0,
   };
 
+  /// Predicado único de validez: el monto resuelto (contra [total]) debe ser
+  /// > 0 y no superar [available]. Lo usan el wizard y la edición de cuenta.
+  bool isValid({required num total, required num available}) {
+    final d = resolved(total);
+    return d > 0 && d <= available;
+  }
+
   DepositInput copyWith({DepositMode? mode, num? pct, num? amount}) =>
       DepositInput(
         mode: mode ?? this.mode,
@@ -49,10 +56,8 @@ class WizardData {
   num get resolvedDeposit => deposit.resolved(totalCapital ?? 0);
 
   /// El depósito es válido si es > 0 y no supera el disponible.
-  bool depositIsValid(num available) {
-    final d = resolvedDeposit;
-    return d > 0 && d <= available;
-  }
+  bool depositIsValid(num available) =>
+      deposit.isValid(total: totalCapital ?? 0, available: available);
 
   /// `clearAccountType`/`clearPlan` permiten limpiar esos campos (al cambiar de
   /// broker o de tipo de cuenta), algo que un `copyWith` con `??` no puede hacer.
