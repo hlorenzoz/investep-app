@@ -76,22 +76,40 @@ class MainShell extends StatelessWidget {
                       right: BorderSide(color: glassTheme.glassBorder, width: 0.5),
                     ),
                   ),
-                  child: NavigationRail(
-                    selectedIndex: navigationShell.currentIndex,
-                    onDestinationSelected: _onDestinationSelected,
-                    labelType: NavigationRailLabelType.all,
-                    destinations: [
-                      NavigationRailDestination(
-                        icon: const Icon(LucideIcons.pieChart),
-                        label: Text(l10n.navPortfolio),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: NavigationRail(
+                          selectedIndex: navigationShell.currentIndex < 2
+                              ? navigationShell.currentIndex
+                              : null,
+                          onDestinationSelected: _onDestinationSelected,
+                          labelType: NavigationRailLabelType.all,
+                          destinations: [
+                            NavigationRailDestination(
+                              icon: const Icon(LucideIcons.pieChart),
+                              label: Text(l10n.navPortfolio),
+                            ),
+                            NavigationRailDestination(
+                              icon: const Icon(LucideIcons.graduationCap),
+                              label: Text(l10n.navAcademy),
+                            ),
+                          ],
+                        ),
                       ),
-                      NavigationRailDestination(
-                        icon: const Icon(LucideIcons.graduationCap),
-                        label: Text(l10n.navAcademy),
-                      ),
-                      NavigationRailDestination(
-                        icon: const Icon(LucideIcons.settings),
-                        label: Text(l10n.navSettings),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: NavigationRail(
+                          selectedIndex: navigationShell.currentIndex == 2 ? 0 : null,
+                          onDestinationSelected: (_) => _onDestinationSelected(2),
+                          labelType: NavigationRailLabelType.all,
+                          destinations: [
+                            NavigationRailDestination(
+                              icon: const Icon(LucideIcons.settings),
+                              label: Text(l10n.navSettings),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
