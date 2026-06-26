@@ -439,6 +439,96 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Guardar'**
   String get save;
+
+  /// No description provided for @navPortfolio.
+  ///
+  /// In es, this message translates to:
+  /// **'Portafolio'**
+  String get navPortfolio;
+
+  /// No description provided for @navAcademy.
+  ///
+  /// In es, this message translates to:
+  /// **'Academia'**
+  String get navAcademy;
+
+  /// No description provided for @navSettings.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes'**
+  String get navSettings;
+
+  /// No description provided for @settingsInterface.
+  ///
+  /// In es, this message translates to:
+  /// **'Interfaz'**
+  String get settingsInterface;
+
+  /// No description provided for @settingsTheme.
+  ///
+  /// In es, this message translates to:
+  /// **'Tema'**
+  String get settingsTheme;
+
+  /// No description provided for @settingsThemeLight.
+  ///
+  /// In es, this message translates to:
+  /// **'Claro'**
+  String get settingsThemeLight;
+
+  /// No description provided for @settingsThemeDark.
+  ///
+  /// In es, this message translates to:
+  /// **'Oscuro'**
+  String get settingsThemeDark;
+
+  /// No description provided for @settingsThemeSystem.
+  ///
+  /// In es, this message translates to:
+  /// **'Sistema'**
+  String get settingsThemeSystem;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In es, this message translates to:
+  /// **'Idioma'**
+  String get settingsLanguage;
+
+  /// No description provided for @settingsLanguageEs.
+  ///
+  /// In es, this message translates to:
+  /// **'Español'**
+  String get settingsLanguageEs;
+
+  /// No description provided for @settingsLanguageEn.
+  ///
+  /// In es, this message translates to:
+  /// **'Inglés'**
+  String get settingsLanguageEn;
+
+  /// No description provided for @settingsAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta'**
+  String get settingsAccount;
+
+  /// No description provided for @settingsChangePassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar contraseña'**
+  String get settingsChangePassword;
+
+  /// No description provided for @settingsSignOut.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar sesión'**
+  String get settingsSignOut;
+
+  /// No description provided for @academyComingSoon.
+  ///
+  /// In es, this message translates to:
+  /// **'El contenido educativo de Investep Academy estará disponible próximamente.'**
+  String get academyComingSoon;
 }
 
 class _AppLocalizationsDelegate

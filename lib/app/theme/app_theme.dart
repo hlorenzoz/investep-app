@@ -102,6 +102,44 @@ abstract final class AppTheme {
           shape: const StadiumBorder(),
         ),
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: Colors.transparent,
+        indicatorColor: AppColors.accent.withOpacity(0.24),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: AppColors.accent);
+          }
+          return const IconThemeData(color: AppColors.textSecondary);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(
+              color: AppColors.accent,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            );
+          }
+          return const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 12,
+          );
+        }),
+      ),
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: Colors.transparent,
+        indicatorColor: AppColors.accent.withOpacity(0.24),
+        selectedIconTheme: const IconThemeData(color: AppColors.accent),
+        unselectedIconTheme: const IconThemeData(color: AppColors.textSecondary),
+        selectedLabelTextStyle: const TextStyle(
+          color: AppColors.accent,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
+        unselectedLabelTextStyle: const TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 12,
+        ),
+      ),
       extensions: [
         GlassThemeExtension(
           glassFill: AppColors.glassFill,
@@ -202,6 +240,44 @@ abstract final class AppTheme {
         ),
         labelStyle: const TextStyle(color: Color(0xFF475569)),
         floatingLabelStyle: const TextStyle(color: AppColors.lightAccent),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: Colors.transparent,
+        indicatorColor: const Color(0xFFE2E8F0), // Slate 200
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: Colors.black);
+          }
+          return const IconThemeData(color: Color(0xFF475569)); // Slate 600
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            );
+          }
+          return const TextStyle(
+            color: Color(0xFF475569), // Slate 600
+            fontSize: 12,
+          );
+        }),
+      ),
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: Colors.transparent,
+        indicatorColor: const Color(0xFFE2E8F0), // Slate 200
+        selectedIconTheme: const IconThemeData(color: Colors.black),
+        unselectedIconTheme: const IconThemeData(color: Color(0xFF475569)),
+        selectedLabelTextStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
+        unselectedLabelTextStyle: const TextStyle(
+          color: Color(0xFF475569),
+          fontSize: 12,
+        ),
       ),
       extensions: [
         GlassThemeExtension(

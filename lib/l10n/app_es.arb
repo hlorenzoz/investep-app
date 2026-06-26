@@ -67,5 +67,20 @@
   "accountDetailComingSoon": "Próximamente",
   "editAccount": "Editar cuenta",
   "accountNotFound": "Cuenta no encontrada",
-  "save": "Guardar"
+  "save": "Guardar",
+  "navPortfolio": "Portafolio",
+  "navAcademy": "Academia",
+  "navSettings": "Ajustes",
+  "settingsInterface": "Interfaz",
+  "settingsTheme": "Tema",
+  "settingsThemeLight": "Claro",
+  "settingsThemeDark": "Oscuro",
+  "settingsThemeSystem": "Sistema",
+  "settingsLanguage": "Idioma",
+  "settingsLanguageEs": "Español",
+  "settingsLanguageEn": "Inglés",
+  "settingsAccount": "Cuenta",
+  "settingsChangePassword": "Cambiar contraseña",
+  "settingsSignOut": "Cerrar sesión",
+  "academyComingSoon": "El contenido educativo de Investep Academy estará disponible próximamente."
 }

@@ -3,14 +3,17 @@ import 'package:go_router/go_router.dart';
 
 import '../core/auth/auth_gate.dart';
 import '../core/auth/gate_refresh_listenable.dart';
+import '../features/academy/presentation/academy_screen.dart';
 import '../features/account/presentation/account_detail_screen.dart';
 import '../features/account/presentation/edit_allocation_screen.dart';
 import '../features/auth/presentation/change_password_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/splash_screen.dart';
 import '../features/portfolio/presentation/portfolio_screen.dart';
+import '../features/settings/presentation/settings_screen.dart';
 import '../features/setup/presentation/broker_setup_flow.dart';
 import '../features/setup/presentation/setup_mode.dart';
+import 'main_shell.dart';
 
 /// Decisión de redirección a partir del estado del gate y la ubicación actual.
 ///
@@ -70,11 +73,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           mode: state.extra as SetupMode? ?? SetupMode.initialSetup,
         ),
       ),
-      GoRoute(
-        path: '/',
-        name: 'portfolio',
-        builder: (context, state) => const PortfolioScreen(),
-      ),
+      // Sub-rutas de detalle fuera del shell para que se abran a pantalla completa
       GoRoute(
         path: '/account/:id',
         name: 'account',
@@ -86,6 +85,41 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'account_edit',
         builder: (context, state) =>
             EditAllocationScreen(allocationId: state.pathParameters['id']!),
+      ),
+      // Menú de navegación global responsivo con persistencia de estado por rama
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return MainShell(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/',
+                name: 'portfolio',
+                builder: (context, state) => const PortfolioScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/academy',
+                name: 'academy',
+                builder: (context, state) => const AcademyScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/settings',
+                name: 'settings',
+                builder: (context, state) => const SettingsScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );

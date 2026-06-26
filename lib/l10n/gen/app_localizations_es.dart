@@ -181,4 +181,50 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get save => 'Guardar';
+
+  @override
+  String get navPortfolio => 'Portafolio';
+
+  @override
+  String get navAcademy => 'Academia';
+
+  @override
+  String get navSettings => 'Ajustes';
+
+  @override
+  String get settingsInterface => 'Interfaz';
+
+  @override
+  String get settingsTheme => 'Tema';
+
+  @override
+  String get settingsThemeLight => 'Claro';
+
+  @override
+  String get settingsThemeDark => 'Oscuro';
+
+  @override
+  String get settingsThemeSystem => 'Sistema';
+
+  @override
+  String get settingsLanguage => 'Idioma';
+
+  @override
+  String get settingsLanguageEs => 'Español';
+
+  @override
+  String get settingsLanguageEn => 'Inglés';
+
+  @override
+  String get settingsAccount => 'Cuenta';
+
+  @override
+  String get settingsChangePassword => 'Cambiar contraseña';
+
+  @override
+  String get settingsSignOut => 'Cerrar sesión';
+
+  @override
+  String get academyComingSoon =>
+      'El contenido educativo de Investep Academy estará disponible próximamente.';
 }

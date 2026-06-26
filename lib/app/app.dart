@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/l10n/locale_provider.dart';
 import '../l10n/gen/app_localizations.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
@@ -15,6 +16,7 @@ class InvestepApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
 
     return MaterialApp.router(
       title: 'Investep',
@@ -22,8 +24,7 @@ class InvestepApp extends ConsumerWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: themeMode,
-      // i18n: default español. Textos nuevos pasan por AppLocalizations (gen-l10n).
-      locale: const Locale('es'),
+      locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: router,
