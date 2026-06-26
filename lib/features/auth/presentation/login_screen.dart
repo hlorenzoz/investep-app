@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../core/config/app_config.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
-import '../domain/auth_user.dart';
+import 'last_email_provider.dart';
 import 'login_controller.dart';
 
 /// Vista de Autenticación para validar el flujo completo de dos patas.
@@ -26,6 +25,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Precarga el email recordado (p. ej. tras un cambio de contraseña que
+    // desloguea y vuelve al login).
+    final lastEmail = ref.read(lastEmailProvider);
+    if (lastEmail != null && lastEmail.isNotEmpty) {
+      _emailController.text = lastEmail;
+    }
+  }
 
   @override
   void dispose() {
@@ -164,8 +174,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildLoginContent(LoginState state, bool isValidConfig) {
     switch (state) {
-      case LoginSuccess(:final user):
-        return _buildSuccessCard(user);
       case LoginLoading():
         return const GlassCard(
           child: Column(
@@ -179,8 +187,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ],
           ),
         );
-      case LoginGateRetryable(:final message):
-        return _buildRetryableCard(message);
       case LoginInitial() || LoginFailure():
         return Column(
           children: [
@@ -192,63 +198,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ],
         );
     }
-  }
-
-  /// Card para `LoginGateRetryable`: el backend está caído/throttleado (503/500).
-  /// NO se desloguea — la sesión Supabase sigue viva; sólo se reintenta el gate.
-  Widget _buildRetryableCard(String message) {
-    return GlassCard(
-      borderRadius: 20,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Center(
-            child: Icon(
-              LucideIcons.serverCrash,
-              color: AppColors.negative,
-              size: 56,
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Center(
-            child: Text(
-              'Servicio no disponible',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Center(
-            child: Text(
-              message,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 14,
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accent,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: () =>
-                ref.read(loginControllerProvider.notifier).retryGate(),
-            icon: const Icon(LucideIcons.refreshCw, size: 18),
-            label: const Text('Reintentar'),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildErrorCard(String message) {
@@ -281,128 +230,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSuccessCard(AuthUser user) {
-    final email = user.email;
-    final id = user.id;
-    final mustReset = user.mustResetPassword;
-
-    return GlassCard(
-      borderRadius: 20,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Center(
-            child: Icon(
-              LucideIcons.badgeCheck,
-              color: AppColors.positive,
-              size: 64,
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Center(
-            child: Text(
-              '¡Conexión Exitosa!',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.positive,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Center(
-            child: Text(
-              'Autenticación y validación de API correctas.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-            ),
-          ),
-          const SizedBox(height: 24),
-          _buildDetailRow('Email del Usuario', email),
-          const SizedBox(height: 12),
-          _buildDetailRow('ID de Usuario', id),
-          const SizedBox(height: 12),
-          _buildDetailRow(
-            'Contraseña Expirada',
-            mustReset ? 'SÍ (DEBÉS CAMBIAR TU CONTRASEÑA)' : 'NO',
-            valueColor: mustReset ? AppColors.negative : AppColors.positive,
-            fontWeight: mustReset ? FontWeight.bold : FontWeight.normal,
-          ),
-          const SizedBox(height: 24),
-          if (mustReset) ...[
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.negative,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: () => context.push('/change-password'),
-              icon: const Icon(LucideIcons.lock, size: 18),
-              label: const Text('Cambiar contraseña ahora'),
-            ),
-            const SizedBox(height: 12),
-          ],
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accent,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: () {
-              ref.read(loginControllerProvider.notifier).reset();
-            },
-            icon: const Icon(LucideIcons.logOut, size: 18),
-            label: const Text('Cerrar sesión / Probar de nuevo'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailRow(
-    String label,
-    String value, {
-    Color valueColor = AppColors.textPrimary,
-    FontWeight fontWeight = FontWeight.normal,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.glassBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 11,
-            ),
-          ),
-          const SizedBox(height: 4),
-          SelectableText(
-            value,
-            style: TextStyle(
-              color: valueColor,
-              fontSize: 13,
-              fontWeight: fontWeight,
-              fontFamily: 'monospace',
             ),
           ),
         ],

@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
 import '../domain/password_policy.dart';
 import 'change_password_controller.dart';
@@ -53,7 +54,22 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ChangePasswordState state = ref.watch(changePasswordControllerProvider);
+    final ChangePasswordState state = ref.watch(
+      changePasswordControllerProvider,
+    );
+
+    // Al cambiar la contraseña, el backend revoca la sesión: el controller hace
+    // signOut → AuthGate pasa a GateNoSession → el router redirige a /login. Acá
+    // sólo avisamos. El ScaffoldMessenger raíz sobrevive el cambio de ruta.
+    ref.listen(changePasswordControllerProvider, (prev, next) {
+      if (next is ChangePasswordSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).passwordChangedRelogin),
+          ),
+        );
+      }
+    });
 
     return Container(
       decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),

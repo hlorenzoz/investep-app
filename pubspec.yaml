@@ -31,6 +31,13 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # --- i18n / l10n ---
+  # Textos NUEVOS (wizard, gating, capital) pasan por gen-l10n. Locale default es.
+  # En Flutter 3.41 `synthetic-package` fue removido: la salida va a lib/l10n/gen.
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
   # --- Gestión de estado (Riverpod) ---
   # Sin code generation por ahora: el ecosistema riverpod_generator 3.x está en
   # transición (macros/analyzer en Dart 3.11). Declaramos providers a mano, que
@@ -62,11 +69,19 @@ dev_dependencies:
   # --- Testing: mocks sin code generation (alineado con la postura no-codegen) ---
   mocktail: ^1.0.4
 
+  # --- Golden tests: alchemist está mantenido y desactiva blur/sombras
+  # (el GlassCard usa BackdropFilter, fuente #1 de flakiness). Correr SOLO en
+  # host (no web/chrome): BackdropFilter renderiza distinto en HTML/CanvasKit.
+  alchemist: ^0.12.1
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
+
+  # Genera las clases de localización (gen-l10n) a partir de los .arb.
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

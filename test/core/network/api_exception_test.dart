@@ -6,10 +6,10 @@ void main() {
   final req = RequestOptions(path: '/auth/change-password');
 
   DioException withResponse(int status, dynamic data) => DioException(
-        requestOptions: req,
-        response: Response(requestOptions: req, statusCode: status, data: data),
-        type: DioExceptionType.badResponse,
-      );
+    requestOptions: req,
+    response: Response(requestOptions: req, statusCode: status, data: data),
+    type: DioExceptionType.badResponse,
+  );
 
   group('ApiException.fromDioException', () {
     test('parsea el envelope { error: { code, message } }', () {
@@ -52,7 +52,9 @@ void main() {
     });
 
     test('conserva el status cuando la respuesta no trae envelope', () {
-      final e = ApiException.fromDioException(withResponse(500, {'foo': 'bar'}));
+      final e = ApiException.fromDioException(
+        withResponse(500, {'foo': 'bar'}),
+      );
 
       expect(e.status, 500);
       expect(e.code, 'UNKNOWN');

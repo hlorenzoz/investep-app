@@ -70,7 +70,9 @@ class ChangePasswordController extends Notifier<ChangePasswordState> {
       } else if (e.status == 422) {
         // Body malformado: bug del cliente. No debería pasar porque siempre
         // mandamos { newPassword: String }.
-        state = ChangePasswordFailure('Error interno del cliente: ${e.message}');
+        state = ChangePasswordFailure(
+          'Error interno del cliente: ${e.message}',
+        );
       } else {
         // 400 (política / rechazo de Supabase) y 500/503 (reintentable):
         // mostramos el message y dejamos reintentar desde el form.

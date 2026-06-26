@@ -1,0 +1,8 @@
+# Configuración de gen-l10n.
+# Flutter 3.41 removió `synthetic-package`: la salida va al árbol de fuentes
+# (lib/l10n/gen) y se importa por path relativo, NO por package:flutter_gen.
+arb-dir: lib/l10n
+template-arb-file: app_es.arb
+output-localization-file: app_localizations.dart
+output-dir: lib/l10n/gen
+nullable-getter: false

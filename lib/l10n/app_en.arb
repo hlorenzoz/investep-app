@@ -1,0 +1,12 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Investep",
+  "splashChecking": "Checking your session...",
+  "serviceUnavailableTitle": "Service unavailable",
+  "retry": "Retry",
+  "passwordChangedRelogin": "Password updated, please sign in again",
+  "commonCancel": "Cancel",
+  "commonClose": "Close",
+  "commonContinue": "Continue"
+}

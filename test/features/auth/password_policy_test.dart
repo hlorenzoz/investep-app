@@ -26,7 +26,10 @@ void main() {
     });
 
     test('rechaza si no coincide con el original', () {
-      expect(validatePasswordConfirmation('otra12345', 'secreto123'), isNotNull);
+      expect(
+        validatePasswordConfirmation('otra12345', 'secreto123'),
+        isNotNull,
+      );
     });
 
     test('acepta si coincide con el original', () {

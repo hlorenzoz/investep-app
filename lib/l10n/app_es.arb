@@ -1,0 +1,32 @@
+{
+  "@@locale": "es",
+
+  "appTitle": "Investep",
+  "@appTitle": {
+    "description": "Nombre de la app"
+  },
+
+  "splashChecking": "Verificando tu sesión...",
+  "@splashChecking": {
+    "description": "Mensaje del splash mientras se valida la sesión contra /auth/me"
+  },
+
+  "serviceUnavailableTitle": "Servicio no disponible",
+  "@serviceUnavailableTitle": {
+    "description": "Título cuando la API responde 503/500 (transitorio)"
+  },
+
+  "retry": "Reintentar",
+  "@retry": {
+    "description": "Botón para reintentar una operación fallida"
+  },
+
+  "passwordChangedRelogin": "Contraseña actualizada, volvé a iniciar sesión",
+  "@passwordChangedRelogin": {
+    "description": "Snackbar tras cambiar la contraseña: la sesión se cerró y hay que re-loguear"
+  },
+
+  "commonCancel": "Cancelar",
+  "commonClose": "Cerrar",
+  "commonContinue": "Continuar"
+}

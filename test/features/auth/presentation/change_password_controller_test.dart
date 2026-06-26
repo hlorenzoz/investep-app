@@ -60,7 +60,8 @@ void main() {
 
   test('401 → signOut + SessionExpired (volver a login)', () async {
     when(() => repo.changePassword(any())).thenAnswer(
-      (_) async => throw const ApiException(401, 'UNAUTHORIZED', 'Token inválido'),
+      (_) async =>
+          throw const ApiException(401, 'UNAUTHORIZED', 'Token inválido'),
     );
 
     await notifier().submit('nuevaClave123');
@@ -73,8 +74,11 @@ void main() {
 
   test('400 → Failure con el message del server, SIN signOut', () async {
     when(() => repo.changePassword(any())).thenAnswer(
-      (_) async =>
-          throw const ApiException(400, 'VALIDATION_ERROR', 'Contraseña muy débil'),
+      (_) async => throw const ApiException(
+        400,
+        'VALIDATION_ERROR',
+        'Contraseña muy débil',
+      ),
     );
 
     await notifier().submit('debil');
@@ -87,8 +91,11 @@ void main() {
 
   test('422 → Failure marcado como bug del cliente', () async {
     when(() => repo.changePassword(any())).thenAnswer(
-      (_) async =>
-          throw const ApiException(422, 'VALIDATION_ERROR', 'newPassword ausente'),
+      (_) async => throw const ApiException(
+        422,
+        'VALIDATION_ERROR',
+        'newPassword ausente',
+      ),
     );
 
     await notifier().submit('x');
