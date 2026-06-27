@@ -34,8 +34,8 @@
   "accountTypeOptions": "Opciones",
 
   "planTitle": "Elegí un plan",
-  "planTargetMonthly": "Ganancia mensual objetivo",
-  "planTargetDaily": "Ganancia diaria objetivo",
+  "planTargetMonthly": "Mensual",
+  "planTargetDaily": "Diario",
   "plansEmpty": "No hay planes para este tipo de cuenta",
 
   "depositTitle": "Depósito inicial",

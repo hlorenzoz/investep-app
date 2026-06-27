@@ -263,13 +263,13 @@ abstract class AppLocalizations {
   /// No description provided for @planTargetMonthly.
   ///
   /// In es, this message translates to:
-  /// **'Ganancia mensual objetivo'**
+  /// **'Mensual'**
   String get planTargetMonthly;
 
   /// No description provided for @planTargetDaily.
   ///
   /// In es, this message translates to:
-  /// **'Ganancia diaria objetivo'**
+  /// **'Diario'**
   String get planTargetDaily;
 
   /// No description provided for @plansEmpty.

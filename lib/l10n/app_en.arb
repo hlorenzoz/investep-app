@@ -34,8 +34,8 @@
   "accountTypeOptions": "Options",
 
   "planTitle": "Choose a plan",
-  "planTargetMonthly": "Target monthly profit",
-  "planTargetDaily": "Target daily profit",
+  "planTargetMonthly": "Monthly",
+  "planTargetDaily": "Daily",
   "plansEmpty": "No plans available for this account type",
 
   "depositTitle": "Initial deposit",

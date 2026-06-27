@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - DART_FLAGS=--dart-define-from-file=config/devel.json --pwa-strategy=none
+        - DART_FLAGS=--dart-define-from-file=config/devel.json
     container_name: investep-web
     ports:
       - "8080:80"

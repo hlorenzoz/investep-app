@@ -90,10 +90,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get planTitle => 'Choose a plan';
 
   @override
-  String get planTargetMonthly => 'Target monthly profit';
+  String get planTargetMonthly => 'Monthly';
 
   @override
-  String get planTargetDaily => 'Target daily profit';
+  String get planTargetDaily => 'Daily';
 
   @override
   String get plansEmpty => 'No plans available for this account type';
