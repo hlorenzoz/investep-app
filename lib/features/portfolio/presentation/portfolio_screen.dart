@@ -336,14 +336,28 @@ class _AllocationTile extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '${l10n.planTargetMonthly}: ${allocation.targetMonthlyPct}%',
-                  style: TextStyle(
-                    color: glassTheme.textSecondary,
-                    fontSize: 13,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${l10n.planTargetMonthly}: ${allocation.targetMonthlyPct}%',
+                      style: TextStyle(
+                        color: glassTheme.textSecondary,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${l10n.planTargetDaily}: ${(allocation.targetMonthlyPct / 30).toStringAsFixed(2)}%',
+                      style: TextStyle(
+                        color: glassTheme.textSecondary,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                 ),
                 Text(
                   '${pct.toStringAsFixed(1)}% ${l10n.ofCapital}',

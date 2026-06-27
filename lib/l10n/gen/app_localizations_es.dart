@@ -94,6 +94,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get planTargetMonthly => 'Ganancia mensual objetivo';
 
   @override
+  String get planTargetDaily => 'Ganancia diaria objetivo';
+
+  @override
   String get plansEmpty => 'No hay planes para este tipo de cuenta';
 
   @override
