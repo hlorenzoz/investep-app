@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 # ── build stage ───────────────────────────────────────────────────────────────
 FROM debian:bookworm-slim AS build
 
