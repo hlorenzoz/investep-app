@@ -13,6 +13,7 @@ class Allocation {
   final num targetMonthlyPct;
   final num initialDeposit;
   final String currency;
+  final DateTime? createdAt;
 
   const Allocation({
     required this.id,
@@ -23,6 +24,7 @@ class Allocation {
     required this.targetMonthlyPct,
     required this.initialDeposit,
     required this.currency,
+    this.createdAt,
   });
 
   factory Allocation.fromJson(Map<String, dynamic> json) => Allocation(
@@ -34,5 +36,8 @@ class Allocation {
     targetMonthlyPct: json['targetMonthlyPct'] as num,
     initialDeposit: json['initialDeposit'] as num,
     currency: json['currency'] as String,
+    createdAt: json['createdAt'] != null
+        ? DateTime.tryParse(json['createdAt'] as String)
+        : null,
   );
 }

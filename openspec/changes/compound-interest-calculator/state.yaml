@@ -1,0 +1,11 @@
+change_name: compound-interest-calculator
+current_phase: archive
+status: in_progress
+phases:
+  proposal: completed
+  spec: completed
+  design: completed
+  tasks: completed
+  apply: completed
+  verify: completed
+  archive: pending

@@ -1,0 +1,56 @@
+schema: spec-driven
+
+context: |
+  Tech stack: Flutter (Dart 3.11+ / SDK ^3.11.5)
+  Architecture: Clean/Feature-first, Riverpod (no code-gen)
+  Testing: flutter_test (unit + widget)
+  Style: flutter_lints, strict analysis, dart format
+
+strict_tdd: true
+
+testing:
+  testing_capabilities:
+    strict_tdd: true
+    test_runner:
+      command: "just test"
+      framework: "flutter_test"
+    test_layers:
+      unit: true
+      integration: true
+      e2e: false
+    coverage:
+      available: false
+      command: ""
+    quality_tools:
+      linter:
+        available: true
+        command: "just analyze"
+      type_checker:
+        available: true
+        command: "just analyze"
+      formatter:
+        available: true
+        command: "just format"
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Identify affected modules/packages
+  specs:
+    - Use Given/When/Then format for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+  tasks:
+    - Group tasks by phase (infrastructure, implementation, testing)
+    - Use hierarchical numbering (1.1, 1.2, etc.)
+    - Keep tasks small enough to complete in one session
+  apply:
+    - Follow existing code patterns and conventions
+    - Load relevant coding skills for the project stack
+  verify:
+    - Run tests if test infrastructure exists
+    - Compare implementation against every spec scenario
+  archive:
+    - Warn before merging destructive deltas (large removals)

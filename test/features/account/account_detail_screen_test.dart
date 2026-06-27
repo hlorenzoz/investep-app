@@ -68,9 +68,12 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-
     expect(find.text('ibkr'), findsOneWidget); // título del AppBar (vivo)
-    expect(find.text('Próximamente'), findsOneWidget); // cuerpo en blanco
+
+    // Por defecto se abre la pestaña "Plan". Hacemos tap en "Registros" para ver el placeholder
+    await tester.tap(find.text('Registros'));
+    await tester.pumpAndSettle();
+    expect(find.text('Próximamente'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Editar cuenta'));
     await tester.pumpAndSettle();
