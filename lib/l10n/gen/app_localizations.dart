@@ -443,7 +443,7 @@ abstract class AppLocalizations {
   /// No description provided for @navPortfolio.
   ///
   /// In es, this message translates to:
-  /// **'Portafolio'**
+  /// **'Brokers'**
   String get navPortfolio;
 
   /// No description provided for @navAcademy.

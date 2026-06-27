@@ -183,7 +183,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get save => 'Guardar';
 
   @override
-  String get navPortfolio => 'Portafolio';
+  String get navPortfolio => 'Brokers';
 
   @override
   String get navAcademy => 'Academia';

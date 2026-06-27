@@ -80,6 +80,7 @@ class MainShell extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
+                        const SizedBox(height: 28),
                         Expanded(
                           child: NavigationRail(
                             selectedIndex: navigationShell.currentIndex < 2
