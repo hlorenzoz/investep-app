@@ -86,6 +86,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final changePasswordBtn = find.text('Cambiar contraseña');
+    await tester.scrollUntilVisible(changePasswordBtn, 100.0);
     await tester.tap(changePasswordBtn);
     await tester.pumpAndSettle();
 
@@ -93,12 +94,18 @@ void main() {
   });
 
   testWidgets('al presionar cerrar sesión debe mostrar el diálogo y llamar a signOut en confirmación', (tester) async {
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     final router = createRouter();
     await tester.pumpWidget(createTestWidget(router));
     await tester.pumpAndSettle();
 
     // Presionar el botón de cerrar sesión
-    await tester.tap(find.text('Cerrar sesión'));
+    final signOutBtn = find.text('Cerrar sesión');
+    await tester.tap(signOutBtn);
     await tester.pumpAndSettle();
 
     // Debe mostrarse el diálogo de confirmación
@@ -115,11 +122,17 @@ void main() {
   });
 
   testWidgets('al presionar cancelar en el diálogo de cerrar sesión no debe llamar a signOut', (tester) async {
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     final router = createRouter();
     await tester.pumpWidget(createTestWidget(router));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Cerrar sesión'));
+    final signOutBtn = find.text('Cerrar sesión');
+    await tester.tap(signOutBtn);
     await tester.pumpAndSettle();
 
     // Tocar Cancelar

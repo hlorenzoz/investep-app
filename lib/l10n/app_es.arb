@@ -83,5 +83,13 @@
   "settingsAccount": "Cuenta",
   "settingsChangePassword": "Cambiar contraseña",
   "settingsSignOut": "Cerrar sesión",
-  "academyComingSoon": "El contenido educativo de Investep Academy estará disponible próximamente."
+  "academyComingSoon": "El contenido educativo de Investep Academy estará disponible próximamente.",
+  "deleteAccount": "Eliminar cuenta",
+  "deleteAccountConfirmTitle": "¿Eliminar cuenta?",
+  "deleteAccountConfirmMessage": "¿Estás seguro de que querés eliminar esta cuenta de broker? El saldo asignado volverá a estar disponible en tu capital.",
+  "cancel": "Cancelar",
+  "settingsCapitalTitle": "Capital",
+  "settingsCapitalTotal": "Capital inicial",
+  "settingsEditCapital": "Modificar capital inicial",
+  "settingsEditCapitalHint": "Ingresá el nuevo monto para tu capital inicial."
 }

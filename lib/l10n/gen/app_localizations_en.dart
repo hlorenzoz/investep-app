@@ -229,4 +229,30 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get academyComingSoon =>
       'Investep Academy educational content will be available soon.';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountConfirmTitle => 'Delete account?';
+
+  @override
+  String get deleteAccountConfirmMessage =>
+      'Are you sure you want to delete this broker account? The allocated balance will return to your available capital.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get settingsCapitalTitle => 'Capital';
+
+  @override
+  String get settingsCapitalTotal => 'Initial capital';
+
+  @override
+  String get settingsEditCapital => 'Modify initial capital';
+
+  @override
+  String get settingsEditCapitalHint =>
+      'Enter the new amount for your initial capital.';
 }

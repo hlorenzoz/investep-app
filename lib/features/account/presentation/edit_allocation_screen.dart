@@ -7,6 +7,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/forms/deposit_field.dart';
+import '../../../shared/widgets/glass/glass_card.dart';
 import '../../capital/domain/account_type.dart';
 import '../../capital/domain/allocation.dart';
 import '../../capital/presentation/capital_controller.dart';
@@ -36,7 +37,21 @@ class EditAllocationScreen extends ConsumerWidget {
       decoration: BoxDecoration(gradient: glassTheme.backgroundGradient),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(title: Text(l10n.editAccount)),
+        appBar: AppBar(
+          title: Text(l10n.editAccount),
+          actions: [
+            IconButton(
+              icon: const Icon(LucideIcons.trash2, color: AppColors.negative),
+              tooltip: l10n.deleteAccount,
+              onPressed: () {
+                final notifier = ref.read(
+                  editAllocationControllerProvider(allocationId).notifier,
+                );
+                _showDeleteDialog(context, notifier);
+              },
+            ),
+          ],
+        ),
         body: SafeArea(
           child: Center(
             child: ConstrainedBox(
@@ -197,7 +212,92 @@ class _EditForm extends ConsumerWidget {
               : const Icon(LucideIcons.check, size: 18),
           label: Text(l10n.save),
         ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: glassTheme.negative,
+            side: BorderSide(color: glassTheme.negative),
+          ),
+          onPressed: submitting ? null : () => _showDeleteDialog(context, notifier),
+          icon: const Icon(LucideIcons.trash2, size: 18),
+          label: Text(l10n.deleteAccount),
+        ),
       ],
     );
   }
+}
+
+void _showDeleteDialog(
+  BuildContext context,
+  EditAllocationController notifier,
+) {
+  final l10n = AppLocalizations.of(context);
+  final glassTheme = context.glass;
+
+  showDialog<void>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      contentPadding: EdgeInsets.zero,
+      content: GlassCard(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Icon(
+              LucideIcons.trash2,
+              size: 40,
+              color: glassTheme.negative,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.deleteAccountConfirmTitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: glassTheme.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              l10n.deleteAccountConfirmMessage,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: glassTheme.textSecondary,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: Text(l10n.cancel),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: glassTheme.negative,
+                    ),
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                      notifier.delete();
+                    },
+                    child: Text(l10n.deleteAccount),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }

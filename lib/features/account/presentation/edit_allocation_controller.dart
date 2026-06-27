@@ -134,6 +134,38 @@ class EditAllocationController extends Notifier<EditState> {
       );
     }
   }
+
+  /// `DELETE /capital/allocations/{id}`. Éxito → refresca capital y completa.
+  Future<void> delete() async {
+    if (state is EditSubmitting || state is EditCompleted) return;
+    final planId = state.investmentPlanId;
+    final deposit = state.deposit;
+
+    _set(EditSubmitting(planId, deposit));
+    try {
+      await ref.read(capitalRepositoryProvider).deleteAllocation(allocationId);
+      await ref.read(capitalControllerProvider.notifier).refresh();
+      _set(EditCompleted(planId, deposit));
+    } on ApiException catch (e) {
+      _set(
+        EditError(
+          planId,
+          deposit,
+          message: e.message,
+          retryable: e.isRetryable,
+        ),
+      );
+    } catch (_) {
+      _set(
+        EditError(
+          planId,
+          deposit,
+          message: 'Ocurrió un error inesperado al eliminar la cuenta.',
+          retryable: true,
+        ),
+      );
+    }
+  }
 }
 
 final editAllocationControllerProvider = NotifierProvider.autoDispose

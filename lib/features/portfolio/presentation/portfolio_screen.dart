@@ -351,7 +351,7 @@ class _AllocationTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${l10n.planTargetDaily}: ${(allocation.targetMonthlyPct / 30).toStringAsFixed(2)}%',
+                      '${l10n.planTargetDaily}: ${(allocation.targetMonthlyPct / 20).toStringAsFixed(2)}%',
                       style: TextStyle(
                         color: glassTheme.textSecondary,
                         fontSize: 13,

@@ -77,7 +77,6 @@ class AccountDetailController extends Notifier<AccountDetailState> {
   List<CompoundInterestPeriodResult> getProjections(Allocation allocation) {
     final now = DateTime.now();
     final creationDate = allocation.createdAt ?? now;
-    final startDate = DateTime(creationDate.year - 1, 1, 1);
 
     DateTime? filterStart;
     DateTime? filterEnd;
@@ -92,19 +91,13 @@ class AccountDetailController extends Notifier<AccountDetailState> {
         filterEnd = DateTime(drillDate.year, drillDate.month + 1, 0);
       }
     } else {
-      if (state.grouping == CompoundInterestGrouping.daily) {
-        final weekday = now.weekday;
-        filterStart = now.subtract(Duration(days: weekday - 1));
-        filterEnd = filterStart.add(const Duration(days: 6));
-      } else if (state.grouping == CompoundInterestGrouping.weekly) {
-        filterStart = DateTime(creationDate.year, creationDate.month, 1);
-        filterEnd = DateTime(creationDate.year, creationDate.month + 1, 0);
+      filterStart = creationDate;
+      if (state.grouping == CompoundInterestGrouping.daily || state.grouping == CompoundInterestGrouping.weekly) {
+        filterEnd = DateTime(creationDate.year + 1, creationDate.month, creationDate.day);
       } else if (state.grouping == CompoundInterestGrouping.monthly) {
-        filterStart = DateTime(creationDate.year, creationDate.month, 1);
-        filterEnd = DateTime(creationDate.year + 3, creationDate.month, 1);
+        filterEnd = DateTime(creationDate.year + 3, creationDate.month, creationDate.day);
       } else if (state.grouping == CompoundInterestGrouping.yearly) {
-        filterStart = startDate;
-        filterEnd = DateTime(creationDate.year + 3, 12, 31);
+        filterEnd = DateTime(creationDate.year + 5, creationDate.month, creationDate.day);
       }
     }
 
@@ -112,7 +105,6 @@ class AccountDetailController extends Notifier<AccountDetailState> {
       baseAmount: allocation.initialDeposit.toDouble(),
       monthlyRatePct: allocation.targetMonthlyPct.toDouble(),
       grouping: state.grouping,
-      startDate: startDate,
       accountCreationDate: creationDate,
       years: 5,
       filterStartDate: filterStart,

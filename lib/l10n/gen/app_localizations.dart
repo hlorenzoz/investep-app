@@ -535,6 +535,54 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'El contenido educativo de Investep Academy estará disponible próximamente.'**
   String get academyComingSoon;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar cuenta'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Eliminar cuenta?'**
+  String get deleteAccountConfirmTitle;
+
+  /// No description provided for @deleteAccountConfirmMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Estás seguro de que querés eliminar esta cuenta de broker? El saldo asignado volverá a estar disponible en tu capital.'**
+  String get deleteAccountConfirmMessage;
+
+  /// No description provided for @cancel.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar'**
+  String get cancel;
+
+  /// No description provided for @settingsCapitalTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Capital'**
+  String get settingsCapitalTitle;
+
+  /// No description provided for @settingsCapitalTotal.
+  ///
+  /// In es, this message translates to:
+  /// **'Capital inicial'**
+  String get settingsCapitalTotal;
+
+  /// No description provided for @settingsEditCapital.
+  ///
+  /// In es, this message translates to:
+  /// **'Modificar capital inicial'**
+  String get settingsEditCapital;
+
+  /// No description provided for @settingsEditCapitalHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ingresá el nuevo monto para tu capital inicial.'**
+  String get settingsEditCapitalHint;
 }
 
 class _AppLocalizationsDelegate
