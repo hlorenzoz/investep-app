@@ -68,9 +68,20 @@ class PlanSelector extends ConsumerWidget {
                       fontWeight: selectedPlanId == plan.id ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
-                  subtitle: Text(
-                    '${l10n.planTargetMonthly}: ${plan.targetMonthlyPct}%',
-                    style: TextStyle(color: glassTheme.textSecondary),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 2),
+                      Text(
+                        '${l10n.planTargetMonthly}: ${plan.targetMonthlyPct}%',
+                        style: TextStyle(color: glassTheme.textSecondary, fontSize: 13),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${l10n.planTargetDaily}: ${plan.effectiveDailyPct}%',
+                        style: TextStyle(color: glassTheme.textSecondary, fontSize: 13),
+                      ),
+                    ],
                   ),
                   trailing: selectedPlanId == plan.id
                       ? Icon(
