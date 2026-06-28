@@ -7,6 +7,8 @@ import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/language_selector.dart';
+import '../../../shared/widgets/theme_selector.dart';
 import '../domain/password_policy.dart';
 import 'change_password_controller.dart';
 import 'login_controller.dart';
@@ -83,12 +85,23 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
               Text('Cambiar contraseña'),
             ],
           ),
+          actions: const [
+            LanguageSelector(),
+            ThemeSelector(),
+            SizedBox(width: 16),
+          ],
         ),
         body: SafeArea(
           child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: _buildContent(state),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
+                child: _buildContent(state),
+              ),
             ),
           ),
         ),
@@ -161,10 +174,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
             child: Text(
               message,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: glassTheme.textSecondary,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: glassTheme.textSecondary, fontSize: 14),
             ),
           ),
           const SizedBox(height: 24),
@@ -305,7 +315,11 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
               decoration: InputDecoration(
                 labelText: 'Contraseña nueva',
                 labelStyle: TextStyle(color: glassTheme.textSecondary),
-                prefixIcon: Icon(LucideIcons.lock, size: 20, color: glassTheme.textSecondary),
+                prefixIcon: Icon(
+                  LucideIcons.lock,
+                  size: 20,
+                  color: glassTheme.textSecondary,
+                ),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword ? LucideIcons.eye : LucideIcons.eyeOff,
@@ -340,7 +354,11 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
               decoration: InputDecoration(
                 labelText: 'Repetir contraseña',
                 labelStyle: TextStyle(color: glassTheme.textSecondary),
-                prefixIcon: Icon(LucideIcons.lock, size: 20, color: glassTheme.textSecondary),
+                prefixIcon: Icon(
+                  LucideIcons.lock,
+                  size: 20,
+                  color: glassTheme.textSecondary,
+                ),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscureConfirm ? LucideIcons.eye : LucideIcons.eyeOff,

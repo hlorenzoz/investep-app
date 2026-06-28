@@ -9,13 +9,12 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:investep_app/app/theme/theme_provider.dart';
-import 'package:investep_app/core/l10n/locale_provider.dart';
 import 'package:investep_app/core/providers/supabase_provider.dart';
 import 'package:investep_app/features/settings/presentation/settings_screen.dart';
 import 'package:investep_app/l10n/gen/app_localizations.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}
+
 class MockGoTrueClient extends Mock implements GoTrueClient {}
 
 void main() {
@@ -39,9 +38,8 @@ void main() {
         ),
         GoRoute(
           path: '/change-password',
-          builder: (context, state) => const Scaffold(
-            body: Text('CHANGE_PASSWORD_ROUTE'),
-          ),
+          builder: (context, state) =>
+              const Scaffold(body: Text('CHANGE_PASSWORD_ROUTE')),
         ),
       ],
     );
@@ -49,9 +47,7 @@ void main() {
 
   Widget createTestWidget(GoRouter router) {
     return ProviderScope(
-      overrides: [
-        supabaseClientProvider.overrideWithValue(mockSupabase),
-      ],
+      overrides: [supabaseClientProvider.overrideWithValue(mockSupabase)],
       child: MaterialApp.router(
         locale: const Locale('es'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -61,7 +57,9 @@ void main() {
     );
   }
 
-  testWidgets('debe renderizar todos los elementos de la interfaz en español', (tester) async {
+  testWidgets('debe renderizar todos los elementos de la interfaz en español', (
+    tester,
+  ) async {
     final router = createRouter();
     await tester.pumpWidget(createTestWidget(router));
     await tester.pumpAndSettle();
@@ -80,66 +78,75 @@ void main() {
     expect(find.text('Cerrar sesión'), findsOneWidget);
   });
 
-  testWidgets('al presionar Cambiar contraseña debe navegar a /change-password', (tester) async {
-    final router = createRouter();
-    await tester.pumpWidget(createTestWidget(router));
-    await tester.pumpAndSettle();
+  testWidgets(
+    'al presionar Cambiar contraseña debe navegar a /change-password',
+    (tester) async {
+      final router = createRouter();
+      await tester.pumpWidget(createTestWidget(router));
+      await tester.pumpAndSettle();
 
-    final changePasswordBtn = find.text('Cambiar contraseña');
-    await tester.scrollUntilVisible(changePasswordBtn, 100.0);
-    await tester.tap(changePasswordBtn);
-    await tester.pumpAndSettle();
+      final changePasswordBtn = find.text('Cambiar contraseña');
+      await tester.scrollUntilVisible(changePasswordBtn, 100.0);
+      await tester.tap(changePasswordBtn);
+      await tester.pumpAndSettle();
 
-    expect(find.text('CHANGE_PASSWORD_ROUTE'), findsOneWidget);
-  });
+      expect(find.text('CHANGE_PASSWORD_ROUTE'), findsOneWidget);
+    },
+  );
 
-  testWidgets('al presionar cerrar sesión debe mostrar el diálogo y llamar a signOut en confirmación', (tester) async {
-    tester.view.physicalSize = const Size(800, 1200);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
+  testWidgets(
+    'al presionar cerrar sesión debe mostrar el diálogo y llamar a signOut en confirmación',
+    (tester) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
 
-    final router = createRouter();
-    await tester.pumpWidget(createTestWidget(router));
-    await tester.pumpAndSettle();
+      final router = createRouter();
+      await tester.pumpWidget(createTestWidget(router));
+      await tester.pumpAndSettle();
 
-    // Presionar el botón de cerrar sesión
-    final signOutBtn = find.text('Cerrar sesión');
-    await tester.tap(signOutBtn);
-    await tester.pumpAndSettle();
+      // Presionar el botón de cerrar sesión
+      final signOutBtn = find.text('Cerrar sesión');
+      await tester.tap(signOutBtn);
+      await tester.pumpAndSettle();
 
-    // Debe mostrarse el diálogo de confirmación
-    expect(find.text('¿Cerrar sesión?'), findsOneWidget);
-    expect(find.text('Cancelar'), findsOneWidget);
-    
-    // Tocar confirmar
-    await tester.tap(find.text('Confirmar'));
-    await tester.pumpAndSettle();
+      // Debe mostrarse el diálogo de confirmación
+      expect(find.text('¿Cerrar sesión?'), findsOneWidget);
+      expect(find.text('Cancelar'), findsOneWidget);
 
-    // Debe cerrarse el diálogo y llamarse a signOut()
-    expect(find.text('¿Cerrar sesión?'), findsNothing);
-    verify(() => mockAuth.signOut()).called(1);
-  });
+      // Tocar confirmar
+      await tester.tap(find.text('Confirmar'));
+      await tester.pumpAndSettle();
 
-  testWidgets('al presionar cancelar en el diálogo de cerrar sesión no debe llamar a signOut', (tester) async {
-    tester.view.physicalSize = const Size(800, 1200);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
+      // Debe cerrarse el diálogo y llamarse a signOut()
+      expect(find.text('¿Cerrar sesión?'), findsNothing);
+      verify(() => mockAuth.signOut()).called(1);
+    },
+  );
 
-    final router = createRouter();
-    await tester.pumpWidget(createTestWidget(router));
-    await tester.pumpAndSettle();
+  testWidgets(
+    'al presionar cancelar en el diálogo de cerrar sesión no debe llamar a signOut',
+    (tester) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
 
-    final signOutBtn = find.text('Cerrar sesión');
-    await tester.tap(signOutBtn);
-    await tester.pumpAndSettle();
+      final router = createRouter();
+      await tester.pumpWidget(createTestWidget(router));
+      await tester.pumpAndSettle();
 
-    // Tocar Cancelar
-    await tester.tap(find.text('Cancelar'));
-    await tester.pumpAndSettle();
+      final signOutBtn = find.text('Cerrar sesión');
+      await tester.tap(signOutBtn);
+      await tester.pumpAndSettle();
 
-    expect(find.text('¿Cerrar sesión?'), findsNothing);
-    verifyNever(() => mockAuth.signOut());
-  });
+      // Tocar Cancelar
+      await tester.tap(find.text('Cancelar'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('¿Cerrar sesión?'), findsNothing);
+      verifyNever(() => mockAuth.signOut());
+    },
+  );
 }

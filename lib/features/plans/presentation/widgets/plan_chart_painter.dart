@@ -29,7 +29,10 @@ class _PlanChartState extends State<PlanChart> {
     final double chartWidth = width - (paddingX * 2);
     final double relativeX = localPos.dx - paddingX;
     final double step = chartWidth / (widget.data.length - 1);
-    final int index = (relativeX / step).round().clamp(0, widget.data.length - 1);
+    final int index = (relativeX / step).round().clamp(
+      0,
+      widget.data.length - 1,
+    );
     if (_selectedIndex != index) {
       setState(() {
         _selectedIndex = index;
@@ -61,7 +64,8 @@ class _PlanChartState extends State<PlanChart> {
         const double paddingY = 20.0;
 
         return MouseRegion(
-          onHover: (event) => _updateSelectedIndex(event.localPosition, width, paddingX),
+          onHover: (event) =>
+              _updateSelectedIndex(event.localPosition, width, paddingX),
           onExit: (_) {
             if (_selectedIndex != null) {
               setState(() => _selectedIndex = null);
@@ -74,7 +78,8 @@ class _PlanChartState extends State<PlanChart> {
                 widget.onTapPoint!(_selectedIndex!);
               }
             },
-            onPanUpdate: (details) => _updateSelectedIndex(details.localPosition, width, paddingX),
+            onPanUpdate: (details) =>
+                _updateSelectedIndex(details.localPosition, width, paddingX),
             onPanEnd: (_) {},
             child: CustomPaint(
               size: Size(width, height),
@@ -138,7 +143,8 @@ class _PlanChartPainter extends CustomPainter {
     for (int i = 0; i < data.length; i++) {
       final d = data[i];
       final double x = paddingX + (i * stepX);
-      final double y = height - paddingY - ((d.endBalance - minY) / rangeY * chartHeight);
+      final double y =
+          height - paddingY - ((d.endBalance - minY) / rangeY * chartHeight);
       points.add(Offset(x, y));
     }
 
@@ -147,15 +153,17 @@ class _PlanChartPainter extends CustomPainter {
       ..color = glassTheme.textPrimary.withValues(alpha: 0.08)
       ..strokeWidth = 1.0;
 
-    final textPainter = TextPainter(
-      textDirection: TextDirection.ltr,
-    );
+    final textPainter = TextPainter(textDirection: TextDirection.ltr);
 
     const int gridLines = 3;
     for (int i = 0; i <= gridLines; i++) {
       final double fraction = i / gridLines;
       final double y = height - paddingY - (fraction * chartHeight);
-      canvas.drawLine(Offset(paddingX, y), Offset(width - paddingX, y), gridPaint);
+      canvas.drawLine(
+        Offset(paddingX, y),
+        Offset(width - paddingX, y),
+        gridPaint,
+      );
 
       // Etiquetas del eje Y
       final double val = minY + (fraction * (maxY - minY));
@@ -173,8 +181,7 @@ class _PlanChartPainter extends CustomPainter {
 
     // 4. Pintar área con gradiente debajo de la curva verde
     if (points.isNotEmpty) {
-      final gradientPath = Path()
-        ..moveTo(points.first.dx, height - paddingY);
+      final gradientPath = Path()..moveTo(points.first.dx, height - paddingY);
       for (final p in points) {
         gradientPath.lineTo(p.dx, p.dy);
       }
@@ -192,7 +199,12 @@ class _PlanChartPainter extends CustomPainter {
 
       final paintArea = Paint()
         ..shader = areaGradient.createShader(
-          Rect.fromLTRB(paddingX, paddingY, width - paddingX, height - paddingY),
+          Rect.fromLTRB(
+            paddingX,
+            paddingY,
+            width - paddingX,
+            height - paddingY,
+          ),
         )
         ..style = PaintingStyle.fill;
 
@@ -218,7 +230,9 @@ class _PlanChartPainter extends CustomPainter {
     int minDiffMs = double.maxFinite.toInt();
 
     for (int i = 0; i < data.length; i++) {
-      final diff = (data[i].date.millisecondsSinceEpoch - now.millisecondsSinceEpoch).abs();
+      final diff =
+          (data[i].date.millisecondsSinceEpoch - now.millisecondsSinceEpoch)
+              .abs();
       if (diff < minDiffMs) {
         minDiffMs = diff;
         closestIndex = i;
@@ -226,7 +240,10 @@ class _PlanChartPainter extends CustomPainter {
     }
 
     final double brokerX = points[closestIndex].dx;
-    final double brokerY = height - paddingY - ((currentBrokerAmount - minY) / rangeY * chartHeight);
+    final double brokerY =
+        height -
+        paddingY -
+        ((currentBrokerAmount - minY) / rangeY * chartHeight);
     final Offset brokerOffset = Offset(brokerX, brokerY);
 
     // Línea vertical discontinua hacia el marcador azul
@@ -274,18 +291,25 @@ class _PlanChartPainter extends CustomPainter {
     // Dibujar fondo de etiqueta con Glass Fill y Border
     final double textWidth = textPainter.width;
     final double textHeight = textPainter.height;
-    final double labelX = (brokerX + textWidth + 10 > width - 10) ? brokerX - textWidth - 10 : brokerX + 10;
+    final double labelX = (brokerX + textWidth + 10 > width - 10)
+        ? brokerX - textWidth - 10
+        : brokerX + 10;
     final double labelY = brokerY - (textHeight / 2);
 
-    final labelRect = Rect.fromLTWH(labelX - 4, labelY - 2, textWidth + 8, textHeight + 4);
+    final labelRect = Rect.fromLTWH(
+      labelX - 4,
+      labelY - 2,
+      textWidth + 8,
+      textHeight + 4,
+    );
     final rRect = RRect.fromRectAndRadius(labelRect, const Radius.circular(4));
-    
+
     final labelBgPaint = Paint()..color = glassTheme.glassFill;
     final labelBorderPaint = Paint()
       ..color = glassTheme.glassBorder
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
-      
+
     canvas.drawRRect(rRect, labelBgPaint);
     canvas.drawRRect(rRect, labelBorderPaint);
 
@@ -311,7 +335,9 @@ class _PlanChartPainter extends CustomPainter {
     }
 
     // 8. Dibujar indicador y tooltip para el punto seleccionado (hover / touch)
-    if (selectedIndex != null && selectedIndex! >= 0 && selectedIndex! < points.length) {
+    if (selectedIndex != null &&
+        selectedIndex! >= 0 &&
+        selectedIndex! < points.length) {
       final idx = selectedIndex!;
       final selectedPoint = points[idx];
       final item = data[idx];
@@ -369,12 +395,23 @@ class _PlanChartPainter extends CustomPainter {
         ),
       );
 
-      final tpDate = TextPainter(text: dateSpan, textDirection: TextDirection.ltr)..layout();
-      final tpTotal = TextPainter(text: totalSpan, textDirection: TextDirection.ltr)..layout();
-      final tpYield = TextPainter(text: yieldSpan, textDirection: TextDirection.ltr)..layout();
+      final tpDate = TextPainter(
+        text: dateSpan,
+        textDirection: TextDirection.ltr,
+      )..layout();
+      final tpTotal = TextPainter(
+        text: totalSpan,
+        textDirection: TextDirection.ltr,
+      )..layout();
+      final tpYield = TextPainter(
+        text: yieldSpan,
+        textDirection: TextDirection.ltr,
+      )..layout();
 
-      final double tooltipWidth = max(tpDate.width, max(tpTotal.width, tpYield.width)) + 16;
-      final double tooltipHeight = tpDate.height + tpTotal.height + tpYield.height + 12;
+      final double tooltipWidth =
+          max(tpDate.width, max(tpTotal.width, tpYield.width)) + 16;
+      final double tooltipHeight =
+          tpDate.height + tpTotal.height + tpYield.height + 12;
 
       // Posicionamiento inteligente del tooltip (encima o debajo, sin salirse de bordes)
       double ttX = selectedPoint.dx - (tooltipWidth / 2);
@@ -389,7 +426,9 @@ class _PlanChartPainter extends CustomPainter {
       final ttRRect = RRect.fromRectAndRadius(ttRect, const Radius.circular(8));
 
       final bool isDarkTheme = glassTheme.textPrimary.computeLuminance() > 0.5;
-      final Color ttBgColor = isDarkTheme ? const Color(0xEE1E293B) : const Color(0xF0F8FAFC);
+      final Color ttBgColor = isDarkTheme
+          ? const Color(0xEE1E293B)
+          : const Color(0xF0F8FAFC);
 
       final ttBgPaint = Paint()
         ..color = ttBgColor

@@ -39,8 +39,8 @@ void main() {
       final gate = GateAuthenticated(user);
       expect(gateRedirect(gate, '/login'), '/');
       expect(gateRedirect(gate, '/splash'), '/');
-      expect(gateRedirect(gate, '/change-password'), '/');
-      // Rutas de app permitidas.
+      // Rutas de app permitidas (incluyendo cambio voluntario de contraseña).
+      expect(gateRedirect(gate, '/change-password'), isNull);
       expect(gateRedirect(gate, '/'), isNull);
       expect(gateRedirect(gate, '/setup'), isNull);
     });

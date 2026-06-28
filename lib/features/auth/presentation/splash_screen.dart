@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../core/auth/auth_gate.dart';
 import '../../../l10n/gen/app_localizations.dart';
@@ -107,10 +106,7 @@ class _RetryCard extends ConsumerWidget {
             child: Text(
               message,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: glassTheme.textSecondary,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: glassTheme.textSecondary, fontSize: 14),
             ),
           ),
           const SizedBox(height: 24),

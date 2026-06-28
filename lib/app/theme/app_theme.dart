@@ -45,12 +45,19 @@ class GlassThemeExtension extends ThemeExtension<GlassThemeExtension> {
   }
 
   @override
-  GlassThemeExtension lerp(ThemeExtension<GlassThemeExtension>? other, double t) {
+  GlassThemeExtension lerp(
+    ThemeExtension<GlassThemeExtension>? other,
+    double t,
+  ) {
     if (other is! GlassThemeExtension) return this;
     return GlassThemeExtension(
       glassFill: Color.lerp(glassFill, other.glassFill, t)!,
       glassBorder: Color.lerp(glassBorder, other.glassBorder, t)!,
-      backgroundGradient: LinearGradient.lerp(backgroundGradient, other.backgroundGradient, t)!,
+      backgroundGradient: LinearGradient.lerp(
+        backgroundGradient,
+        other.backgroundGradient,
+        t,
+      )!,
       textPrimary: Color.lerp(textPrimary, other.textPrimary, t)!,
       textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,
       positive: Color.lerp(positive, other.positive, t)!,
@@ -119,17 +126,16 @@ abstract final class AppTheme {
               fontSize: 12,
             );
           }
-          return const TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 12,
-          );
+          return const TextStyle(color: AppColors.textSecondary, fontSize: 12);
         }),
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: Colors.transparent,
         indicatorColor: AppColors.accent.withOpacity(0.24),
         selectedIconTheme: const IconThemeData(color: AppColors.accent),
-        unselectedIconTheme: const IconThemeData(color: AppColors.textSecondary),
+        unselectedIconTheme: const IconThemeData(
+          color: AppColors.textSecondary,
+        ),
         selectedLabelTextStyle: const TextStyle(
           color: AppColors.accent,
           fontWeight: FontWeight.bold,
@@ -236,7 +242,10 @@ abstract final class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.lightAccent, width: 1.5),
+          borderSide: const BorderSide(
+            color: AppColors.lightAccent,
+            width: 1.5,
+          ),
         ),
         labelStyle: const TextStyle(color: Color(0xFF475569)),
         floatingLabelStyle: const TextStyle(color: AppColors.lightAccent),
@@ -286,7 +295,10 @@ abstract final class AppTheme {
           backgroundGradient: const LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppColors.lightBackgroundTop, AppColors.lightBackgroundBottom],
+            colors: [
+              AppColors.lightBackgroundTop,
+              AppColors.lightBackgroundBottom,
+            ],
           ),
           textPrimary: AppColors.lightTextPrimary,
           textSecondary: AppColors.lightTextSecondary,

@@ -139,7 +139,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get summaryRemaining => 'Remaining available';
 
   @override
-  String get dashboardTitle => 'My capital';
+  String get dashboardTitle => 'Brokers';
 
   @override
   String get dashboardEmptyTitle => 'Set up your capital';
@@ -255,4 +255,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsEditCapitalHint =>
       'Enter the new amount for your initial capital.';
+
+  @override
+  String get loginTitle => 'Sign In';
+
+  @override
+  String get loginSubtitle => 'Enter your credentials to access.';
+
+  @override
+  String get loginEmailLabel => 'Email';
+
+  @override
+  String get loginPasswordLabel => 'Password';
+
+  @override
+  String get loginSubmitButton => 'Sign In';
+
+  @override
+  String get loginAuthenticating => 'Authenticating and validating...';
+
+  @override
+  String get loginAuthError => 'Authentication Error';
 }

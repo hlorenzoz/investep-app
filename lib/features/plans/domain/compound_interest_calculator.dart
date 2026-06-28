@@ -100,12 +100,20 @@ class CompoundInterestCalculator {
     var filtered = rawPeriods;
     if (filterStartDate != null) {
       filtered = filtered
-          .where((p) => p.date.isAfter(filterStartDate) || p.date.isAtSameMomentAs(filterStartDate))
+          .where(
+            (p) =>
+                p.date.isAfter(filterStartDate) ||
+                p.date.isAtSameMomentAs(filterStartDate),
+          )
           .toList();
     }
     if (filterEndDate != null) {
       filtered = filtered
-          .where((p) => p.date.isBefore(filterEndDate) || p.date.isAtSameMomentAs(filterEndDate))
+          .where(
+            (p) =>
+                p.date.isBefore(filterEndDate) ||
+                p.date.isAtSameMomentAs(filterEndDate),
+          )
           .toList();
     }
 
@@ -136,7 +144,11 @@ class CompoundInterestCalculator {
     double currentBalance = _round(baseAmount);
 
     for (int m = 0; m < totalMonths; m++) {
-      final date = DateTime(creationDate.year, creationDate.month + m, creationDate.day);
+      final date = DateTime(
+        creationDate.year,
+        creationDate.month + m,
+        creationDate.day,
+      );
       final monthName = _monthAbbr(date.month);
       final label = '$monthName ${date.year.toString().substring(2)}';
 
@@ -144,14 +156,16 @@ class CompoundInterestCalculator {
       final yieldAmt = _round(startBal * rate);
       final endBal = _round(startBal + yieldAmt);
 
-      results.add(CompoundInterestPeriodResult(
-        periodIndex: m + 1,
-        label: label,
-        startBalance: startBal,
-        yieldAmount: yieldAmt,
-        endBalance: endBal,
-        date: date,
-      ));
+      results.add(
+        CompoundInterestPeriodResult(
+          periodIndex: m + 1,
+          label: label,
+          startBalance: startBal,
+          yieldAmount: yieldAmt,
+          endBalance: endBal,
+          date: date,
+        ),
+      );
 
       currentBalance = endBal;
     }
@@ -177,14 +191,16 @@ class CompoundInterestCalculator {
       final yieldAmt = _round(startBal * weeklyRate);
       final endBal = _round(startBal + yieldAmt);
 
-      results.add(CompoundInterestPeriodResult(
-        periodIndex: w + 1,
-        label: 'Semana ${w + 1}',
-        startBalance: startBal,
-        yieldAmount: yieldAmt,
-        endBalance: endBal,
-        date: date,
-      ));
+      results.add(
+        CompoundInterestPeriodResult(
+          periodIndex: w + 1,
+          label: 'Semana ${w + 1}',
+          startBalance: startBal,
+          yieldAmount: yieldAmt,
+          endBalance: endBal,
+          date: date,
+        ),
+      );
 
       currentBalance = endBal;
     }
@@ -211,14 +227,16 @@ class CompoundInterestCalculator {
       final yieldAmt = _round(startBal * dailyRate);
       final endBal = _round(startBal + yieldAmt);
 
-      results.add(CompoundInterestPeriodResult(
-        periodIndex: d + 1,
-        label: '${date.day} $monthName',
-        startBalance: startBal,
-        yieldAmount: yieldAmt,
-        endBalance: endBal,
-        date: date,
-      ));
+      results.add(
+        CompoundInterestPeriodResult(
+          periodIndex: d + 1,
+          label: '${date.day} $monthName',
+          startBalance: startBal,
+          yieldAmount: yieldAmt,
+          endBalance: endBal,
+          date: date,
+        ),
+      );
 
       currentBalance = endBal;
     }
@@ -246,14 +264,16 @@ class CompoundInterestCalculator {
       final yieldAmt = _round(endBal - startBal);
       final yearLabel = '${creationDate.year + y}';
 
-      results.add(CompoundInterestPeriodResult(
-        periodIndex: y + 1,
-        label: yearLabel,
-        startBalance: startBal,
-        yieldAmount: yieldAmt,
-        endBalance: endBal,
-        date: yearMonths.first.date,
-      ));
+      results.add(
+        CompoundInterestPeriodResult(
+          periodIndex: y + 1,
+          label: yearLabel,
+          startBalance: startBal,
+          yieldAmount: yieldAmt,
+          endBalance: endBal,
+          date: yearMonths.first.date,
+        ),
+      );
     }
     return results;
   }

@@ -140,7 +140,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get summaryRemaining => 'Disponible restante';
 
   @override
-  String get dashboardTitle => 'Mi capital';
+  String get dashboardTitle => 'Brókers';
 
   @override
   String get dashboardEmptyTitle => 'Configurá tu capital';
@@ -256,4 +256,26 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsEditCapitalHint =>
       'Ingresá el nuevo monto para tu capital inicial.';
+
+  @override
+  String get loginTitle => 'Iniciar Sesión';
+
+  @override
+  String get loginSubtitle =>
+      'Ingresá tus credenciales para validar el acceso.';
+
+  @override
+  String get loginEmailLabel => 'Email';
+
+  @override
+  String get loginPasswordLabel => 'Contraseña';
+
+  @override
+  String get loginSubmitButton => 'Ingresar';
+
+  @override
+  String get loginAuthenticating => 'Autenticando y validando...';
+
+  @override
+  String get loginAuthError => 'Error de Autenticación';
 }

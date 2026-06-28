@@ -53,7 +53,7 @@
   "summaryCurrency": "Moneda",
   "summaryRemaining": "Disponible restante",
 
-  "dashboardTitle": "Mi capital",
+  "dashboardTitle": "Brókers",
   "dashboardEmptyTitle": "Configurá tu capital",
   "dashboardEmptySubtitle": "Definí tu capital inicial y agregá tus cuentas de broker.",
   "configureCapitalCta": "Configurar mi capital",
@@ -91,5 +91,12 @@
   "settingsCapitalTitle": "Capital",
   "settingsCapitalTotal": "Capital inicial",
   "settingsEditCapital": "Modificar capital inicial",
-  "settingsEditCapitalHint": "Ingresá el nuevo monto para tu capital inicial."
+  "settingsEditCapitalHint": "Ingresá el nuevo monto para tu capital inicial.",
+  "loginTitle": "Iniciar Sesión",
+  "loginSubtitle": "Ingresá tus credenciales para validar el acceso.",
+  "loginEmailLabel": "Email",
+  "loginPasswordLabel": "Contraseña",
+  "loginSubmitButton": "Ingresar",
+  "loginAuthenticating": "Autenticando y validando...",
+  "loginAuthError": "Error de Autenticación"
 }

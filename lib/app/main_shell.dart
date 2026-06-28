@@ -75,7 +75,10 @@ class MainShell extends StatelessWidget {
                   Container(
                     decoration: BoxDecoration(
                       border: Border(
-                        right: BorderSide(color: glassTheme.glassBorder, width: 0.5),
+                        right: BorderSide(
+                          color: glassTheme.glassBorder,
+                          width: 0.5,
+                        ),
                       ),
                     ),
                     child: Column(
@@ -103,8 +106,11 @@ class MainShell extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 16.0),
                           child: NavigationRail(
-                            selectedIndex: navigationShell.currentIndex == 2 ? 0 : null,
-                            onDestinationSelected: (_) => _onDestinationSelected(2),
+                            selectedIndex: navigationShell.currentIndex == 2
+                                ? 0
+                                : null,
+                            onDestinationSelected: (_) =>
+                                _onDestinationSelected(2),
                             labelType: NavigationRailLabelType.all,
                             destinations: [
                               NavigationRailDestination(
@@ -117,9 +123,7 @@ class MainShell extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: navigationShell,
-                  ),
+                  Expanded(child: navigationShell),
                 ],
               ),
             );

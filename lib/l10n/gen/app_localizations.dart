@@ -359,7 +359,7 @@ abstract class AppLocalizations {
   /// No description provided for @dashboardTitle.
   ///
   /// In es, this message translates to:
-  /// **'Mi capital'**
+  /// **'Brókers'**
   String get dashboardTitle;
 
   /// No description provided for @dashboardEmptyTitle.
@@ -583,6 +583,48 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Ingresá el nuevo monto para tu capital inicial.'**
   String get settingsEditCapitalHint;
+
+  /// No description provided for @loginTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Iniciar Sesión'**
+  String get loginTitle;
+
+  /// No description provided for @loginSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ingresá tus credenciales para validar el acceso.'**
+  String get loginSubtitle;
+
+  /// No description provided for @loginEmailLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Email'**
+  String get loginEmailLabel;
+
+  /// No description provided for @loginPasswordLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña'**
+  String get loginPasswordLabel;
+
+  /// No description provided for @loginSubmitButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Ingresar'**
+  String get loginSubmitButton;
+
+  /// No description provided for @loginAuthenticating.
+  ///
+  /// In es, this message translates to:
+  /// **'Autenticando y validando...'**
+  String get loginAuthenticating;
+
+  /// No description provided for @loginAuthError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error de Autenticación'**
+  String get loginAuthError;
 }
 
 class _AppLocalizationsDelegate

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/format/money.dart';
@@ -46,10 +45,7 @@ class PortfolioScreen extends ConsumerWidget {
               Text(l10n.dashboardTitle),
             ],
           ),
-          actions: const [
-            ThemeSelector(),
-            SizedBox(width: 16),
-          ],
+          actions: const [ThemeSelector(), SizedBox(width: 16)],
         ),
         floatingActionButton: showFab
             ? FloatingActionButton.extended(
@@ -135,10 +131,7 @@ class _EmptyState extends StatelessWidget {
               Text(
                 l10n.dashboardEmptySubtitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: glassTheme.textSecondary,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: glassTheme.textSecondary, fontSize: 14),
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
@@ -249,7 +242,12 @@ class _CapitalList extends StatelessWidget {
     );
   }
 
-  Widget _summaryRow(BuildContext context, String label, String value, {bool emphasized = false}) {
+  Widget _summaryRow(
+    BuildContext context,
+    String label,
+    String value, {
+    bool emphasized = false,
+  }) {
     final glassTheme = context.glass;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -407,10 +405,7 @@ class _Banner extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                color: glassTheme.textPrimary,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: glassTheme.textPrimary, fontSize: 14),
             ),
           ),
         ],
@@ -427,7 +422,6 @@ class _ErrorState extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     final glassTheme = context.glass;
 
     return Center(
@@ -436,11 +430,7 @@ class _ErrorState extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              LucideIcons.serverCrash,
-              color: glassTheme.negative,
-              size: 48,
-            ),
+            Icon(LucideIcons.serverCrash, color: glassTheme.negative, size: 48),
             const SizedBox(height: 16),
             Text(
               message,

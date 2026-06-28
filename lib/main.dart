@@ -29,9 +29,7 @@ Future<void> main() async {
   // permitir que se lea de forma síncrona e inmediata en toda la app.
   runApp(
     ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(sharedPrefs),
-      ],
+      overrides: [sharedPreferencesProvider.overrideWithValue(sharedPrefs)],
       child: const InvestepApp(),
     ),
   );

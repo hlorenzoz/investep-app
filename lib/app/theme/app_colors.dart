@@ -29,14 +29,24 @@ abstract final class AppColors {
 
   // --- Colores para el Tema Claro (Blanco y Negro de Alto Contraste) ---
   static const Color lightBackgroundTop = Color(0xFFFFFFFF);
-  static const Color lightBackgroundBottom = Color(0xFFFFFFFF); // Blanco puro para todo el fondo
+  static const Color lightBackgroundBottom = Color(
+    0xFFFFFFFF,
+  ); // Blanco puro para todo el fondo
 
-  static const Color lightAccent = Color(0xFF000000); // Negro puro para acento y botones
-  static const Color lightAccentSoft = Color(0xFF334155); // Slate 700 para acentos secundarios
+  static const Color lightAccent = Color(
+    0xFF000000,
+  ); // Negro puro para acento y botones
+  static const Color lightAccentSoft = Color(
+    0xFF334155,
+  ); // Slate 700 para acentos secundarios
 
   // Superficie de cristal claro: gris slate ultra claro + borde gris suave para alto contraste.
-  static const Color lightGlassFill = Color(0xFFF1F5F9); // Slate 100 (gris claro)
-  static const Color lightGlassBorder = Color(0xFFE2E8F0); // Slate 200 (borde gris)
+  static const Color lightGlassFill = Color(
+    0xFFF1F5F9,
+  ); // Slate 100 (gris claro)
+  static const Color lightGlassBorder = Color(
+    0xFFE2E8F0,
+  ); // Slate 200 (borde gris)
 
   // Texto sobre fondo claro.
   static const Color lightTextPrimary = Color(0xFF000000); // Negro puro

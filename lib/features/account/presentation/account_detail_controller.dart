@@ -21,7 +21,9 @@ class AccountDetailState {
   }) {
     return AccountDetailState(
       grouping: grouping ?? this.grouping,
-      drillDownDate: clearDrillDown ? null : (drillDownDate ?? this.drillDownDate),
+      drillDownDate: clearDrillDown
+          ? null
+          : (drillDownDate ?? this.drillDownDate),
       activeTab: activeTab ?? this.activeTab,
     );
   }
@@ -38,10 +40,7 @@ class AccountDetailController extends Notifier<AccountDetailState> {
   }
 
   void setGrouping(CompoundInterestGrouping grouping) {
-    state = state.copyWith(
-      grouping: grouping,
-      clearDrillDown: true,
-    );
+    state = state.copyWith(grouping: grouping, clearDrillDown: true);
   }
 
   void setTab(int tab) {
@@ -92,12 +91,25 @@ class AccountDetailController extends Notifier<AccountDetailState> {
       }
     } else {
       filterStart = creationDate;
-      if (state.grouping == CompoundInterestGrouping.daily || state.grouping == CompoundInterestGrouping.weekly) {
-        filterEnd = DateTime(creationDate.year + 1, creationDate.month, creationDate.day);
+      if (state.grouping == CompoundInterestGrouping.daily ||
+          state.grouping == CompoundInterestGrouping.weekly) {
+        filterEnd = DateTime(
+          creationDate.year + 1,
+          creationDate.month,
+          creationDate.day,
+        );
       } else if (state.grouping == CompoundInterestGrouping.monthly) {
-        filterEnd = DateTime(creationDate.year + 3, creationDate.month, creationDate.day);
+        filterEnd = DateTime(
+          creationDate.year + 3,
+          creationDate.month,
+          creationDate.day,
+        );
       } else if (state.grouping == CompoundInterestGrouping.yearly) {
-        filterEnd = DateTime(creationDate.year + 5, creationDate.month, creationDate.day);
+        filterEnd = DateTime(
+          creationDate.year + 5,
+          creationDate.month,
+          creationDate.day,
+        );
       }
     }
 
@@ -115,5 +127,5 @@ class AccountDetailController extends Notifier<AccountDetailState> {
 
 final accountDetailControllerProvider = NotifierProvider.autoDispose
     .family<AccountDetailController, AccountDetailState, String>(
-  AccountDetailController.new,
-);
+      AccountDetailController.new,
+    );

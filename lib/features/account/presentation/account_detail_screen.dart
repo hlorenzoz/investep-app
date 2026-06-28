@@ -51,7 +51,9 @@ class AccountDetailScreen extends ConsumerWidget {
       );
     }
 
-    final controller = ref.read(accountDetailControllerProvider(allocationId).notifier);
+    final controller = ref.read(
+      accountDetailControllerProvider(allocationId).notifier,
+    );
     final state = ref.watch(accountDetailControllerProvider(allocationId));
     final projections = controller.getProjections(allocation);
 
@@ -73,136 +75,166 @@ class AccountDetailScreen extends ConsumerWidget {
           ],
         ),
         body: SafeArea(
-          child: Column(
-            children: [
-              // 1. Gráfico superior + Selector de período
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: GlassCard(
-                  padding: const EdgeInsets.all(12),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = constraints.maxWidth >= 600;
+              final targetWidth = isDesktop
+                  ? constraints.maxWidth * 0.8
+                  : double.infinity;
+              return Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: targetWidth),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Desempeño vs Plan',
-                            style: TextStyle(
-                              color: glassTheme.textPrimary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                      // 1. Gráfico superior + Selector de período
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: GlassCard(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Desempeño vs Plan',
+                                    style: TextStyle(
+                                      color: glassTheme.textPrimary,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  if (state.drillDownDate != null)
+                                    TextButton.icon(
+                                      onPressed: controller.clearDrillDown,
+                                      icon: const Icon(LucideIcons.x, size: 14),
+                                      label: const Text('Volver'),
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: Colors.amberAccent,
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              PlanChart(
+                                data: projections,
+                                currentBrokerAmount: currentBrokerAmount,
+                                currency: allocation.currency,
+                                onTapPoint: (index) {
+                                  if (index >= 0 &&
+                                      index < projections.length) {
+                                    final targetDate = projections[index].date;
+                                    controller.handleDrillDown(targetDate);
+                                  }
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              // Selector de período con diseño Glass
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: CompoundInterestGrouping.values.map((
+                                  group,
+                                ) {
+                                  final isSelected = state.grouping == group;
+                                  return MouseRegion(
+                                    cursor: SystemMouseCursors.click,
+                                    child: InkWell(
+                                      onTap: () =>
+                                          controller.setGrouping(group),
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: AnimatedContainer(
+                                        duration: const Duration(
+                                          milliseconds: 150,
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: isSelected
+                                              ? theme.colorScheme.primary
+                                                    .withValues(alpha: 0.12)
+                                              : Colors.transparent,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          border: Border.all(
+                                            color: isSelected
+                                                ? theme.colorScheme.primary
+                                                      .withValues(alpha: 0.3)
+                                                : Colors.transparent,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          group.displayName,
+                                          style: TextStyle(
+                                            color: isSelected
+                                                ? theme.colorScheme.primary
+                                                : glassTheme.textSecondary,
+                                            fontWeight: isSelected
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
                           ),
-                          if (state.drillDownDate != null)
-                            TextButton.icon(
-                              onPressed: controller.clearDrillDown,
-                              icon: const Icon(LucideIcons.x, size: 14),
-                              label: const Text('Volver'),
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.amberAccent,
-                                padding: EdgeInsets.zero,
-                              ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // 2. Tabs: Registros / Plan
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Row(
+                          children: [
+                            _tabButton(
+                              label: 'Registros',
+                              isSelected: state.activeTab == 0,
+                              onTap: () => controller.setTab(0),
+                              glassTheme: glassTheme,
                             ),
-                        ],
+                            const SizedBox(width: 8),
+                            _tabButton(
+                              label: 'Plan',
+                              isSelected: state.activeTab == 1,
+                              onTap: () => controller.setTab(1),
+                              glassTheme: glassTheme,
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      PlanChart(
-                        data: projections,
-                        currentBrokerAmount: currentBrokerAmount,
-                        currency: allocation.currency,
-                        onTapPoint: (index) {
-                          if (index >= 0 && index < projections.length) {
-                            final targetDate = projections[index].date;
-                            controller.handleDrillDown(targetDate);
-                          }
-                        },
-                      ),
+
                       const SizedBox(height: 12),
-                      // Selector de período con diseño Glass
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: CompoundInterestGrouping.values.map((group) {
-                          final isSelected = state.grouping == group;
-                          return MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: InkWell(
-                              onTap: () => controller.setGrouping(group),
-                              borderRadius: BorderRadius.circular(12),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 150),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
+
+                      // 3. Contenido de los Tabs
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: state.activeTab == 0
+                              ? _buildRegistrosTab(glassTheme)
+                              : _buildPlanTab(
+                                  projections,
+                                  allocation.currency,
+                                  glassTheme,
                                 ),
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? theme.colorScheme.primary.withValues(alpha: 0.12)
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? theme.colorScheme.primary.withValues(alpha: 0.3)
-                                        : Colors.transparent,
-                                  ),
-                                ),
-                                child: Text(
-                                  group.displayName,
-                                  style: TextStyle(
-                                    color: isSelected
-                                        ? theme.colorScheme.primary
-                                        : glassTheme.textSecondary,
-                                    fontWeight:
-                                        isSelected ? FontWeight.bold : FontWeight.normal,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // 2. Tabs: Registros / Plan
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  children: [
-                    _tabButton(
-                      label: 'Registros',
-                      isSelected: state.activeTab == 0,
-                      onTap: () => controller.setTab(0),
-                      glassTheme: glassTheme,
-                    ),
-                    const SizedBox(width: 8),
-                    _tabButton(
-                      label: 'Plan',
-                      isSelected: state.activeTab == 1,
-                      onTap: () => controller.setTab(1),
-                      glassTheme: glassTheme,
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // 3. Contenido de los Tabs
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: state.activeTab == 0
-                      ? _buildRegistrosTab(glassTheme)
-                      : _buildPlanTab(projections, allocation.currency, glassTheme),
-                ),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),
@@ -234,7 +266,9 @@ class AccountDetailScreen extends ConsumerWidget {
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? glassTheme.textPrimary : glassTheme.textSecondary,
+              color: isSelected
+                  ? glassTheme.textPrimary
+                  : glassTheme.textSecondary,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               fontSize: 14,
             ),
@@ -363,10 +397,15 @@ class AccountDetailScreen extends ConsumerWidget {
             // Cuerpo de la tabla
             Expanded(
               child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 itemCount: projections.length,
-                separatorBuilder: (context, index) =>
-                    Divider(height: 1, color: glassTheme.glassBorder.withValues(alpha: 0.5)),
+                separatorBuilder: (context, index) => Divider(
+                  height: 1,
+                  color: glassTheme.glassBorder.withValues(alpha: 0.5),
+                ),
                 itemBuilder: (context, index) {
                   final p = projections[index];
                   return Padding(

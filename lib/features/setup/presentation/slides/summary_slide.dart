@@ -121,7 +121,11 @@ class SummarySlide extends ConsumerWidget {
               ? () => controller.goTo(WizardSlide.capital)
               : null,
         ),
-        _row(context, l10n.summaryRemaining, formatMoney(remaining, data.currency)),
+        _row(
+          context,
+          l10n.summaryRemaining,
+          formatMoney(remaining, data.currency),
+        ),
         if (error != null) ...[
           const SizedBox(height: 16),
           Text(
@@ -133,7 +137,12 @@ class SummarySlide extends ConsumerWidget {
     );
   }
 
-  Widget _row(BuildContext context, String label, String value, {VoidCallback? onTap}) {
+  Widget _row(
+    BuildContext context,
+    String label,
+    String value, {
+    VoidCallback? onTap,
+  }) {
     final glassTheme = context.glass;
     final row = Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
@@ -142,10 +151,7 @@ class SummarySlide extends ConsumerWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
-              color: glassTheme.textSecondary,
-              fontSize: 13,
-            ),
+            style: TextStyle(color: glassTheme.textSecondary, fontSize: 13),
           ),
           Flexible(
             child: Row(

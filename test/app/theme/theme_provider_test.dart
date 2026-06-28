@@ -24,35 +24,52 @@ void main() {
       return container;
     }
 
-    test('debe inicializar en ThemeMode.system si no hay preferencia guardada', () {
-      final container = createContainer();
+    test(
+      'debe inicializar en ThemeMode.system si no hay preferencia guardada',
+      () {
+        final container = createContainer();
 
-      final currentMode = container.read(themeModeProvider);
-      expect(currentMode, ThemeMode.system);
-    });
+        final currentMode = container.read(themeModeProvider);
+        expect(currentMode, ThemeMode.system);
+      },
+    );
 
-    test('debe inicializar en el tema guardado en SharedPreferences si existe', () async {
-      await sharedPreferences.setString('theme_mode_preference', ThemeMode.dark.name);
-      
-      final container = createContainer();
+    test(
+      'debe inicializar en el tema guardado en SharedPreferences si existe',
+      () async {
+        await sharedPreferences.setString(
+          'theme_mode_preference',
+          ThemeMode.dark.name,
+        );
 
-      final currentMode = container.read(themeModeProvider);
-      expect(currentMode, ThemeMode.dark);
-    });
+        final container = createContainer();
 
-    test('debe actualizar el tema y persistir el valor en SharedPreferences al llamar a setThemeMode', () async {
-      final container = createContainer();
+        final currentMode = container.read(themeModeProvider);
+        expect(currentMode, ThemeMode.dark);
+      },
+    );
 
-      expect(container.read(themeModeProvider), ThemeMode.system);
+    test(
+      'debe actualizar el tema y persistir el valor en SharedPreferences al llamar a setThemeMode',
+      () async {
+        final container = createContainer();
 
-      // Cambiar a claro
-      await container.read(themeModeProvider.notifier).setThemeMode(ThemeMode.light);
+        expect(container.read(themeModeProvider), ThemeMode.system);
 
-      // Verificar que el estado cambie en memoria
-      expect(container.read(themeModeProvider), ThemeMode.light);
+        // Cambiar a claro
+        await container
+            .read(themeModeProvider.notifier)
+            .setThemeMode(ThemeMode.light);
 
-      // Verificar que se persistió en SharedPreferences
-      expect(sharedPreferences.getString('theme_mode_preference'), ThemeMode.light.name);
-    });
+        // Verificar que el estado cambie en memoria
+        expect(container.read(themeModeProvider), ThemeMode.light);
+
+        // Verificar que se persistió en SharedPreferences
+        expect(
+          sharedPreferences.getString('theme_mode_preference'),
+          ThemeMode.light.name,
+        );
+      },
+    );
   });
 }

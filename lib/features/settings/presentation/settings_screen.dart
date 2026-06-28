@@ -37,11 +37,7 @@ class SettingsScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(
-                LucideIcons.logOut,
-                size: 40,
-                color: glassTheme.negative,
-              ),
+              Icon(LucideIcons.logOut, size: 40, color: glassTheme.negative),
               const SizedBox(height: 16),
               Text(
                 '¿Cerrar sesión?',
@@ -202,7 +198,8 @@ class SettingsScreen extends ConsumerWidget {
                                     final val = double.tryParse(text);
                                     if (val == null || val <= 0) {
                                       setDialogState(() {
-                                        errorMessage = 'Ingresá un monto válido.';
+                                        errorMessage =
+                                            'Ingresá un monto válido.';
                                       });
                                       return;
                                     }
@@ -222,7 +219,9 @@ class SettingsScreen extends ConsumerWidget {
                                           .read(capitalRepositoryProvider)
                                           .putCapital(totalCapital: val);
                                       await ref
-                                          .read(capitalControllerProvider.notifier)
+                                          .read(
+                                            capitalControllerProvider.notifier,
+                                          )
                                           .refresh();
                                       if (dialogCtx.mounted) {
                                         Navigator.of(dialogCtx).pop();
@@ -230,7 +229,8 @@ class SettingsScreen extends ConsumerWidget {
                                     } catch (e) {
                                       setDialogState(() {
                                         submitting = false;
-                                        errorMessage = 'No se pudo actualizar el capital.';
+                                        errorMessage =
+                                            'No se pudo actualizar el capital.';
                                       });
                                     }
                                   },
@@ -303,7 +303,9 @@ class SettingsScreen extends ConsumerWidget {
                                 Icon(
                                   LucideIcons.sun,
                                   size: 20,
-                                  color: Theme.of(context).colorScheme.secondary,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.secondary,
                                 ),
                                 const SizedBox(width: 12),
                                 Text(
@@ -351,7 +353,9 @@ class SettingsScreen extends ConsumerWidget {
                                 Icon(
                                   LucideIcons.languages,
                                   size: 20,
-                                  color: Theme.of(context).colorScheme.secondary,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.secondary,
                                 ),
                                 const SizedBox(width: 12),
                                 Text(
@@ -426,7 +430,27 @@ class SettingsScreen extends ConsumerWidget {
                         OutlinedButton.icon(
                           onPressed: () => _showEditCapitalDialog(context, ref),
                           icon: const Icon(LucideIcons.pencil, size: 16),
-                          label: Text(l10n.save == 'Guardar' ? 'Editar' : 'Edit'),
+                          label: Text(
+                            l10n.save == 'Guardar' ? 'Editar' : 'Edit',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+
+                  // --- SECCIÓN ADMINISTRACIÓN ---
+                  const _SectionHeader(title: 'ADMINISTRACIÓN'),
+                  const SizedBox(height: 10),
+                  GlassCard(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () => context.push('/admin/academy-plans'),
+                          icon: const Icon(LucideIcons.award, size: 18),
+                          label: const Text('Gestionar Paquetes Academia'),
                         ),
                       ],
                     ),
@@ -449,7 +473,9 @@ class SettingsScreen extends ConsumerWidget {
                         const SizedBox(height: 12),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: glassTheme.negative.withOpacity(0.12),
+                            backgroundColor: glassTheme.negative.withOpacity(
+                              0.12,
+                            ),
                             foregroundColor: glassTheme.negative,
                           ),
                           onPressed: () => _showSignOutDialog(context, ref),

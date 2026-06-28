@@ -5,7 +5,10 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../core/config/app_config.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/language_selector.dart';
+import '../../../shared/widgets/theme_selector.dart';
 import 'last_email_provider.dart';
 import 'login_controller.dart';
 
@@ -73,21 +76,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Text('Investep Auth'),
             ],
           ),
+          actions: const [
+            LanguageSelector(),
+            ThemeSelector(),
+            SizedBox(width: 16),
+          ],
         ),
         body: SafeArea(
           child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (!isValidConfig) ...[
-                    _buildConfigWarningCard(),
-                    const SizedBox(height: 20),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (!isValidConfig) ...[
+                      _buildConfigWarningCard(),
+                      const SizedBox(height: 20),
+                    ],
+                    _buildLoginContent(loginState, isValidConfig),
                   ],
-                  _buildLoginContent(loginState, isValidConfig),
-                ],
+                ),
               ),
             ),
           ),
@@ -176,6 +190,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildLoginContent(LoginState state, bool isValidConfig) {
     final glassTheme = context.glass;
+    final l10n = AppLocalizations.of(context);
     switch (state) {
       case LoginLoading():
         return GlassCard(
@@ -184,7 +199,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const CircularProgressIndicator(),
               const SizedBox(height: 20),
               Text(
-                'Autenticando y validando...',
+                l10n.loginAuthenticating,
                 style: TextStyle(color: glassTheme.textSecondary),
               ),
             ],
@@ -205,6 +220,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildErrorCard(String message) {
     final glassTheme = context.glass;
+    final l10n = AppLocalizations.of(context);
     return GlassCard(
       borderRadius: 16,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -218,7 +234,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Error de Autenticación',
+                  l10n.loginAuthError,
                   style: TextStyle(
                     color: glassTheme.negative,
                     fontWeight: FontWeight.bold,
@@ -244,6 +260,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget _buildLoginFormCard(bool isEnabled) {
     final glassTheme = context.glass;
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return GlassCard(
       borderRadius: 20,
       child: Form(
@@ -252,7 +269,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Iniciar Sesión',
+              l10n.loginTitle,
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -261,7 +278,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Ingresá tus credenciales para validar el acceso.',
+              l10n.loginSubtitle,
               style: TextStyle(color: glassTheme.textSecondary, fontSize: 13),
             ),
             const SizedBox(height: 24),
@@ -272,9 +289,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               textInputAction: TextInputAction.next,
               style: TextStyle(color: glassTheme.textPrimary),
               decoration: InputDecoration(
-                labelText: 'Email',
+                labelText: l10n.loginEmailLabel,
                 labelStyle: TextStyle(color: glassTheme.textSecondary),
-                prefixIcon: Icon(LucideIcons.mail, size: 20, color: glassTheme.textSecondary),
+                prefixIcon: Icon(
+                  LucideIcons.mail,
+                  size: 20,
+                  color: glassTheme.textSecondary,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -307,9 +328,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onFieldSubmitted: (_) => isEnabled ? _submit() : null,
               style: TextStyle(color: glassTheme.textPrimary),
               decoration: InputDecoration(
-                labelText: 'Contraseña',
+                labelText: l10n.loginPasswordLabel,
                 labelStyle: TextStyle(color: glassTheme.textSecondary),
-                prefixIcon: Icon(LucideIcons.lock, size: 20, color: glassTheme.textSecondary),
+                prefixIcon: Icon(
+                  LucideIcons.lock,
+                  size: 20,
+                  color: glassTheme.textSecondary,
+                ),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword ? LucideIcons.eye : LucideIcons.eyeOff,
@@ -356,15 +381,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
               onPressed: isEnabled ? _submit : null,
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Ingresar',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    l10n.loginSubmitButton,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(LucideIcons.arrowRight, size: 18),
+                  const SizedBox(width: 8),
+                  const Icon(LucideIcons.arrowRight, size: 18),
                 ],
               ),
             ),

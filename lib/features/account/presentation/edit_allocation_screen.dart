@@ -157,10 +157,7 @@ class _EditForm extends ConsumerWidget {
             const SizedBox(width: 8),
             Text(
               typeLabel,
-              style: TextStyle(
-                color: glassTheme.textSecondary,
-                fontSize: 13,
-              ),
+              style: TextStyle(color: glassTheme.textSecondary, fontSize: 13),
             ),
           ],
         ),
@@ -218,7 +215,9 @@ class _EditForm extends ConsumerWidget {
             foregroundColor: glassTheme.negative,
             side: BorderSide(color: glassTheme.negative),
           ),
-          onPressed: submitting ? null : () => _showDeleteDialog(context, notifier),
+          onPressed: submitting
+              ? null
+              : () => _showDeleteDialog(context, notifier),
           icon: const Icon(LucideIcons.trash2, size: 18),
           label: Text(l10n.deleteAccount),
         ),
@@ -246,11 +245,7 @@ void _showDeleteDialog(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Icon(
-              LucideIcons.trash2,
-              size: 40,
-              color: glassTheme.negative,
-            ),
+            Icon(LucideIcons.trash2, size: 40, color: glassTheme.negative),
             const SizedBox(height: 16),
             Text(
               l10n.deleteAccountConfirmTitle,

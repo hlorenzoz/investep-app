@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../core/auth/auth_gate.dart';
 import '../core/auth/gate_refresh_listenable.dart';
 import '../features/academy/presentation/academy_screen.dart';
+import '../features/academy/presentation/admin_academy_plans_screen.dart';
 import '../features/account/presentation/account_detail_screen.dart';
 import '../features/account/presentation/edit_allocation_screen.dart';
 import '../features/auth/presentation/change_password_screen.dart';
@@ -32,11 +33,7 @@ String? gateRedirect(AuthGateState gate, String location) {
     GateNeedsPasswordReset() =>
       location == '/change-password' ? null : '/change-password',
     GateAuthenticated() =>
-      (location == '/login' ||
-              location == '/splash' ||
-              location == '/change-password')
-          ? '/'
-          : null,
+      (location == '/login' || location == '/splash') ? '/' : null,
   };
 }
 
@@ -85,6 +82,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'account_edit',
         builder: (context, state) =>
             EditAllocationScreen(allocationId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/admin/academy-plans',
+        name: 'admin_academy_plans',
+        builder: (context, state) => const AdminAcademyPlansScreen(),
       ),
       // Menú de navegación global responsivo con persistencia de estado por rama
       StatefulShellRoute.indexedStack(

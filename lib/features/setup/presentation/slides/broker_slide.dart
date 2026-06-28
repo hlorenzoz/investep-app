@@ -129,8 +129,8 @@ class _BrokerTile extends StatelessWidget {
     return Card(
       color: selected
           ? (isDark
-              ? AppColors.accent.withValues(alpha: 0.25)
-              : Colors.black.withValues(alpha: 0.08))
+                ? AppColors.accent.withValues(alpha: 0.25)
+                : Colors.black.withValues(alpha: 0.08))
           : glassTheme.glassFill,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -183,11 +183,7 @@ class _BrokersError extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
         children: [
-          Icon(
-            LucideIcons.serverCrash,
-            color: glassTheme.negative,
-            size: 48,
-          ),
+          Icon(LucideIcons.serverCrash, color: glassTheme.negative, size: 48),
           const SizedBox(height: 12),
           Text(
             message,

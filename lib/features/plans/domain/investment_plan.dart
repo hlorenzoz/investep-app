@@ -24,10 +24,10 @@ class InvestmentPlan {
   }
 
   factory InvestmentPlan.fromJson(Map<String, dynamic> json) => InvestmentPlan(
-        id: (json['id'] as num).toInt(),
-        accountType: AccountType.fromApi(json['accountType'] as String),
-        targetMonthlyPct: json['targetMonthlyPct'] as num,
-        targetDailyPct: json['targetDailyPct'] as num?,
-        label: json['label'] as String?,
-      );
+    id: (json['id'] as num).toInt(),
+    accountType: AccountType.fromApi(json['accountType'] as String),
+    targetMonthlyPct: json['targetMonthlyPct'] as num,
+    targetDailyPct: json['targetDailyPct'] as num?,
+    label: json['label'] as String?,
+  );
 }

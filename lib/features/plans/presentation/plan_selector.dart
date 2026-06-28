@@ -52,8 +52,8 @@ class PlanSelector extends ConsumerWidget {
               Card(
                 color: selectedPlanId == plan.id
                     ? (isDark
-                        ? AppColors.accent.withValues(alpha: 0.25)
-                        : Colors.black.withValues(alpha: 0.08))
+                          ? AppColors.accent.withValues(alpha: 0.25)
+                          : Colors.black.withValues(alpha: 0.08))
                     : glassTheme.glassFill,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -65,7 +65,9 @@ class PlanSelector extends ConsumerWidget {
                     plan.label ?? 'Plan ${plan.id}',
                     style: TextStyle(
                       color: glassTheme.textPrimary,
-                      fontWeight: selectedPlanId == plan.id ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: selectedPlanId == plan.id
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   ),
                   subtitle: Column(
@@ -74,12 +76,18 @@ class PlanSelector extends ConsumerWidget {
                       const SizedBox(height: 2),
                       Text(
                         '${l10n.planTargetMonthly}: ${plan.targetMonthlyPct}%',
-                        style: TextStyle(color: glassTheme.textSecondary, fontSize: 13),
+                        style: TextStyle(
+                          color: glassTheme.textSecondary,
+                          fontSize: 13,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         '${l10n.planTargetDaily}: ${plan.effectiveDailyPct}%',
-                        style: TextStyle(color: glassTheme.textSecondary, fontSize: 13),
+                        style: TextStyle(
+                          color: glassTheme.textSecondary,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ),

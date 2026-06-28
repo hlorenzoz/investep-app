@@ -13,7 +13,11 @@ import '../../app/theme/theme_provider.dart';
 class ThemeSelector extends ConsumerWidget {
   const ThemeSelector({super.key});
 
-  void _handleThemeCycle(BuildContext context, WidgetRef ref, ThemeMode currentMode) {
+  void _handleThemeCycle(
+    BuildContext context,
+    WidgetRef ref,
+    ThemeMode currentMode,
+  ) {
     final nextMode = switch (currentMode) {
       ThemeMode.system => ThemeMode.light,
       ThemeMode.light => ThemeMode.dark,
@@ -33,7 +37,8 @@ class ThemeSelector extends ConsumerWidget {
 
     // Calculamos de forma predictiva los colores correctos para el tema entrante.
     // Esto asegura el contraste inmediato antes de que el árbol termine el build.
-    final isNextDark = nextMode == ThemeMode.dark ||
+    final isNextDark =
+        nextMode == ThemeMode.dark ||
         (nextMode == ThemeMode.system &&
             MediaQuery.platformBrightnessOf(context) == Brightness.dark);
 
@@ -82,10 +87,7 @@ class ThemeSelector extends ConsumerWidget {
         duration: const Duration(milliseconds: 200),
         transitionBuilder: (child, animation) => ScaleTransition(
           scale: animation,
-          child: FadeTransition(
-            opacity: animation,
-            child: child,
-          ),
+          child: FadeTransition(opacity: animation, child: child),
         ),
         child: Icon(
           icon,

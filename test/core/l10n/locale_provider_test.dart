@@ -34,37 +34,45 @@ void main() {
 
       final currentLocale = container.read(localeProvider);
       expect(currentLocale, const Locale('es'));
-      
+
       final currentCode = container.read(localeCodeProvider);
       expect(currentCode, 'es');
     });
 
-    test('debe inicializar en el idioma guardado en SharedPreferences si existe', () async {
-      await sharedPreferences.setString('locale_preference', 'en');
-      
-      final container = createContainer();
+    test(
+      'debe inicializar en el idioma guardado en SharedPreferences si existe',
+      () async {
+        await sharedPreferences.setString('locale_preference', 'en');
 
-      final currentLocale = container.read(localeProvider);
-      expect(currentLocale, const Locale('en'));
-      
-      final currentCode = container.read(localeCodeProvider);
-      expect(currentCode, 'en');
-    });
+        final container = createContainer();
 
-    test('debe actualizar el idioma y persistir el valor en SharedPreferences al llamar a setLocale', () async {
-      final container = createContainer();
+        final currentLocale = container.read(localeProvider);
+        expect(currentLocale, const Locale('en'));
 
-      expect(container.read(localeProvider), const Locale('es'));
+        final currentCode = container.read(localeCodeProvider);
+        expect(currentCode, 'en');
+      },
+    );
 
-      // Cambiar a inglés
-      await container.read(localeProvider.notifier).setLocale(const Locale('en'));
+    test(
+      'debe actualizar el idioma y persistir el valor en SharedPreferences al llamar a setLocale',
+      () async {
+        final container = createContainer();
 
-      // Verificar que el estado cambie en memoria
-      expect(container.read(localeProvider), const Locale('en'));
-      expect(container.read(localeCodeProvider), 'en');
+        expect(container.read(localeProvider), const Locale('es'));
 
-      // Verificar que se persistió en SharedPreferences
-      expect(sharedPreferences.getString('locale_preference'), 'en');
-    });
+        // Cambiar a inglés
+        await container
+            .read(localeProvider.notifier)
+            .setLocale(const Locale('en'));
+
+        // Verificar que el estado cambie en memoria
+        expect(container.read(localeProvider), const Locale('en'));
+        expect(container.read(localeCodeProvider), 'en');
+
+        // Verificar que se persistió en SharedPreferences
+        expect(sharedPreferences.getString('locale_preference'), 'en');
+      },
+    );
   });
 }

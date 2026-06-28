@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:investep_app/features/auth/presentation/last_email_provider.dart';
 import 'package:investep_app/features/auth/presentation/login_screen.dart';
 
+import 'package:investep_app/l10n/gen/app_localizations.dart';
+
 /// Notifier de prueba que arranca con un email ya recordado.
 class _SeededLastEmail extends LastEmail {
   _SeededLastEmail(this.seed);
@@ -24,7 +26,11 @@ void main() {
               () => _SeededLastEmail('user@example.com'),
             ),
           ],
-          child: const MaterialApp(home: LoginScreen()),
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: LoginScreen(),
+          ),
         ),
       );
 
@@ -34,7 +40,13 @@ void main() {
 
   testWidgets('LoginScreen sin email recordado → campo vacío', (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: LoginScreen())),
+      const ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: LoginScreen(),
+        ),
+      ),
     );
 
     expect(find.text('user@example.com'), findsNothing);
