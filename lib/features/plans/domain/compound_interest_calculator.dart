@@ -133,7 +133,7 @@ class CompoundInterestCalculator {
     final totalMonths = years * 12;
     final rate = monthlyRatePct / 100;
 
-    double currentBalance = baseAmount;
+    double currentBalance = _round(baseAmount);
 
     for (int m = 0; m < totalMonths; m++) {
       final date = DateTime(creationDate.year, creationDate.month + m, creationDate.day);
@@ -141,15 +141,15 @@ class CompoundInterestCalculator {
       final label = '$monthName ${date.year.toString().substring(2)}';
 
       final startBal = currentBalance;
-      final yieldAmt = startBal * rate;
-      final endBal = startBal + yieldAmt;
+      final yieldAmt = _round(startBal * rate);
+      final endBal = _round(startBal + yieldAmt);
 
       results.add(CompoundInterestPeriodResult(
         periodIndex: m + 1,
         label: label,
-        startBalance: _round(startBal),
-        yieldAmount: _round(yieldAmt),
-        endBalance: _round(endBal),
+        startBalance: startBal,
+        yieldAmount: yieldAmt,
+        endBalance: endBal,
         date: date,
       ));
 
@@ -168,21 +168,21 @@ class CompoundInterestCalculator {
     final totalWeeks = years * 12 * 4;
     final weeklyRate = (monthlyRatePct / 4) / 100;
 
-    double currentBalance = baseAmount;
+    double currentBalance = _round(baseAmount);
 
     for (int w = 0; w < totalWeeks; w++) {
       final date = creationDate.add(Duration(days: w * 7));
 
       final startBal = currentBalance;
-      final yieldAmt = startBal * weeklyRate;
-      final endBal = startBal + yieldAmt;
+      final yieldAmt = _round(startBal * weeklyRate);
+      final endBal = _round(startBal + yieldAmt);
 
       results.add(CompoundInterestPeriodResult(
         periodIndex: w + 1,
         label: 'Semana ${w + 1}',
-        startBalance: _round(startBal),
-        yieldAmount: _round(yieldAmt),
-        endBalance: _round(endBal),
+        startBalance: startBal,
+        yieldAmount: yieldAmt,
+        endBalance: endBal,
         date: date,
       ));
 
@@ -201,22 +201,22 @@ class CompoundInterestCalculator {
     final totalDays = years * 12 * 20; // 20 días operativos por mes
     final dailyRate = (monthlyRatePct / 20) / 100;
 
-    double currentBalance = baseAmount;
+    double currentBalance = _round(baseAmount);
 
     for (int d = 0; d < totalDays; d++) {
       final date = creationDate.add(Duration(days: d));
       final monthName = _monthAbbr(date.month);
 
       final startBal = currentBalance;
-      final yieldAmt = startBal * dailyRate;
-      final endBal = startBal + yieldAmt;
+      final yieldAmt = _round(startBal * dailyRate);
+      final endBal = _round(startBal + yieldAmt);
 
       results.add(CompoundInterestPeriodResult(
         periodIndex: d + 1,
         label: '${date.day} $monthName',
-        startBalance: _round(startBal),
-        yieldAmount: _round(yieldAmt),
-        endBalance: _round(endBal),
+        startBalance: startBal,
+        yieldAmount: yieldAmt,
+        endBalance: endBal,
         date: date,
       ));
 
@@ -243,15 +243,15 @@ class CompoundInterestCalculator {
       final yearMonths = monthlySeries.sublist(y * 12, (y + 1) * 12);
       final startBal = yearMonths.first.startBalance;
       final endBal = yearMonths.last.endBalance;
-      final yieldAmt = endBal - startBal;
+      final yieldAmt = _round(endBal - startBal);
       final yearLabel = '${creationDate.year + y}';
 
       results.add(CompoundInterestPeriodResult(
         periodIndex: y + 1,
         label: yearLabel,
-        startBalance: _round(startBal),
-        yieldAmount: _round(yieldAmt),
-        endBalance: _round(endBal),
+        startBalance: startBal,
+        yieldAmount: yieldAmt,
+        endBalance: endBal,
         date: yearMonths.first.date,
       ));
     }
