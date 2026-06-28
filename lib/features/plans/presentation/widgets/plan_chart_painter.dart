@@ -162,7 +162,7 @@ class _PlanChartPainter extends CustomPainter {
       textPainter.text = TextSpan(
         text: '\$${val.toStringAsFixed(0)}',
         style: TextStyle(
-          color: glassTheme.textSecondary.withValues(alpha: 0.65),
+          color: glassTheme.textSecondary.withValues(alpha: 0.85),
           fontSize: 9,
           fontWeight: FontWeight.w500,
         ),
@@ -299,7 +299,7 @@ class _PlanChartPainter extends CustomPainter {
         textPainter.text = TextSpan(
           text: d.label,
           style: TextStyle(
-            color: glassTheme.textSecondary.withValues(alpha: 0.65),
+            color: glassTheme.textSecondary.withValues(alpha: 0.85),
             fontSize: 9,
             fontWeight: FontWeight.w500,
           ),

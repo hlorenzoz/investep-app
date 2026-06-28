@@ -124,34 +124,38 @@ class AccountDetailScreen extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: CompoundInterestGrouping.values.map((group) {
                           final isSelected = state.grouping == group;
-                          return InkWell(
-                            onTap: () => controller.setGrouping(group),
-                            borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? theme.colorScheme.primary.withValues(alpha: 0.12)
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: isSelected
-                                      ? theme.colorScheme.primary.withValues(alpha: 0.3)
-                                      : Colors.transparent,
+                          return MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: InkWell(
+                              onTap: () => controller.setGrouping(group),
+                              borderRadius: BorderRadius.circular(12),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 150),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
                                 ),
-                              ),
-                              child: Text(
-                                group.displayName,
-                                style: TextStyle(
+                                decoration: BoxDecoration(
                                   color: isSelected
-                                      ? theme.colorScheme.primary
-                                      : glassTheme.textSecondary,
-                                  fontWeight:
-                                      isSelected ? FontWeight.bold : FontWeight.normal,
-                                  fontSize: 12,
+                                      ? theme.colorScheme.primary.withValues(alpha: 0.12)
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                                        : Colors.transparent,
+                                  ),
+                                ),
+                                child: Text(
+                                  group.displayName,
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? theme.colorScheme.primary
+                                        : glassTheme.textSecondary,
+                                    fontWeight:
+                                        isSelected ? FontWeight.bold : FontWeight.normal,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
                             ),
