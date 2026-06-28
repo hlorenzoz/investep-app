@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme/app_theme.dart';
 import '../../domain/compound_interest_calculator.dart';
 
-class PlanChart extends StatelessWidget {
+class PlanChart extends StatefulWidget {
   final List<CompoundInterestPeriodResult> data;
   final double currentBrokerAmount;
   final String currency;
@@ -18,8 +18,28 @@ class PlanChart extends StatelessWidget {
   });
 
   @override
+  State<PlanChart> createState() => _PlanChartState();
+}
+
+class _PlanChartState extends State<PlanChart> {
+  int? _selectedIndex;
+
+  void _updateSelectedIndex(Offset localPos, double width, double paddingX) {
+    if (widget.data.length < 2) return;
+    final double chartWidth = width - (paddingX * 2);
+    final double relativeX = localPos.dx - paddingX;
+    final double step = chartWidth / (widget.data.length - 1);
+    final int index = (relativeX / step).round().clamp(0, widget.data.length - 1);
+    if (_selectedIndex != index) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (data.isEmpty) {
+    if (widget.data.isEmpty) {
       return const SizedBox(
         height: 220,
         child: Center(
@@ -40,30 +60,33 @@ class PlanChart extends StatelessWidget {
         const double paddingX = 40.0;
         const double paddingY = 20.0;
 
-        final double chartWidth = width - (paddingX * 2);
-
-        return GestureDetector(
-          onTapDown: (details) {
-            if (onTapPoint == null || data.length < 2) return;
-            final RenderBox box = context.findRenderObject() as RenderBox;
-            final localPos = box.globalToLocal(details.globalPosition);
-
-            // Calculamos el índice más cercano al tap en base al eje X
-            final double relativeX = localPos.dx - paddingX;
-            final double step = chartWidth / (data.length - 1);
-            final int index = (relativeX / step).round().clamp(0, data.length - 1);
-
-            onTapPoint!(index);
+        return MouseRegion(
+          onHover: (event) => _updateSelectedIndex(event.localPosition, width, paddingX),
+          onExit: (_) {
+            if (_selectedIndex != null) {
+              setState(() => _selectedIndex = null);
+            }
           },
-          child: CustomPaint(
-            size: Size(width, height),
-            painter: _PlanChartPainter(
-              data: data,
-              currentBrokerAmount: currentBrokerAmount,
-              currency: currency,
-              paddingX: paddingX,
-              paddingY: paddingY,
-              glassTheme: glassTheme,
+          child: GestureDetector(
+            onTapDown: (details) {
+              _updateSelectedIndex(details.localPosition, width, paddingX);
+              if (_selectedIndex != null && widget.onTapPoint != null) {
+                widget.onTapPoint!(_selectedIndex!);
+              }
+            },
+            onPanUpdate: (details) => _updateSelectedIndex(details.localPosition, width, paddingX),
+            onPanEnd: (_) {},
+            child: CustomPaint(
+              size: Size(width, height),
+              painter: _PlanChartPainter(
+                data: widget.data,
+                currentBrokerAmount: widget.currentBrokerAmount,
+                currency: widget.currency,
+                paddingX: paddingX,
+                paddingY: paddingY,
+                glassTheme: glassTheme,
+                selectedIndex: _selectedIndex,
+              ),
             ),
           ),
         );
@@ -79,6 +102,7 @@ class _PlanChartPainter extends CustomPainter {
   final double paddingX;
   final double paddingY;
   final GlassThemeExtension glassTheme;
+  final int? selectedIndex;
 
   _PlanChartPainter({
     required this.data,
@@ -87,6 +111,7 @@ class _PlanChartPainter extends CustomPainter {
     required this.paddingX,
     required this.paddingY,
     required this.glassTheme,
+    this.selectedIndex,
   });
 
   @override
@@ -284,12 +309,114 @@ class _PlanChartPainter extends CustomPainter {
         textPainter.paint(canvas, Offset(labelXPos, height - paddingY + 6));
       }
     }
+
+    // 8. Dibujar indicador y tooltip para el punto seleccionado (hover / touch)
+    if (selectedIndex != null && selectedIndex! >= 0 && selectedIndex! < points.length) {
+      final idx = selectedIndex!;
+      final selectedPoint = points[idx];
+      final item = data[idx];
+
+      // Línea vertical tenue indicadora
+      final guideLinePaint = Paint()
+        ..color = glassTheme.textPrimary.withValues(alpha: 0.15)
+        ..strokeWidth = 1.0;
+      canvas.drawLine(
+        Offset(selectedPoint.dx, paddingY),
+        Offset(selectedPoint.dx, height - paddingY),
+        guideLinePaint,
+      );
+
+      // Círculo concéntrico en el punto verde
+      final outerDotPaint = Paint()
+        ..color = glassTheme.positive.withValues(alpha: 0.35)
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(selectedPoint, 8, outerDotPaint);
+
+      final innerDotPaint = Paint()
+        ..color = glassTheme.positive
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(selectedPoint, 4, innerDotPaint);
+
+      final whiteDotPaint = Paint()
+        ..color = Colors.white
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(selectedPoint, 2, whiteDotPaint);
+
+      // Textos del Tooltip
+      final dateSpan = TextSpan(
+        text: item.label,
+        style: TextStyle(
+          color: glassTheme.textSecondary,
+          fontSize: 10,
+          fontWeight: FontWeight.w500,
+        ),
+      );
+      final totalSpan = TextSpan(
+        text: 'Total: \$${item.endBalance.toStringAsFixed(2)}',
+        style: TextStyle(
+          color: glassTheme.textPrimary,
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+      final yieldSign = item.yieldAmount >= 0 ? '+' : '';
+      final yieldSpan = TextSpan(
+        text: 'Plan: $yieldSign\$${item.yieldAmount.toStringAsFixed(2)}',
+        style: TextStyle(
+          color: glassTheme.positive,
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+        ),
+      );
+
+      final tpDate = TextPainter(text: dateSpan, textDirection: TextDirection.ltr)..layout();
+      final tpTotal = TextPainter(text: totalSpan, textDirection: TextDirection.ltr)..layout();
+      final tpYield = TextPainter(text: yieldSpan, textDirection: TextDirection.ltr)..layout();
+
+      final double tooltipWidth = max(tpDate.width, max(tpTotal.width, tpYield.width)) + 16;
+      final double tooltipHeight = tpDate.height + tpTotal.height + tpYield.height + 12;
+
+      // Posicionamiento inteligente del tooltip (encima o debajo, sin salirse de bordes)
+      double ttX = selectedPoint.dx - (tooltipWidth / 2);
+      ttX = ttX.clamp(10.0, width - tooltipWidth - 10.0);
+
+      double ttY = selectedPoint.dy - tooltipHeight - 10;
+      if (ttY < 10) {
+        ttY = selectedPoint.dy + 10;
+      }
+
+      final ttRect = Rect.fromLTWH(ttX, ttY, tooltipWidth, tooltipHeight);
+      final ttRRect = RRect.fromRectAndRadius(ttRect, const Radius.circular(8));
+
+      final bool isDarkTheme = glassTheme.textPrimary.computeLuminance() > 0.5;
+      final Color ttBgColor = isDarkTheme ? const Color(0xEE1E293B) : const Color(0xF0F8FAFC);
+
+      final ttBgPaint = Paint()
+        ..color = ttBgColor
+        ..style = PaintingStyle.fill;
+
+      final ttBorderPaint = Paint()
+        ..color = glassTheme.glassBorder
+        ..strokeWidth = 1.0
+        ..style = PaintingStyle.stroke;
+
+      canvas.drawRRect(ttRRect, ttBgPaint);
+      canvas.drawRRect(ttRRect, ttBorderPaint);
+
+      double currY = ttY + 6;
+      tpDate.paint(canvas, Offset(ttX + 8, currY));
+      currY += tpDate.height + 2;
+      tpTotal.paint(canvas, Offset(ttX + 8, currY));
+      currY += tpTotal.height + 2;
+      tpYield.paint(canvas, Offset(ttX + 8, currY));
+    }
   }
 
   @override
   bool shouldRepaint(covariant _PlanChartPainter oldDelegate) {
     return oldDelegate.data != data ||
         oldDelegate.currentBrokerAmount != currentBrokerAmount ||
-        oldDelegate.currency != currency;
+        oldDelegate.currency != currency ||
+        oldDelegate.selectedIndex != selectedIndex;
   }
 }
