@@ -126,3 +126,47 @@ class AcademyPlanAdmin {
     );
   }
 }
+
+class AcademyFeatureTranslation {
+  final String locale;
+  final String label;
+
+  const AcademyFeatureTranslation({required this.locale, required this.label});
+
+  factory AcademyFeatureTranslation.fromJson(Map<String, dynamic> json) {
+    return AcademyFeatureTranslation(
+      locale: json['locale'] as String,
+      label: json['label'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {'locale': locale, 'label': label};
+}
+
+class AcademyFeatureAdmin {
+  final int id;
+  final String slug;
+  final int sortOrder;
+  final List<AcademyFeatureTranslation> translations;
+
+  const AcademyFeatureAdmin({
+    required this.id,
+    required this.slug,
+    required this.sortOrder,
+    required this.translations,
+  });
+
+  factory AcademyFeatureAdmin.fromJson(Map<String, dynamic> json) {
+    return AcademyFeatureAdmin(
+      id: json['id'] as int,
+      slug: json['slug'] as String,
+      sortOrder: json['sortOrder'] as int,
+      translations: (json['translations'] as List<dynamic>)
+          .map(
+            (e) =>
+                AcademyFeatureTranslation.fromJson(e as Map<String, dynamic>),
+          )
+          .toList(),
+    );
+  }
+}

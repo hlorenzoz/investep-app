@@ -52,4 +52,32 @@ void main() {
       expect(adminPlan.featureIds, equals([1, 2, 3]));
     });
   });
+
+  group('AcademyFeatureAdmin model tests', () {
+    test(
+      'debe deserializar un JSON de característica administrativa correctamente',
+      () {
+        final json = {
+          'id': 5,
+          'slug': 'live_sessions',
+          'sortOrder': 3,
+          'translations': [
+            {'locale': 'es', 'label': 'Sesiones en vivo'},
+            {'locale': 'en', 'label': 'Live sessions'},
+          ],
+        };
+
+        final feature = AcademyFeatureAdmin.fromJson(json);
+
+        expect(feature.id, 5);
+        expect(feature.slug, 'live_sessions');
+        expect(feature.sortOrder, 3);
+        expect(feature.translations.length, 2);
+        expect(feature.translations.first.locale, 'es');
+        expect(feature.translations.first.label, 'Sesiones en vivo');
+        expect(feature.translations.last.locale, 'en');
+        expect(feature.translations.last.label, 'Live sessions');
+      },
+    );
+  });
 }

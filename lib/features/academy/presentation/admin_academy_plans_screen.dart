@@ -79,7 +79,18 @@ class AdminAcademyPlansScreen extends ConsumerWidget {
             ),
           ),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _showCreateDialog(context, ref),
+          child: const Icon(LucideIcons.plus),
+        ),
       ),
+    );
+  }
+
+  void _showCreateDialog(BuildContext context, WidgetRef ref) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => const _CreatePlanDialog(),
     );
   }
 }
@@ -93,6 +104,44 @@ class _AdminPlanCard extends ConsumerWidget {
     showDialog<void>(
       context: context,
       builder: (context) => _EditPlanDialog(plan: plan),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, WidgetRef ref) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Eliminar Plan'),
+        content: Text(
+          '¿Estás seguro de que querés eliminar el plan "${plan.slug.toUpperCase()}"? Esta acción no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.negative,
+            ),
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              try {
+                await ref
+                    .read(adminAcademyPlansProvider.notifier)
+                    .deletePlan(plan.id);
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error al eliminar: $e')),
+                  );
+                }
+              }
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -187,9 +236,21 @@ class _AdminPlanCard extends ConsumerWidget {
                 ],
               ),
             ),
-            IconButton(
-              icon: const Icon(LucideIcons.edit3, color: AppColors.accent),
-              onPressed: () => _showEditDialog(context, ref),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(LucideIcons.edit3, color: AppColors.accent),
+                  onPressed: () => _showEditDialog(context, ref),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    LucideIcons.trash2,
+                    color: AppColors.negative,
+                  ),
+                  onPressed: () => _confirmDelete(context, ref),
+                ),
+              ],
             ),
           ],
         ),
@@ -215,6 +276,7 @@ class _EditPlanDialogState extends ConsumerState<_EditPlanDialog> {
   late TextEditingController _subtitleCtrl;
   late bool _isActive;
   late int _sortOrder;
+  late List<int> _selectedFeatureIds;
   bool _isSaving = false;
 
   @override
@@ -237,6 +299,7 @@ class _EditPlanDialogState extends ConsumerState<_EditPlanDialog> {
     _subtitleCtrl = TextEditingController(text: esTrans.subtitle ?? '');
     _isActive = widget.plan.isActive;
     _sortOrder = widget.plan.sortOrder;
+    _selectedFeatureIds = List<int>.from(widget.plan.featureIds);
   }
 
   @override
@@ -271,6 +334,7 @@ class _EditPlanDialogState extends ConsumerState<_EditPlanDialog> {
               : null,
         },
       ],
+      'featureIds': _selectedFeatureIds,
     };
 
     try {
@@ -291,6 +355,8 @@ class _EditPlanDialogState extends ConsumerState<_EditPlanDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final featuresAsync = ref.watch(adminAcademyFeaturesProvider);
+
     return AlertDialog(
       title: Text('Editar ${widget.plan.slug.toUpperCase()}'),
       content: SingleChildScrollView(
@@ -298,6 +364,7 @@ class _EditPlanDialogState extends ConsumerState<_EditPlanDialog> {
           key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
                 controller: _nameCtrl,
@@ -330,10 +397,329 @@ class _EditPlanDialogState extends ConsumerState<_EditPlanDialog> {
                 ),
               ),
               const SizedBox(height: 12),
-              SwitchListTile(
-                title: const Text('Activo'),
-                value: _isActive,
-                onChanged: (v) => setState(() => _isActive = v),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: '$_sortOrder',
+                      decoration: const InputDecoration(labelText: 'Orden'),
+                      keyboardType: TextInputType.number,
+                      onChanged: (v) {
+                        final parsed = int.tryParse(v);
+                        if (parsed != null) _sortOrder = parsed;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text(
+                        'Activo',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      value: _isActive,
+                      onChanged: (v) => setState(() => _isActive = v),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Características Asociadas',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+              const SizedBox(height: 8),
+              featuresAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, s) => Text('Error al cargar características: $e'),
+                data: (features) {
+                  if (features.isEmpty) {
+                    return const Text(
+                      'No hay características globales creadas.',
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontSize: 13,
+                      ),
+                    );
+                  }
+                  return Column(
+                    children: features.map((feature) {
+                      final esTrans = feature.translations.firstWhere(
+                        (t) => t.locale == 'es',
+                        orElse: () => const AcademyFeatureTranslation(
+                          locale: 'es',
+                          label: '',
+                        ),
+                      );
+                      final name = esTrans.label.isNotEmpty
+                          ? esTrans.label
+                          : feature.slug;
+                      final isSelected = _selectedFeatureIds.contains(
+                        feature.id,
+                      );
+
+                      return CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(name, style: const TextStyle(fontSize: 13)),
+                        subtitle: Text(
+                          'Slug: ${feature.slug}',
+                          style: const TextStyle(fontSize: 11),
+                        ),
+                        value: isSelected,
+                        onChanged: (val) {
+                          setState(() {
+                            if (val == true) {
+                              _selectedFeatureIds.add(feature.id);
+                            } else {
+                              _selectedFeatureIds.remove(feature.id);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isSaving ? null : () => Navigator.of(context).pop(),
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: _isSaving ? null : _save,
+          child: _isSaving
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Guardar'),
+        ),
+      ],
+    );
+  }
+}
+
+class _CreatePlanDialog extends ConsumerStatefulWidget {
+  const _CreatePlanDialog();
+
+  @override
+  ConsumerState<_CreatePlanDialog> createState() => _CreatePlanDialogState();
+}
+
+class _CreatePlanDialogState extends ConsumerState<_CreatePlanDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _slugCtrl = TextEditingController();
+  final _priceRegularCtrl = TextEditingController();
+  final _priceOfferCtrl = TextEditingController();
+  final _nameCtrl = TextEditingController();
+  final _subtitleCtrl = TextEditingController();
+  bool _isActive = true;
+  int _sortOrder = 0;
+  final List<int> _selectedFeatureIds = [];
+  bool _isSaving = false;
+
+  @override
+  void dispose() {
+    _slugCtrl.dispose();
+    _priceRegularCtrl.dispose();
+    _priceOfferCtrl.dispose();
+    _nameCtrl.dispose();
+    _subtitleCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isSaving = true);
+
+    final regular = double.parse(_priceRegularCtrl.text.trim());
+    final offerText = _priceOfferCtrl.text.trim();
+    final offer = offerText.isNotEmpty ? double.parse(offerText) : null;
+
+    final planPayload = <String, dynamic>{
+      'slug': _slugCtrl.text.trim().toLowerCase(),
+      'priceRegular': regular,
+      'priceOffer': offer,
+      'currency': 'USD',
+      'sortOrder': _sortOrder,
+      'isActive': _isActive,
+      'translations': [
+        {
+          'locale': 'es',
+          'name': _nameCtrl.text.trim(),
+          'subtitle': _subtitleCtrl.text.trim().isNotEmpty
+              ? _subtitleCtrl.text.trim()
+              : null,
+        },
+      ],
+      'featureIds': _selectedFeatureIds,
+    };
+
+    try {
+      await ref
+          .read(adminAcademyPlansProvider.notifier)
+          .createPlan(planPayload);
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al crear plan: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final featuresAsync = ref.watch(adminAcademyFeaturesProvider);
+
+    return AlertDialog(
+      title: const Text('Nuevo Plan de Membresía'),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _slugCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Slug',
+                  hintText: 'e.g. gold',
+                ),
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Requerido';
+                  if (!RegExp(r'^[a-z0-9_-]+$').hasMatch(v)) {
+                    return 'Inválido (a-z, 0-9, _, -)';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _nameCtrl,
+                decoration: const InputDecoration(labelText: 'Nombre (ES)'),
+                validator: (v) => v == null || v.isEmpty ? 'Requerido' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _subtitleCtrl,
+                decoration: const InputDecoration(labelText: 'Subtítulo (ES)'),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _priceRegularCtrl,
+                decoration: const InputDecoration(labelText: 'Precio Regular'),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                validator: (v) =>
+                    v == null || double.tryParse(v) == null ? 'Inválido' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _priceOfferCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Precio Oferta (opcional)',
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: '$_sortOrder',
+                      decoration: const InputDecoration(labelText: 'Orden'),
+                      keyboardType: TextInputType.number,
+                      onChanged: (v) {
+                        final parsed = int.tryParse(v);
+                        if (parsed != null) _sortOrder = parsed;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text(
+                        'Activo',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      value: _isActive,
+                      onChanged: (v) => setState(() => _isActive = v),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Características Asociadas',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+              const SizedBox(height: 8),
+              featuresAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, s) => Text('Error al cargar características: $e'),
+                data: (features) {
+                  if (features.isEmpty) {
+                    return const Text(
+                      'No hay características globales creadas. Creá algunas primero.',
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontSize: 13,
+                      ),
+                    );
+                  }
+                  return Column(
+                    children: features.map((feature) {
+                      final esTrans = feature.translations.firstWhere(
+                        (t) => t.locale == 'es',
+                        orElse: () => const AcademyFeatureTranslation(
+                          locale: 'es',
+                          label: '',
+                        ),
+                      );
+                      final name = esTrans.label.isNotEmpty
+                          ? esTrans.label
+                          : feature.slug;
+                      final isSelected = _selectedFeatureIds.contains(
+                        feature.id,
+                      );
+
+                      return CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(name, style: const TextStyle(fontSize: 13)),
+                        subtitle: Text(
+                          'Slug: ${feature.slug}',
+                          style: const TextStyle(fontSize: 11),
+                        ),
+                        value: isSelected,
+                        onChanged: (val) {
+                          setState(() {
+                            if (val == true) {
+                              _selectedFeatureIds.add(feature.id);
+                            } else {
+                              _selectedFeatureIds.remove(feature.id);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  );
+                },
               ),
             ],
           ),

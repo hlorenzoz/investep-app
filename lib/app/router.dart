@@ -5,6 +5,8 @@ import '../core/auth/auth_gate.dart';
 import '../core/auth/gate_refresh_listenable.dart';
 import '../features/academy/presentation/academy_screen.dart';
 import '../features/academy/presentation/admin_academy_plans_screen.dart';
+import '../features/academy/presentation/admin_academy_features_screen.dart';
+import '../features/admin/presentation/admin_menu_screen.dart';
 import '../features/account/presentation/account_detail_screen.dart';
 import '../features/account/presentation/edit_allocation_screen.dart';
 import '../features/auth/presentation/change_password_screen.dart';
@@ -84,9 +86,19 @@ final routerProvider = Provider<GoRouter>((ref) {
             EditAllocationScreen(allocationId: state.pathParameters['id']!),
       ),
       GoRoute(
-        path: '/admin/academy-plans',
+        path: '/admin',
+        name: 'admin_menu',
+        builder: (context, state) => const AdminMenuScreen(),
+      ),
+      GoRoute(
+        path: '/admin/academy/plans',
         name: 'admin_academy_plans',
         builder: (context, state) => const AdminAcademyPlansScreen(),
+      ),
+      GoRoute(
+        path: '/admin/academy/features',
+        name: 'admin_academy_features',
+        builder: (context, state) => const AdminAcademyFeaturesScreen(),
       ),
       // Menú de navegación global responsivo con persistencia de estado por rama
       StatefulShellRoute.indexedStack(

@@ -230,9 +230,9 @@ class SettingsScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         OutlinedButton.icon(
-                          onPressed: () => context.push('/admin/academy-plans'),
-                          icon: const Icon(LucideIcons.award, size: 18),
-                          label: const Text('Gestionar Paquetes Academia'),
+                          onPressed: () => context.push('/admin'),
+                          icon: const Icon(LucideIcons.shieldAlert, size: 18),
+                          label: const Text('Panel de Administración'),
                         ),
                       ],
                     ),
