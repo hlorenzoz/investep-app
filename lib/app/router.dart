@@ -4,8 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../core/auth/auth_gate.dart';
 import '../core/auth/gate_refresh_listenable.dart';
 import '../features/academy/presentation/academy_screen.dart';
-import '../features/academy/presentation/admin_academy_plans_screen.dart';
-import '../features/academy/presentation/admin_academy_features_screen.dart';
+import '../features/academy/presentation/admin_academy_screen.dart';
 import '../features/admin/presentation/admin_menu_screen.dart';
 import '../features/account/presentation/account_detail_screen.dart';
 import '../features/account/presentation/edit_allocation_screen.dart';
@@ -117,16 +116,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const AdminMenuScreen(),
                 routes: [
                   GoRoute(
-                    path: 'academy/plans',
-                    name: 'admin_academy_plans',
-                    builder: (context, state) =>
-                        const AdminAcademyPlansScreen(),
-                  ),
-                  GoRoute(
-                    path: 'academy/features',
-                    name: 'admin_academy_features',
-                    builder: (context, state) =>
-                        const AdminAcademyFeaturesScreen(),
+                    path: 'academy',
+                    name: 'admin_academy',
+                    builder: (context, state) => const AdminAcademyScreen(),
                   ),
                 ],
               ),

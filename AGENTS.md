@@ -126,6 +126,7 @@ El lenguaje visual de la app es **glassmorphism**, donde corresponda:
 - **Lucide en código:** `import 'package:lucide_icons_flutter/lucide_icons.dart';` y usa
   la clase `LucideIcons` (p. ej. `Icon(LucideIcons.wallet)`). Es una icon font con
   `fontPackage` propio, compilada en el binario.
+- **Administración en viewports grandes (desktop/tablet):** Las pantallas y vistas de administración en dispositivos con viewports grandes (ancho >= 600 dp) deben ocupar un ancho máximo del **80% del display** y presentarse centradas horizontalmente, evitando estirarse innecesariamente de borde a borde.
 
 ## 5. Seguridad y datos sensibles (CRÍTICO — fintech)
 

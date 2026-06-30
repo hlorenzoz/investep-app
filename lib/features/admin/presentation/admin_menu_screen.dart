@@ -32,18 +32,11 @@ class AdminMenuScreen extends StatelessWidget {
             children: [
               _buildMenuCard(
                 context,
-                title: 'Planes de la Academia',
-                subtitle: 'Gestionar paquetes de membresía, precios y estados.',
-                icon: LucideIcons.award,
-                route: '/admin/academy/plans',
-              ),
-              const SizedBox(height: 16),
-              _buildMenuCard(
-                context,
-                title: 'Características de la Academia',
-                subtitle: 'Crear, editar y organizar características globales.',
-                icon: LucideIcons.listTodo,
-                route: '/admin/academy/features',
+                title: 'Academia',
+                subtitle:
+                    'Gestionar paquetes de membresía, precios y características globales.',
+                icon: LucideIcons.graduationCap,
+                route: '/admin/academy',
               ),
               const SizedBox(height: 16),
               _buildMenuCard(
