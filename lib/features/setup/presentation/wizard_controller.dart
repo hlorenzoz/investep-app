@@ -70,8 +70,7 @@ class WizardController extends Notifier<WizardState> {
 
   bool _disposed = false;
 
-  int get _minSlide =>
-      mode == SetupMode.initialSetup ? WizardSlide.capital : WizardSlide.broker;
+  int get _minSlide => WizardSlide.broker;
 
   /// Setea el estado sólo si el notifier sigue vivo. Las escrituras (`submit*`)
   /// completan después de `await`s: si el wizard se desmontó (p. ej. el usuario

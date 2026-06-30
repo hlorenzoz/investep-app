@@ -60,6 +60,11 @@ void main() {
   testWidgets('debe renderizar todos los elementos de la interfaz en español', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     final router = createRouter();
     await tester.pumpWidget(createTestWidget(router));
     await tester.pumpAndSettle();

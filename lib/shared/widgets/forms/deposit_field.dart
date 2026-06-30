@@ -45,7 +45,7 @@ class _DepositFieldState extends State<DepositField> {
   void initState() {
     super.initState();
     final d = widget.value;
-    final initial = d.mode == DepositMode.percentOfCapital ? d.pct : d.amount;
+    final initial = d.amount;
     _input = TextEditingController(text: initial != null ? '$initial' : '');
   }
 
@@ -55,35 +55,13 @@ class _DepositFieldState extends State<DepositField> {
     super.dispose();
   }
 
-  void _write({DepositMode? mode, String? raw}) {
+  void _write({String? raw}) {
     final cur = widget.value;
-    final m = mode ?? cur.mode;
-    var pct = cur.pct;
     var amount = cur.amount;
-    // Sólo cuando el usuario tipea (`raw != null`) reescribimos el campo activo,
-    // incluso a null si borró el campo (un campo vacío NO debe conservar el
-    // valor anterior). Al togglear de modo (`raw == null`) se preservan ambos.
     if (raw != null) {
-      final value = num.tryParse(raw.replaceAll(',', '.'));
-      if (m == DepositMode.percentOfCapital) {
-        pct = value;
-      } else {
-        amount = value;
-      }
+      amount = num.tryParse(raw.replaceAll(',', '.'));
     }
-    widget.onChanged(DepositInput(mode: m, pct: pct, amount: amount));
-  }
-
-  /// Sincroniza el TextField al valor almacenado del modo dado (al togglear).
-  void _syncInput(DepositMode mode) {
-    final v = mode == DepositMode.percentOfCapital
-        ? widget.value.pct
-        : widget.value.amount;
-    final text = v != null ? '$v' : '';
-    _input.value = TextEditingValue(
-      text: text,
-      selection: TextSelection.collapsed(offset: text.length),
-    );
+    widget.onChanged(DepositInput(mode: DepositMode.amount, amount: amount));
   }
 
   @override
@@ -95,7 +73,6 @@ class _DepositFieldState extends State<DepositField> {
       total: widget.totalCapital,
       available: widget.available,
     );
-    final isPercent = data.mode == DepositMode.percentOfCapital;
     final glassTheme = context.glass;
 
     return Column(
@@ -116,24 +93,6 @@ class _DepositFieldState extends State<DepositField> {
           '${formatMoney(widget.available, widget.currency)}',
           style: TextStyle(color: glassTheme.textSecondary, fontSize: 13),
         ),
-        const SizedBox(height: 20),
-        SegmentedButton<DepositMode>(
-          segments: [
-            ButtonSegment(
-              value: DepositMode.percentOfCapital,
-              label: Text(l10n.depositModePercent),
-            ),
-            ButtonSegment(
-              value: DepositMode.amount,
-              label: Text(l10n.depositModeAmount),
-            ),
-          ],
-          selected: {data.mode},
-          onSelectionChanged: (s) {
-            _write(mode: s.first);
-            _syncInput(s.first);
-          },
-        ),
         const SizedBox(height: 16),
         TextField(
           controller: _input,
@@ -144,21 +103,12 @@ class _DepositFieldState extends State<DepositField> {
           onChanged: (raw) => _write(raw: raw),
           style: TextStyle(color: glassTheme.textPrimary),
           decoration: InputDecoration(
-            labelText: isPercent ? l10n.depositModePercent : l10n.amountLabel,
+            labelText: l10n.amountLabel,
             labelStyle: TextStyle(color: glassTheme.textSecondary),
-            suffixText: isPercent ? '%' : widget.currency,
+            suffixText: widget.currency,
             suffixStyle: TextStyle(color: glassTheme.textSecondary),
           ),
         ),
-        const SizedBox(height: 12),
-        if (isPercent)
-          Text(
-            '= ${formatMoney(resolved, widget.currency)}',
-            style: TextStyle(
-              color: glassTheme.textPrimary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
         if (!isValid && resolved > 0) ...[
           const SizedBox(height: 8),
           Text(

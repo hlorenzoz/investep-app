@@ -62,8 +62,7 @@ class _WizardShell extends ConsumerWidget {
 
   final SetupMode mode;
 
-  int get _minSlide =>
-      mode == SetupMode.initialSetup ? WizardSlide.capital : WizardSlide.broker;
+  int get _minSlide => WizardSlide.broker;
 
   bool _canAdvance(WizardState state, num available) {
     final d = state.data;

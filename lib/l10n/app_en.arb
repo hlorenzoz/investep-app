@@ -38,7 +38,7 @@
   "planTargetDaily": "Daily",
   "plansEmpty": "No plans available for this account type",
 
-  "depositTitle": "Initial deposit",
+  "depositTitle": "Amount",
   "depositModePercent": "% of capital",
   "depositModeAmount": "Amount",
   "depositAvailable": "Available",

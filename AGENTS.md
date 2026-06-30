@@ -326,4 +326,3 @@ A continuación se detalla el catálogo y el criterio de ruteo para cada una:
 *   **[updating-android-sdk](file:///Users/hlorenzoz/databank/COD3/Antigravity/projects/apps/investep-app/investep-app/.agents/skills/updating-android-sdk/SKILL.md)**: Usala para gestionar APIs nativas de Android y paquetes CIPD del framework.
 *   **[upgrade-browser](file:///Users/hlorenzoz/databank/COD3/Antigravity/projects/apps/investep-app/investep-app/.agents/skills/upgrade-browser/SKILL.md)**: Usala si es necesario actualizar la versión del navegador (Chrome o Firefox) en las pruebas de motor web.
 *   **[validate-pr](file:///Users/hlorenzoz/databank/COD3/Antigravity/projects/apps/investep-app/investep-app/.agents/skills/validate-pr/SKILL.md)**: Usala para levantar y verificar documentación web local de la comunidad de Flutter.
-

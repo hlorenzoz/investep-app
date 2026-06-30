@@ -50,4 +50,40 @@ void main() {
     expect(state.value!.available, 3000);
     expect(calls, 2);
   });
+
+  test('transferCapital → llama al repo y hace refresh del capital', () async {
+    var calls = 0;
+    when(() => repo.getCapital()).thenAnswer((_) async {
+      calls++;
+      return overview(available: calls == 1 ? 4000 : 3000);
+    });
+    when(
+      () => repo.transferCapital(
+        fromAllocationId: any(named: 'fromAllocationId'),
+        toAllocationId: any(named: 'toAllocationId'),
+        amount: any(named: 'amount'),
+      ),
+    ).thenAnswer((_) async {});
+
+    await container.read(capitalControllerProvider.future);
+    await container
+        .read(capitalControllerProvider.notifier)
+        .transferCapital(
+          fromAllocationId: 'alloc-1',
+          toAllocationId: 'capital',
+          amount: 150.0,
+        );
+
+    verify(
+      () => repo.transferCapital(
+        fromAllocationId: 'alloc-1',
+        toAllocationId: 'capital',
+        amount: 150.0,
+      ),
+    ).called(1);
+
+    final state = container.read(capitalControllerProvider);
+    expect(state.value!.available, 3000);
+    expect(calls, 2);
+  });
 }

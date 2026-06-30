@@ -72,8 +72,8 @@ void main() {
           as FakeCapitalController;
 
   group('navegación inicial', () {
-    test('initialSetup arranca en el slide 0 (capital)', () {
-      expect(state(SetupMode.initialSetup).slideIndex, 0);
+    test('initialSetup arranca en el slide 1 (broker)', () {
+      expect(state(SetupMode.initialSetup).slideIndex, 1);
     });
 
     test('addBroker arranca en el slide 1 (broker) y omite capital', () {
@@ -121,48 +121,6 @@ void main() {
         expect(data.investmentPlanId, isNull);
       },
     );
-  });
-
-  group('submitCapital', () {
-    test('200 → guarda capital, avanza al slide 1', () async {
-      when(
-        () => capitalRepo.putCapital(
-          totalCapital: any(named: 'totalCapital'),
-          currency: any(named: 'currency'),
-        ),
-      ).thenAnswer(
-        (_) async => const Capital(totalCapital: 9000, currency: 'USD'),
-      );
-
-      final n = notifier(SetupMode.initialSetup)..setCapital(9000, 'USD');
-      await n.submitCapital();
-
-      final s = state(SetupMode.initialSetup);
-      expect(s, isA<WizardIdle>());
-      expect(s.slideIndex, 1);
-      expect(s.data.totalCapital, 9000);
-    });
-
-    test('409 → WizardStepError(capital) con el message', () async {
-      when(
-        () => capitalRepo.putCapital(
-          totalCapital: any(named: 'totalCapital'),
-          currency: any(named: 'currency'),
-        ),
-      ).thenAnswer(
-        (_) async =>
-            throw const ApiException(409, 'CONFLICT', 'Menor a lo asignado'),
-      );
-
-      final n = notifier(SetupMode.initialSetup)..setCapital(1, 'USD');
-      await n.submitCapital();
-
-      final s = state(SetupMode.initialSetup);
-      expect(s, isA<WizardStepError>());
-      expect((s as WizardStepError).step, WizardStep.capital);
-      expect(s.message, 'Menor a lo asignado');
-      expect(s.slideIndex, 0); // no avanza
-    });
   });
 
   group('submitAllocation', () {

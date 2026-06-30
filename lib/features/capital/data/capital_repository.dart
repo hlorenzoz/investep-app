@@ -111,6 +111,26 @@ class CapitalRepository {
       throw ApiException.fromDioException(e);
     }
   }
+
+  /// `POST /capital/transfers` para transferir saldo manual entre asignaciones o capital general.
+  Future<void> transferCapital({
+    required String fromAllocationId,
+    required String toAllocationId,
+    required num amount,
+  }) async {
+    try {
+      await _dio.post<Map<String, dynamic>>(
+        '/capital/transfers',
+        data: {
+          'fromAllocationId': fromAllocationId,
+          'toAllocationId': toAllocationId,
+          'amount': amount,
+        },
+      );
+    } on DioException catch (e) {
+      throw ApiException.fromDioException(e);
+    }
+  }
 }
 
 final capitalRepositoryProvider = Provider<CapitalRepository>((ref) {

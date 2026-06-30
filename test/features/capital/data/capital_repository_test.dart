@@ -307,4 +307,58 @@ void main() {
       ).called(1);
     });
   });
+
+  group('transferCapital', () {
+    test('envía body correcto y completa con éxito', () async {
+      when(
+        () => dio.post<Map<String, dynamic>>(
+          '/capital/transfers',
+          data: any(named: 'data'),
+        ),
+      ).thenAnswer((_) async => ok({'success': true}));
+
+      await repo.transferCapital(
+        fromAllocationId: 'alloc-1',
+        toAllocationId: 'capital',
+        amount: 150.0,
+      );
+
+      final captured =
+          verify(
+                () => dio.post<Map<String, dynamic>>(
+                  '/capital/transfers',
+                  data: captureAny(named: 'data'),
+                ),
+              ).captured.single
+              as Map;
+
+      expect(captured['fromAllocationId'], 'alloc-1');
+      expect(captured['toAllocationId'], 'capital');
+      expect(captured['amount'], 150.0);
+    });
+
+    test('422 → ApiException(422) con el mensaje de error', () async {
+      when(
+        () => dio.post<Map<String, dynamic>>(
+          '/capital/transfers',
+          data: any(named: 'data'),
+        ),
+      ).thenAnswer(
+        (_) async => throw dioErr(422, 'VALIDATION_ERROR', 'Monto inválido'),
+      );
+
+      await expectLater(
+        repo.transferCapital(
+          fromAllocationId: 'alloc-1',
+          toAllocationId: 'capital',
+          amount: -10,
+        ),
+        throwsA(
+          isA<ApiException>()
+              .having((e) => e.status, 'status', 422)
+              .having((e) => e.message, 'message', 'Monto inválido'),
+        ),
+      );
+    });
+  });
 }

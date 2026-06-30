@@ -9,7 +9,6 @@ import '../../../../shared/format/money.dart';
 import '../../../brokers/domain/broker.dart';
 import '../../../brokers/presentation/brokers_provider.dart';
 import '../../../capital/domain/account_type.dart';
-import '../../../capital/presentation/capital_controller.dart';
 import '../../../plans/domain/investment_plan.dart';
 import '../../../plans/presentation/plans_provider.dart';
 import '../setup_mode.dart';
@@ -49,12 +48,6 @@ class SummarySlide extends ConsumerWidget {
         break;
       }
     }
-
-    final available =
-        ref.watch(capitalControllerProvider).value?.available ??
-        data.totalCapital ??
-        0;
-    final remaining = available - data.resolvedDeposit;
 
     final error =
         state is WizardStepError && state.step == WizardStep.allocation
@@ -111,21 +104,7 @@ class SummarySlide extends ConsumerWidget {
           formatMoney(data.resolvedDeposit, data.currency),
           onTap: () => controller.goTo(WizardSlide.deposit),
         ),
-        // La moneda sólo se edita en initialSetup (en el slide de capital); en
-        // addBroker viene fija del capital existente.
-        _row(
-          context,
-          l10n.summaryCurrency,
-          data.currency,
-          onTap: mode == SetupMode.initialSetup
-              ? () => controller.goTo(WizardSlide.capital)
-              : null,
-        ),
-        _row(
-          context,
-          l10n.summaryRemaining,
-          formatMoney(remaining, data.currency),
-        ),
+        _row(context, l10n.summaryCurrency, data.currency),
         if (error != null) ...[
           const SizedBox(height: 16),
           Text(

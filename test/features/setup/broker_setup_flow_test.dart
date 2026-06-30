@@ -29,19 +29,24 @@ Widget _appFor(SetupMode mode) => MaterialApp(
 );
 
 void main() {
-  testWidgets('initialSetup arranca en el slide de capital', (tester) async {
+  testWidgets('initialSetup arranca en el slide de broker', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           capitalControllerProvider.overrideWith(_FakeCapitalController.new),
+          brokersProvider.overrideWith(
+            (ref) async => const [
+              Broker(id: 7, slug: 'ibkr', name: 'Interactive Brokers'),
+            ],
+          ),
         ],
         child: _appFor(SetupMode.initialSetup),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Tu capital inicial'), findsOneWidget);
-    expect(find.text('Elegí tu broker'), findsNothing);
+    expect(find.text('Elegí tu broker'), findsOneWidget);
+    expect(find.text('Tu capital inicial'), findsNothing);
     expect(find.text('Configurar más tarde'), findsOneWidget);
   });
 

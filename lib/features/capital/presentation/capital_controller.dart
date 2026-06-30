@@ -19,6 +19,22 @@ class CapitalController extends AsyncNotifier<CapitalOverview> {
       () => ref.read(capitalRepositoryProvider).getCapital(),
     );
   }
+
+  /// Transfiere capital de forma manual entre asignaciones o capital general y refresca el estado.
+  Future<void> transferCapital({
+    required String fromAllocationId,
+    required String toAllocationId,
+    required num amount,
+  }) async {
+    await ref
+        .read(capitalRepositoryProvider)
+        .transferCapital(
+          fromAllocationId: fromAllocationId,
+          toAllocationId: toAllocationId,
+          amount: amount,
+        );
+    await refresh();
+  }
 }
 
 final capitalControllerProvider =
