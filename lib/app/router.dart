@@ -85,21 +85,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) =>
             EditAllocationScreen(allocationId: state.pathParameters['id']!),
       ),
-      GoRoute(
-        path: '/admin',
-        name: 'admin_menu',
-        builder: (context, state) => const AdminMenuScreen(),
-      ),
-      GoRoute(
-        path: '/admin/academy/plans',
-        name: 'admin_academy_plans',
-        builder: (context, state) => const AdminAcademyPlansScreen(),
-      ),
-      GoRoute(
-        path: '/admin/academy/features',
-        name: 'admin_academy_features',
-        builder: (context, state) => const AdminAcademyFeaturesScreen(),
-      ),
       // Menú de navegación global responsivo con persistencia de estado por rama
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -121,6 +106,29 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/academy',
                 name: 'academy',
                 builder: (context, state) => const AcademyScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/admin',
+                name: 'admin_menu',
+                builder: (context, state) => const AdminMenuScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'academy/plans',
+                    name: 'admin_academy_plans',
+                    builder: (context, state) =>
+                        const AdminAcademyPlansScreen(),
+                  ),
+                  GoRoute(
+                    path: 'academy/features',
+                    name: 'admin_academy_features',
+                    builder: (context, state) =>
+                        const AdminAcademyFeaturesScreen(),
+                  ),
+                ],
               ),
             ],
           ),

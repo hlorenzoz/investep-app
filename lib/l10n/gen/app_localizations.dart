@@ -281,7 +281,7 @@ abstract class AppLocalizations {
   /// No description provided for @depositTitle.
   ///
   /// In es, this message translates to:
-  /// **'Depósito inicial'**
+  /// **'Monto'**
   String get depositTitle;
 
   /// No description provided for @depositModePercent.
@@ -457,6 +457,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Academia'**
   String get navAcademy;
+
+  /// No description provided for @navAdmin.
+  ///
+  /// In es, this message translates to:
+  /// **'Admin'**
+  String get navAdmin;
 
   /// No description provided for @navSettings.
   ///

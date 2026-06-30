@@ -60,6 +60,10 @@ class MainShell extends StatelessWidget {
                       label: l10n.navAcademy,
                     ),
                     NavigationDestination(
+                      icon: const Icon(LucideIcons.shieldAlert),
+                      label: l10n.navAdmin,
+                    ),
+                    NavigationDestination(
                       icon: const Icon(LucideIcons.settings),
                       label: l10n.navSettings,
                     ),
@@ -106,13 +110,17 @@ class MainShell extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 16.0),
                           child: NavigationRail(
-                            selectedIndex: navigationShell.currentIndex == 2
-                                ? 0
+                            selectedIndex: navigationShell.currentIndex >= 2
+                                ? navigationShell.currentIndex - 2
                                 : null,
-                            onDestinationSelected: (_) =>
-                                _onDestinationSelected(2),
+                            onDestinationSelected: (idx) =>
+                                _onDestinationSelected(idx + 2),
                             labelType: NavigationRailLabelType.all,
                             destinations: [
+                              NavigationRailDestination(
+                                icon: const Icon(LucideIcons.shieldAlert),
+                                label: Text(l10n.navAdmin),
+                              ),
                               NavigationRailDestination(
                                 icon: const Icon(LucideIcons.settings),
                                 label: Text(l10n.navSettings),

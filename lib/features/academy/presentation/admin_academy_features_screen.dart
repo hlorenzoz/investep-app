@@ -121,7 +121,9 @@ class _AdminFeatureCard extends ConsumerWidget {
             child: const Text('Cancelar'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.negative),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.negative,
+            ),
             onPressed: () async {
               Navigator.of(ctx).pop();
               try {
@@ -217,7 +219,10 @@ class _AdminFeatureCard extends ConsumerWidget {
                   onPressed: () => _showEditDialog(context),
                 ),
                 IconButton(
-                  icon: const Icon(LucideIcons.trash2, color: AppColors.negative),
+                  icon: const Icon(
+                    LucideIcons.trash2,
+                    color: AppColors.negative,
+                  ),
                   onPressed: () => _confirmDelete(context, ref),
                 ),
               ],
@@ -233,7 +238,8 @@ class _CreateFeatureDialog extends ConsumerStatefulWidget {
   const _CreateFeatureDialog();
 
   @override
-  ConsumerState<_CreateFeatureDialog> createState() => _CreateFeatureDialogState();
+  ConsumerState<_CreateFeatureDialog> createState() =>
+      _CreateFeatureDialogState();
 }
 
 class _CreateFeatureDialogState extends ConsumerState<_CreateFeatureDialog> {
@@ -264,15 +270,9 @@ class _CreateFeatureDialogState extends ConsumerState<_CreateFeatureDialog> {
       'slug': _slugCtrl.text.trim().toLowerCase(),
       'sortOrder': sortOrder,
       'translations': [
-        {
-          'locale': 'es',
-          'label': _labelEsCtrl.text.trim(),
-        },
+        {'locale': 'es', 'label': _labelEsCtrl.text.trim()},
         if (_labelEnCtrl.text.trim().isNotEmpty)
-          {
-            'locale': 'en',
-            'label': _labelEnCtrl.text.trim(),
-          },
+          {'locale': 'en', 'label': _labelEnCtrl.text.trim()},
       ],
     };
 
@@ -283,9 +283,9 @@ class _CreateFeatureDialogState extends ConsumerState<_CreateFeatureDialog> {
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al crear: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al crear: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -332,10 +332,13 @@ class _CreateFeatureDialogState extends ConsumerState<_CreateFeatureDialog> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _sortOrderCtrl,
-                decoration: const InputDecoration(labelText: 'Orden de Clasificación'),
+                decoration: const InputDecoration(
+                  labelText: 'Orden de Clasificación',
+                ),
                 keyboardType: TextInputType.number,
-                validator: (v) =>
-                    v == null || int.tryParse(v) == null ? 'Número inválido' : null,
+                validator: (v) => v == null || int.tryParse(v) == null
+                    ? 'Número inválido'
+                    : null,
               ),
             ],
           ),
@@ -411,15 +414,9 @@ class _EditFeatureDialogState extends ConsumerState<_EditFeatureDialog> {
     final featurePayload = <String, dynamic>{
       'sortOrder': sortOrder,
       'translations': [
-        {
-          'locale': 'es',
-          'label': _labelEsCtrl.text.trim(),
-        },
+        {'locale': 'es', 'label': _labelEsCtrl.text.trim()},
         if (_labelEnCtrl.text.trim().isNotEmpty)
-          {
-            'locale': 'en',
-            'label': _labelEnCtrl.text.trim(),
-          },
+          {'locale': 'en', 'label': _labelEnCtrl.text.trim()},
       ],
     };
 
@@ -430,9 +427,9 @@ class _EditFeatureDialogState extends ConsumerState<_EditFeatureDialog> {
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al guardar: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al guardar: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -464,10 +461,13 @@ class _EditFeatureDialogState extends ConsumerState<_EditFeatureDialog> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _sortOrderCtrl,
-                decoration: const InputDecoration(labelText: 'Orden de Clasificación'),
+                decoration: const InputDecoration(
+                  labelText: 'Orden de Clasificación',
+                ),
                 keyboardType: TextInputType.number,
-                validator: (v) =>
-                    v == null || int.tryParse(v) == null ? 'Número inválido' : null,
+                validator: (v) => v == null || int.tryParse(v) == null
+                    ? 'Número inválido'
+                    : null,
               ),
             ],
           ),

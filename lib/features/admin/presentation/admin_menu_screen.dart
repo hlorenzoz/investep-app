@@ -94,10 +94,11 @@ class AdminMenuScreen extends StatelessWidget {
                 height: 48,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: (enabled
-                          ? Theme.of(context).colorScheme.secondary
-                          : glassTheme.textSecondary)
-                      .withOpacity(0.15),
+                  color:
+                      (enabled
+                              ? Theme.of(context).colorScheme.secondary
+                              : glassTheme.textSecondary)
+                          .withOpacity(0.15),
                 ),
                 child: Icon(
                   icon,

@@ -100,7 +100,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get plansEmpty => 'No hay planes para este tipo de cuenta';
 
   @override
-  String get depositTitle => 'Depósito inicial';
+  String get depositTitle => 'Monto';
 
   @override
   String get depositModePercent => '% del capital';
@@ -190,6 +190,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get navAcademy => 'Academia';
+
+  @override
+  String get navAdmin => 'Admin';
 
   @override
   String get navSettings => 'Ajustes';
