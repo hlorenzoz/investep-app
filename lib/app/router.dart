@@ -7,6 +7,7 @@ import '../features/academy/presentation/academy_screen.dart';
 import '../features/academy/presentation/admin_academy_screen.dart';
 import '../features/admin/presentation/admin_menu_screen.dart';
 import '../features/admin/presentation/admin_brokers_screen.dart';
+import '../features/admin/presentation/admin_tickers_screen.dart';
 import '../features/admin/presentation/user_list_view.dart';
 import '../features/account/presentation/account_detail_screen.dart';
 import '../features/account/presentation/edit_allocation_screen.dart';
@@ -154,6 +155,21 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'brokers',
                     name: 'admin_brokers',
                     builder: (context, state) => const AdminBrokersScreen(),
+                    redirect: (context, state) {
+                      final gate = ref.read(authGateProvider);
+                      if (gate is GateAuthenticated) {
+                        final role = gate.user.role;
+                        if (role == 'admin') {
+                          return null;
+                        }
+                      }
+                      return '/admin';
+                    },
+                  ),
+                  GoRoute(
+                    path: 'tickers',
+                    name: 'admin_tickers',
+                    builder: (context, state) => const AdminTickersScreen(),
                     redirect: (context, state) {
                       final gate = ref.read(authGateProvider);
                       if (gate is GateAuthenticated) {

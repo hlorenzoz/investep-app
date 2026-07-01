@@ -65,6 +65,15 @@ class AdminMenuScreen extends ConsumerWidget {
                   route: '/admin/brokers',
                   enabled: true,
                 ),
+                const SizedBox(height: 16),
+                _buildMenuCard(
+                  context,
+                  title: 'Configuración de Activos (Tickers)',
+                  subtitle: 'Gestionar el catálogo de activos del sistema y sus relaciones.',
+                  icon: LucideIcons.candlestickChart,
+                  route: '/admin/tickers',
+                  enabled: true,
+                ),
               ],
               const SizedBox(height: 16),
               _buildMenuCard(
