@@ -1,35 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../core/auth/auth_gate.dart';
 import '../l10n/gen/app_localizations.dart';
 import 'theme/app_theme.dart';
 
 /// Contenedor de navegación responsivo y adaptativo.
 ///
 /// Implementa un [StatefulNavigationShell] para persistir el estado de navegación
-/// de cada rama (Portafolio, Academia y Configuración).
+/// de cada rama (Portafolio, Academia, Administración y Configuración).
 ///
 /// Adaptabilidad de viewports basada en buenas prácticas de diseño:
 /// - Móvil (ancho < 600 dp): Muestra un [NavigationBar] inferior táctil.
 /// - Tablet/Desktop (ancho >= 600 dp): Muestra un [NavigationRail] lateral izquierdo.
-class MainShell extends StatelessWidget {
+class MainShell extends ConsumerWidget {
   const MainShell({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
-  void _onDestinationSelected(int index) {
-    navigationShell.goBranch(
-      index,
-      // Si el usuario toca la pestaña en la que ya está, recarga al primer frame de la rama.
-      initialLocation: index == navigationShell.currentIndex,
-    );
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final glassTheme = context.glass;
+
+    // Verificar si el usuario actual es admin o manager para mostrar/ocultar la pestaña Admin.
+    final gate = ref.watch(authGateProvider);
+    final role = gate is GateAuthenticated ? gate.user.role : 'user';
+    final isAdminOrManager = role == 'admin' || role == 'manager';
+
+    // Mapeo para NavigationBar (Móvil)
+    int branchToUiIndex(int branchIndex) {
+      if (isAdminOrManager) return branchIndex;
+      if (branchIndex >= 3) return branchIndex - 1;
+      return branchIndex;
+    }
+
+    void onDestinationSelected(int uiIndex) {
+      int branchIndex = uiIndex;
+      if (!isAdminOrManager) {
+        if (uiIndex >= 2) {
+          branchIndex = uiIndex + 1;
+        }
+      }
+      navigationShell.goBranch(
+        branchIndex,
+        initialLocation: branchIndex == navigationShell.currentIndex,
+      );
+    }
+
+    // Mapeo para bottom NavigationRail (Tablet/Desktop)
+    final int? bottomRailSelectedIndex;
+    if (isAdminOrManager) {
+      bottomRailSelectedIndex = navigationShell.currentIndex >= 2
+          ? navigationShell.currentIndex - 2
+          : null;
+    } else {
+      bottomRailSelectedIndex = navigationShell.currentIndex == 3 ? 0 : null;
+    }
+
+    void onBottomRailSelected(int uiIndex) {
+      final int targetBranch;
+      if (isAdminOrManager) {
+        targetBranch = uiIndex + 2;
+      } else {
+        targetBranch = 3; // Solo Configuración está disponible
+      }
+      navigationShell.goBranch(
+        targetBranch,
+        initialLocation: targetBranch == navigationShell.currentIndex,
+      );
+    }
 
     return Container(
       decoration: BoxDecoration(gradient: glassTheme.backgroundGradient),
@@ -48,8 +90,8 @@ class MainShell extends StatelessWidget {
                   ),
                 ),
                 child: NavigationBar(
-                  selectedIndex: navigationShell.currentIndex,
-                  onDestinationSelected: _onDestinationSelected,
+                  selectedIndex: branchToUiIndex(navigationShell.currentIndex),
+                  onDestinationSelected: onDestinationSelected,
                   destinations: [
                     NavigationDestination(
                       icon: const Icon(LucideIcons.pieChart),
@@ -59,10 +101,11 @@ class MainShell extends StatelessWidget {
                       icon: const Icon(LucideIcons.graduationCap),
                       label: l10n.navAcademy,
                     ),
-                    NavigationDestination(
-                      icon: const Icon(LucideIcons.shieldAlert),
-                      label: l10n.navAdmin,
-                    ),
+                    if (isAdminOrManager)
+                      NavigationDestination(
+                        icon: const Icon(LucideIcons.shieldAlert),
+                        label: l10n.navAdmin,
+                      ),
                     NavigationDestination(
                       icon: const Icon(LucideIcons.settings),
                       label: l10n.navSettings,
@@ -93,7 +136,12 @@ class MainShell extends StatelessWidget {
                             selectedIndex: navigationShell.currentIndex < 2
                                 ? navigationShell.currentIndex
                                 : null,
-                            onDestinationSelected: _onDestinationSelected,
+                            onDestinationSelected: (idx) {
+                              navigationShell.goBranch(
+                                idx,
+                                initialLocation: idx == navigationShell.currentIndex,
+                              );
+                            },
                             labelType: NavigationRailLabelType.all,
                             destinations: [
                               NavigationRailDestination(
@@ -110,17 +158,15 @@ class MainShell extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 16.0),
                           child: NavigationRail(
-                            selectedIndex: navigationShell.currentIndex >= 2
-                                ? navigationShell.currentIndex - 2
-                                : null,
-                            onDestinationSelected: (idx) =>
-                                _onDestinationSelected(idx + 2),
+                            selectedIndex: bottomRailSelectedIndex,
+                            onDestinationSelected: onBottomRailSelected,
                             labelType: NavigationRailLabelType.all,
                             destinations: [
-                              NavigationRailDestination(
-                                icon: const Icon(LucideIcons.shieldAlert),
-                                label: Text(l10n.navAdmin),
-                              ),
+                              if (isAdminOrManager)
+                                NavigationRailDestination(
+                                  icon: const Icon(LucideIcons.shieldAlert),
+                                  label: Text(l10n.navAdmin),
+                                ),
                               NavigationRailDestination(
                                 icon: const Icon(LucideIcons.settings),
                                 label: Text(l10n.navSettings),

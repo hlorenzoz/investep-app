@@ -35,11 +35,13 @@ void main() {
   final user = AuthUser(
     id: 'uuid-1',
     email: 'user@example.com',
+    role: 'user',
     mustResetPassword: false,
   );
   final userMustReset = AuthUser(
     id: 'uuid-1',
     email: 'reset@example.com',
+    role: 'user',
     mustResetPassword: true,
   );
 

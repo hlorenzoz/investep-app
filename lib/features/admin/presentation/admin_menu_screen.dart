@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../app/theme/app_theme.dart';
+import '../../../core/auth/auth_gate.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
 
-class AdminMenuScreen extends StatelessWidget {
+class AdminMenuScreen extends ConsumerWidget {
   const AdminMenuScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final glassTheme = context.glass;
+
+    // Obtener rol del usuario actual.
+    final gate = ref.watch(authGateProvider);
+    final role = gate is GateAuthenticated ? gate.user.role : 'user';
+    final isAdmin = role == 'admin';
 
     return Container(
       decoration: BoxDecoration(gradient: glassTheme.backgroundGradient),
@@ -38,15 +45,17 @@ class AdminMenuScreen extends StatelessWidget {
                 icon: LucideIcons.graduationCap,
                 route: '/admin/academy',
               ),
-              const SizedBox(height: 16),
-              _buildMenuCard(
-                context,
-                title: 'Gestión de Usuarios',
-                subtitle: 'Visualizar perfiles de usuario y roles.',
-                icon: LucideIcons.users2,
-                route: null,
-                enabled: false,
-              ),
+              if (isAdmin) ...[
+                const SizedBox(height: 16),
+                _buildMenuCard(
+                  context,
+                  title: 'Gestión de Usuarios',
+                  subtitle: 'Visualizar perfiles de usuario, roles y aprovisionar.',
+                  icon: LucideIcons.users2,
+                  route: '/admin/users',
+                  enabled: true,
+                ),
+              ],
               const SizedBox(height: 16),
               _buildMenuCard(
                 context,
@@ -87,11 +96,10 @@ class AdminMenuScreen extends StatelessWidget {
                 height: 48,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color:
-                      (enabled
-                              ? Theme.of(context).colorScheme.secondary
-                              : glassTheme.textSecondary)
-                          .withOpacity(0.15),
+                  color: (enabled
+                          ? Theme.of(context).colorScheme.secondary
+                          : glassTheme.textSecondary)
+                      .withValues(alpha: 0.15),
                 ),
                 child: Icon(
                   icon,

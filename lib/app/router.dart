@@ -6,6 +6,7 @@ import '../core/auth/gate_refresh_listenable.dart';
 import '../features/academy/presentation/academy_screen.dart';
 import '../features/academy/presentation/admin_academy_screen.dart';
 import '../features/admin/presentation/admin_menu_screen.dart';
+import '../features/admin/presentation/user_list_view.dart';
 import '../features/account/presentation/account_detail_screen.dart';
 import '../features/account/presentation/edit_allocation_screen.dart';
 import '../features/auth/presentation/change_password_screen.dart';
@@ -114,11 +115,39 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/admin',
                 name: 'admin_menu',
                 builder: (context, state) => const AdminMenuScreen(),
+                redirect: (context, state) {
+                  final gate = ref.read(authGateProvider);
+                  if (gate is GateAuthenticated) {
+                    final role = gate.user.role;
+                    if (role == 'admin' || role == 'manager') {
+                      return null;
+                    }
+                  }
+                  return '/';
+                },
                 routes: [
                   GoRoute(
                     path: 'academy',
                     name: 'admin_academy',
                     builder: (context, state) => const AdminAcademyScreen(),
+                  ),
+                  GoRoute(
+                    path: 'users',
+                    name: 'admin_users',
+                    builder: (context, state) => const UserListView(),
+                    redirect: (context, state) {
+                      final gate = ref.read(authGateProvider);
+                      if (gate is GateAuthenticated) {
+                        final role = gate.user.role;
+                        if (role == 'admin') {
+                          return null;
+                        }
+                        if (role == 'manager') {
+                          return '/admin';
+                        }
+                      }
+                      return '/';
+                    },
                   ),
                 ],
               ),

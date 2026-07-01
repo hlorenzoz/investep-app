@@ -23,6 +23,7 @@ void main() {
   final authUser = AuthUser(
     id: 'uuid-1',
     email: 'user@example.com',
+    role: 'user',
     mustResetPassword: false,
   );
 

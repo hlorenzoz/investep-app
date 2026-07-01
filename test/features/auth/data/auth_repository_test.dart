@@ -38,6 +38,7 @@ void main() {
     'user': {
       'id': 'uuid-1',
       'email': 'user@example.com',
+      'role': 'user',
       'mustResetPassword': mustReset,
     },
   };
@@ -52,6 +53,7 @@ void main() {
 
       expect(user.id, 'uuid-1');
       expect(user.email, 'user@example.com');
+      expect(user.role, 'user');
       expect(user.mustResetPassword, isTrue);
     });
 

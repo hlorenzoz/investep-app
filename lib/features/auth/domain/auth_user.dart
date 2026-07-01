@@ -3,11 +3,13 @@
 class AuthUser {
   final String id;
   final String email;
+  final String role;
   final bool mustResetPassword;
 
   AuthUser({
     required this.id,
     required this.email,
+    required this.role,
     required this.mustResetPassword,
   });
 
@@ -17,6 +19,7 @@ class AuthUser {
   ///   "user": {
   ///     "id": "...",
   ///     "email": "...",
+  ///     "role": "...",
   ///     "mustResetPassword": false
   ///   }
   /// }
@@ -25,6 +28,7 @@ class AuthUser {
     return AuthUser(
       id: userMap['id'] as String,
       email: userMap['email'] as String,
+      role: userMap['role'] as String? ?? 'user',
       mustResetPassword: userMap['mustResetPassword'] as bool,
     );
   }
@@ -34,6 +38,7 @@ class AuthUser {
       'user': {
         'id': id,
         'email': email,
+        'role': role,
         'mustResetPassword': mustResetPassword,
       },
     };
