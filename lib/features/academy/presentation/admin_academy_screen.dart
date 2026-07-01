@@ -45,10 +45,7 @@ class AdminAcademyScreen extends ConsumerWidget {
             builder: (context, constraints) {
               final isLarge = constraints.maxWidth >= 600;
               const child = TabBarView(
-                children: [
-                  _AdminAcademyPlansTab(),
-                  _AdminAcademyFeaturesTab(),
-                ],
+                children: [_AdminAcademyPlansTab(), _AdminAcademyFeaturesTab()],
               );
 
               if (isLarge) {
@@ -101,9 +98,8 @@ class _AdminAcademyPlansTab extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
-                    onPressed: () => ref
-                        .read(adminAcademyPlansProvider.notifier)
-                        .refresh(),
+                    onPressed: () =>
+                        ref.read(adminAcademyPlansProvider.notifier).refresh(),
                     icon: const Icon(LucideIcons.refreshCw, size: 16),
                     label: const Text('Reintentar'),
                   ),
@@ -231,7 +227,9 @@ class _AdminPlanCard extends ConsumerWidget {
             child: const Text('Cancelar'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.negative),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.negative,
+            ),
             onPressed: () async {
               Navigator.of(ctx).pop();
               try {
@@ -290,10 +288,11 @@ class _AdminPlanCard extends ConsumerWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: (plan.isActive
-                                  ? AppColors.positive
-                                  : glassTheme.textSecondary)
-                              .withOpacity(0.15),
+                          color:
+                              (plan.isActive
+                                      ? AppColors.positive
+                                      : glassTheme.textSecondary)
+                                  .withOpacity(0.15),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -373,7 +372,10 @@ class _AdminPlanCard extends ConsumerWidget {
                   onPressed: () => _showEditDialog(context, ref),
                 ),
                 IconButton(
-                  icon: const Icon(LucideIcons.trash2, color: AppColors.negative),
+                  icon: const Icon(
+                    LucideIcons.trash2,
+                    color: AppColors.negative,
+                  ),
                   onPressed: () => _confirmDelete(context, ref),
                 ),
               ],
@@ -401,6 +403,7 @@ class _EditPlanDialogState extends ConsumerState<_EditPlanDialog> {
   late TextEditingController _priceOfferCtrl;
   late TextEditingController _nameCtrl;
   late TextEditingController _subtitleCtrl;
+  late TextEditingController _urlCtrl;
   late bool _isActive;
   late int _sortOrder;
   late List<int> _selectedFeatureIds;
@@ -415,6 +418,7 @@ class _EditPlanDialogState extends ConsumerState<_EditPlanDialog> {
     _priceOfferCtrl = TextEditingController(
       text: widget.plan.priceOffer?.toStringAsFixed(2) ?? '',
     );
+    _urlCtrl = TextEditingController(text: widget.plan.url ?? '');
 
     final esTrans = widget.plan.translations.firstWhere(
       (t) => t.locale == 'es',
@@ -435,6 +439,7 @@ class _EditPlanDialogState extends ConsumerState<_EditPlanDialog> {
     _priceOfferCtrl.dispose();
     _nameCtrl.dispose();
     _subtitleCtrl.dispose();
+    _urlCtrl.dispose();
     super.dispose();
   }
 
@@ -446,12 +451,15 @@ class _EditPlanDialogState extends ConsumerState<_EditPlanDialog> {
     final regular = double.parse(_priceRegularCtrl.text.trim());
     final offerText = _priceOfferCtrl.text.trim();
     final offer = offerText.isNotEmpty ? double.parse(offerText) : null;
+    final urlText = _urlCtrl.text.trim();
+    final url = urlText.isNotEmpty ? urlText : null;
 
     final delta = <String, dynamic>{
       'priceRegular': regular,
       'priceOffer': offer,
       'isActive': _isActive,
       'sortOrder': _sortOrder,
+      'url': url,
       'translations': [
         {
           'locale': 'es',
@@ -524,6 +532,15 @@ class _EditPlanDialogState extends ConsumerState<_EditPlanDialog> {
                 ),
               ),
               const SizedBox(height: 12),
+              TextFormField(
+                controller: _urlCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'URL de suscripción (opcional)',
+                  hintText: 'e.g. https://checkout.stripe.com/...',
+                ),
+                keyboardType: TextInputType.url,
+              ),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
@@ -541,7 +558,10 @@ class _EditPlanDialogState extends ConsumerState<_EditPlanDialog> {
                   Expanded(
                     child: SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Activo', style: TextStyle(fontSize: 14)),
+                      title: const Text(
+                        'Activo',
+                        style: TextStyle(fontSize: 14),
+                      ),
                       value: _isActive,
                       onChanged: (v) => setState(() => _isActive = v),
                     ),
@@ -561,22 +581,35 @@ class _EditPlanDialogState extends ConsumerState<_EditPlanDialog> {
                   if (features.isEmpty) {
                     return const Text(
                       'No hay características globales creadas.',
-                      style: TextStyle(fontStyle: FontStyle.italic, fontSize: 13),
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontSize: 13,
+                      ),
                     );
                   }
                   return Column(
                     children: features.map((feature) {
                       final esTrans = feature.translations.firstWhere(
                         (t) => t.locale == 'es',
-                        orElse: () => const AcademyFeatureTranslation(locale: 'es', label: ''),
+                        orElse: () => const AcademyFeatureTranslation(
+                          locale: 'es',
+                          label: '',
+                        ),
                       );
-                      final name = esTrans.label.isNotEmpty ? esTrans.label : feature.slug;
-                      final isSelected = _selectedFeatureIds.contains(feature.id);
+                      final name = esTrans.label.isNotEmpty
+                          ? esTrans.label
+                          : feature.slug;
+                      final isSelected = _selectedFeatureIds.contains(
+                        feature.id,
+                      );
 
                       return CheckboxListTile(
                         contentPadding: EdgeInsets.zero,
                         title: Text(name, style: const TextStyle(fontSize: 13)),
-                        subtitle: Text('Slug: ${feature.slug}', style: const TextStyle(fontSize: 11)),
+                        subtitle: Text(
+                          'Slug: ${feature.slug}',
+                          style: const TextStyle(fontSize: 11),
+                        ),
                         value: isSelected,
                         onChanged: (val) {
                           setState(() {
@@ -631,6 +664,7 @@ class _CreatePlanDialogState extends ConsumerState<_CreatePlanDialog> {
   final _priceOfferCtrl = TextEditingController();
   final _nameCtrl = TextEditingController();
   final _subtitleCtrl = TextEditingController();
+  final _urlCtrl = TextEditingController();
   bool _isActive = true;
   int _sortOrder = 0;
   final List<int> _selectedFeatureIds = [];
@@ -643,6 +677,7 @@ class _CreatePlanDialogState extends ConsumerState<_CreatePlanDialog> {
     _priceOfferCtrl.dispose();
     _nameCtrl.dispose();
     _subtitleCtrl.dispose();
+    _urlCtrl.dispose();
     super.dispose();
   }
 
@@ -654,6 +689,8 @@ class _CreatePlanDialogState extends ConsumerState<_CreatePlanDialog> {
     final regular = double.parse(_priceRegularCtrl.text.trim());
     final offerText = _priceOfferCtrl.text.trim();
     final offer = offerText.isNotEmpty ? double.parse(offerText) : null;
+    final urlText = _urlCtrl.text.trim();
+    final url = urlText.isNotEmpty ? urlText : null;
 
     final planPayload = <String, dynamic>{
       'slug': _slugCtrl.text.trim().toLowerCase(),
@@ -662,6 +699,7 @@ class _CreatePlanDialogState extends ConsumerState<_CreatePlanDialog> {
       'currency': 'USD',
       'sortOrder': _sortOrder,
       'isActive': _isActive,
+      'url': url,
       'translations': [
         {
           'locale': 'es',
@@ -732,15 +770,30 @@ class _CreatePlanDialogState extends ConsumerState<_CreatePlanDialog> {
               TextFormField(
                 controller: _priceRegularCtrl,
                 decoration: const InputDecoration(labelText: 'Precio Regular'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 validator: (v) =>
                     v == null || double.tryParse(v) == null ? 'Inválido' : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _priceOfferCtrl,
-                decoration: const InputDecoration(labelText: 'Precio Oferta (opcional)'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                  labelText: 'Precio Oferta (opcional)',
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _urlCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'URL de suscripción (opcional)',
+                  hintText: 'e.g. https://checkout.stripe.com/...',
+                ),
+                keyboardType: TextInputType.url,
               ),
               const SizedBox(height: 12),
               Row(
@@ -760,7 +813,10 @@ class _CreatePlanDialogState extends ConsumerState<_CreatePlanDialog> {
                   Expanded(
                     child: SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Activo', style: TextStyle(fontSize: 14)),
+                      title: const Text(
+                        'Activo',
+                        style: TextStyle(fontSize: 14),
+                      ),
                       value: _isActive,
                       onChanged: (v) => setState(() => _isActive = v),
                     ),
@@ -780,22 +836,35 @@ class _CreatePlanDialogState extends ConsumerState<_CreatePlanDialog> {
                   if (features.isEmpty) {
                     return const Text(
                       'No hay características globales creadas. Creá algunas primero.',
-                      style: TextStyle(fontStyle: FontStyle.italic, fontSize: 13),
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontSize: 13,
+                      ),
                     );
                   }
                   return Column(
                     children: features.map((feature) {
                       final esTrans = feature.translations.firstWhere(
                         (t) => t.locale == 'es',
-                        orElse: () => const AcademyFeatureTranslation(locale: 'es', label: ''),
+                        orElse: () => const AcademyFeatureTranslation(
+                          locale: 'es',
+                          label: '',
+                        ),
                       );
-                      final name = esTrans.label.isNotEmpty ? esTrans.label : feature.slug;
-                      final isSelected = _selectedFeatureIds.contains(feature.id);
+                      final name = esTrans.label.isNotEmpty
+                          ? esTrans.label
+                          : feature.slug;
+                      final isSelected = _selectedFeatureIds.contains(
+                        feature.id,
+                      );
 
                       return CheckboxListTile(
                         contentPadding: EdgeInsets.zero,
                         title: Text(name, style: const TextStyle(fontSize: 13)),
-                        subtitle: Text('Slug: ${feature.slug}', style: const TextStyle(fontSize: 11)),
+                        subtitle: Text(
+                          'Slug: ${feature.slug}',
+                          style: const TextStyle(fontSize: 11),
+                        ),
                         value: isSelected,
                         onChanged: (val) {
                           setState(() {

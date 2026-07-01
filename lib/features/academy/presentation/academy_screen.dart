@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
@@ -421,21 +422,131 @@ class _PlanCard extends StatelessWidget {
           ),
 
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              // Acción de selección / compra
-            },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              backgroundColor: isPopular ? AppColors.accent : null,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text('Inscribirme Ahora'),
-          ),
+          _SubscribeButton(plan: plan, isPopular: isPopular),
         ],
       ),
+    );
+  }
+}
+
+class _SubscribeButton extends StatefulWidget {
+  const _SubscribeButton({required this.plan, required this.isPopular});
+
+  final AcademyPlan plan;
+  final bool isPopular;
+
+  @override
+  State<_SubscribeButton> createState() => _SubscribeButtonState();
+}
+
+class _SubscribeButtonState extends State<_SubscribeButton> {
+  bool _isLoading = false;
+
+  Future<void> _handleSubscription() async {
+    final urlStr = widget.plan.url;
+
+    if (urlStr == null || urlStr.trim().isEmpty) {
+      await _showFallbackDialog();
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final uri = Uri.parse(urlStr.trim());
+      if (await canLaunchUrl(uri)) {
+        final success = await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
+        if (!success && mounted) {
+          _showErrorSnackBar('No se pudo abrir el enlace de suscripción.');
+        }
+      } else if (mounted) {
+        _showErrorSnackBar(
+          'El enlace de suscripción no es válido o no se puede abrir.',
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        _showErrorSnackBar('Ocurrió un error al intentar abrir el enlace.');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: AppColors.negative),
+    );
+  }
+
+  Future<void> _showFallbackDialog() async {
+    final glassTheme = context.glass;
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          backgroundColor: glassTheme.glassFill.withValues(alpha: 0.9),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(
+              color: glassTheme.glassBorder.withValues(alpha: 0.2),
+            ),
+          ),
+          title: Text(
+            'Inscripción de forma directa',
+            style: TextStyle(
+              color: glassTheme.textPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            'Este paquete requiere inscripción directa con nuestro soporte. Por favor, comunícate con nosotros para brindarte asistencia inmediata.',
+            style: TextStyle(color: glassTheme.textSecondary),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Entendido',
+                style: TextStyle(
+                  color: AppColors.accent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: _isLoading ? null : _handleSubscription,
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        backgroundColor: widget.isPopular ? AppColors.accent : null,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: _isLoading
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
+          : const Text('Inscribirme Ahora'),
     );
   }
 }

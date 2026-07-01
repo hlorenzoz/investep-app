@@ -25,6 +25,7 @@ class AcademyPlan {
   final double? priceOffer;
   final String currency;
   final List<AcademyFeature> features;
+  final String? url;
 
   const AcademyPlan({
     required this.id,
@@ -35,6 +36,7 @@ class AcademyPlan {
     this.priceOffer,
     required this.currency,
     required this.features,
+    this.url,
   });
 
   factory AcademyPlan.fromJson(Map<String, dynamic> json) {
@@ -51,6 +53,7 @@ class AcademyPlan {
       features: (json['features'] as List<dynamic>)
           .map((e) => AcademyFeature.fromJson(e as Map<String, dynamic>))
           .toList(),
+      url: json['url'] as String?,
     );
   }
 }
@@ -91,6 +94,7 @@ class AcademyPlanAdmin {
   final bool isActive;
   final List<AcademyPlanTranslation> translations;
   final List<int> featureIds;
+  final String? url;
 
   const AcademyPlanAdmin({
     required this.id,
@@ -102,6 +106,7 @@ class AcademyPlanAdmin {
     required this.isActive,
     required this.translations,
     required this.featureIds,
+    this.url,
   });
 
   factory AcademyPlanAdmin.fromJson(Map<String, dynamic> json) {
@@ -123,6 +128,7 @@ class AcademyPlanAdmin {
       featureIds: (json['featureIds'] as List<dynamic>)
           .map((e) => e as int)
           .toList(),
+      url: json['url'] as String?,
     );
   }
 }

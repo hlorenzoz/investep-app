@@ -15,6 +15,7 @@ void main() {
         'features': [
           {'id': 10, 'slug': 'live_classes', 'label': 'Clases en Vivo'},
         ],
+        'url': 'https://checkout.stripe.com/pay/gold',
       };
 
       final plan = AcademyPlan.fromJson(json);
@@ -26,6 +27,32 @@ void main() {
       expect(plan.priceOffer, 4199.0);
       expect(plan.features.length, 1);
       expect(plan.features.first.label, 'Clases en Vivo');
+      expect(plan.url, 'https://checkout.stripe.com/pay/gold');
+    });
+
+    test('debe manejar url nulo o ausente en el JSON de cliente', () {
+      final jsonWithNull = {
+        'id': 1,
+        'slug': 'gold',
+        'priceRegular': 10000.0,
+        'currency': 'USD',
+        'features': <Map<String, dynamic>>[],
+        'url': null,
+      };
+
+      final jsonWithoutUrl = {
+        'id': 2,
+        'slug': 'silver',
+        'priceRegular': 8000.0,
+        'currency': 'USD',
+        'features': <Map<String, dynamic>>[],
+      };
+
+      final plan1 = AcademyPlan.fromJson(jsonWithNull);
+      final plan2 = AcademyPlan.fromJson(jsonWithoutUrl);
+
+      expect(plan1.url, isNull);
+      expect(plan2.url, isNull);
     });
 
     test('debe deserializar un JSON de administración correctamente', () {
@@ -41,6 +68,7 @@ void main() {
           {'locale': 'es', 'name': 'Paquete Silver', 'subtitle': '2 semanas'},
         ],
         'featureIds': [1, 2, 3],
+        'url': 'https://checkout.stripe.com/pay/silver',
       };
 
       final adminPlan = AcademyPlanAdmin.fromJson(json);
@@ -50,6 +78,38 @@ void main() {
       expect(adminPlan.isActive, isTrue);
       expect(adminPlan.translations.first.name, 'Paquete Silver');
       expect(adminPlan.featureIds, equals([1, 2, 3]));
+      expect(adminPlan.url, 'https://checkout.stripe.com/pay/silver');
+    });
+
+    test('debe manejar url nulo o ausente en el JSON de administración', () {
+      final jsonWithNull = {
+        'id': 2,
+        'slug': 'silver',
+        'priceRegular': 8299.0,
+        'currency': 'USD',
+        'sortOrder': 2,
+        'isActive': true,
+        'translations': <Map<String, dynamic>>[],
+        'featureIds': <int>[],
+        'url': null,
+      };
+
+      final jsonWithoutUrl = {
+        'id': 3,
+        'slug': 'bronze',
+        'priceRegular': 5000.0,
+        'currency': 'USD',
+        'sortOrder': 3,
+        'isActive': true,
+        'translations': <Map<String, dynamic>>[],
+        'featureIds': <int>[],
+      };
+
+      final plan1 = AcademyPlanAdmin.fromJson(jsonWithNull);
+      final plan2 = AcademyPlanAdmin.fromJson(jsonWithoutUrl);
+
+      expect(plan1.url, isNull);
+      expect(plan2.url, isNull);
     });
   });
 
