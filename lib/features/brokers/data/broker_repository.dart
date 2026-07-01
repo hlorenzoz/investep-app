@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/network/retry.dart';
 import '../domain/broker.dart';
 
@@ -33,6 +34,43 @@ class BrokerRepository {
       baseDelay: _retryBaseDelay,
       maxAttempts: _maxAttempts,
     );
+  }
+
+  /// `POST /admin/brokers` → crear un broker.
+  Future<Broker> createBroker(Map<String, dynamic> data) async {
+    try {
+      final res = await _dio.post<Map<String, dynamic>>(
+        '/admin/brokers',
+        data: data,
+      );
+      final brokerJson = res.data!['broker'] as Map<String, dynamic>;
+      return Broker.fromJson(brokerJson);
+    } on DioException catch (e) {
+      throw ApiException.fromDioException(e);
+    }
+  }
+
+  /// `PATCH /admin/brokers/{id}` → actualizar un broker.
+  Future<Broker> updateBroker(int id, Map<String, dynamic> data) async {
+    try {
+      final res = await _dio.patch<Map<String, dynamic>>(
+        '/admin/brokers/$id',
+        data: data,
+      );
+      final brokerJson = res.data!['broker'] as Map<String, dynamic>;
+      return Broker.fromJson(brokerJson);
+    } on DioException catch (e) {
+      throw ApiException.fromDioException(e);
+    }
+  }
+
+  /// `DELETE /admin/brokers/{id}` → eliminar un broker.
+  Future<void> deleteBroker(int id) async {
+    try {
+      await _dio.delete<void>('/admin/brokers/$id');
+    } on DioException catch (e) {
+      throw ApiException.fromDioException(e);
+    }
   }
 }
 

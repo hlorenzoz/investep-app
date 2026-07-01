@@ -375,7 +375,7 @@ class _PlanCard extends StatelessWidget {
                   fit: BoxFit.scaleDown,
                   child: Text(
                     '\$${(plan.priceOffer ?? plan.priceRegular).toStringAsFixed(0)} ${plan.currency}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w900,
                       color: AppColors.positive,

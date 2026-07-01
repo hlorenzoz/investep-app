@@ -23,15 +23,14 @@ void main() {
   setUp(() {
     repo = MockAdminRepository();
     container = ProviderContainer(
-      overrides: [
-        adminRepositoryProvider.overrideWithValue(repo),
-      ],
+      overrides: [adminRepositoryProvider.overrideWithValue(repo)],
     );
     addTearDown(container.dispose);
   });
 
   AdminUsersNotifier notifier() => container.read(adminUsersProvider.notifier);
-  AsyncValue<List<UserAdmin>> currentState() => container.read(adminUsersProvider);
+  AsyncValue<List<UserAdmin>> currentState() =>
+      container.read(adminUsersProvider);
 
   group('AdminUsersNotifier', () {
     test('build → obtiene la lista de usuarios del repositorio', () async {
@@ -48,7 +47,11 @@ void main() {
     });
 
     test('createUser → llama al repo y hace refresh de la lista', () async {
-      final input = {'email': 'new@test.com', 'fullName': 'New', 'role': 'user'};
+      final input = {
+        'email': 'new@test.com',
+        'fullName': 'New',
+        'role': 'user',
+      };
       when(() => repo.createUser(input)).thenAnswer((_) async => user);
       when(() => repo.getUsers()).thenAnswer((_) async => [user]);
 
@@ -63,7 +66,9 @@ void main() {
 
     test('updateUser → llama al repo y hace refresh de la lista', () async {
       final updateData = {'fullName': 'Updated Name'};
-      when(() => repo.updateUser('u-1', updateData)).thenAnswer((_) async => user);
+      when(
+        () => repo.updateUser('u-1', updateData),
+      ).thenAnswer((_) async => user);
       when(() => repo.getUsers()).thenAnswer((_) async => [user]);
 
       container.listen(adminUsersProvider, (_, _) {});

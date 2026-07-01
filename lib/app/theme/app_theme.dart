@@ -273,17 +273,17 @@ abstract final class AppTheme {
           );
         }),
       ),
-      navigationRailTheme: NavigationRailThemeData(
+      navigationRailTheme: const NavigationRailThemeData(
         backgroundColor: Colors.transparent,
-        indicatorColor: const Color(0xFFE2E8F0), // Slate 200
-        selectedIconTheme: const IconThemeData(color: Colors.black),
-        unselectedIconTheme: const IconThemeData(color: Color(0xFF475569)),
-        selectedLabelTextStyle: const TextStyle(
+        indicatorColor: Color(0xFFE2E8F0), // Slate 200
+        selectedIconTheme: IconThemeData(color: Colors.black),
+        unselectedIconTheme: IconThemeData(color: Color(0xFF475569)),
+        selectedLabelTextStyle: TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.bold,
           fontSize: 12,
         ),
-        unselectedLabelTextStyle: const TextStyle(
+        unselectedLabelTextStyle: TextStyle(
           color: Color(0xFF475569),
           fontSize: 12,
         ),

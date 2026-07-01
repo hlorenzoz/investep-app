@@ -27,10 +27,7 @@ class MockUrlLauncher extends UrlLauncherPlatform
   }
 
   @override
-  Future<bool> launchUrl(
-    String url,
-    LaunchOptions options,
-  ) async {
+  Future<bool> launchUrl(String url, LaunchOptions options) async {
     await Future<void>.delayed(const Duration(milliseconds: 5));
     launchedUrl = url;
     launchMode = options.mode;
@@ -119,7 +116,9 @@ void main() {
       // Verificar que cambia a cargando temporalmente
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-      await tester.pump(const Duration(milliseconds: 20)); // Espera el delay del mock
+      await tester.pump(
+        const Duration(milliseconds: 20),
+      ); // Espera el delay del mock
       await tester.pumpAndSettle(); // Completa la llamada asíncrona
 
       expect(

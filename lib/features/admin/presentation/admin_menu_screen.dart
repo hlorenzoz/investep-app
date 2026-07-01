@@ -50,9 +50,19 @@ class AdminMenuScreen extends ConsumerWidget {
                 _buildMenuCard(
                   context,
                   title: 'Gestión de Usuarios',
-                  subtitle: 'Visualizar perfiles de usuario, roles y aprovisionar.',
+                  subtitle:
+                      'Visualizar perfiles de usuario, roles y aprovisionar.',
                   icon: LucideIcons.users2,
                   route: '/admin/users',
+                  enabled: true,
+                ),
+                const SizedBox(height: 16),
+                _buildMenuCard(
+                  context,
+                  title: 'Configuración de Brókers',
+                  subtitle: 'Gestionar el catálogo de brókers del sistema.',
+                  icon: LucideIcons.building2,
+                  route: '/admin/brokers',
                   enabled: true,
                 ),
               ],
@@ -96,10 +106,11 @@ class AdminMenuScreen extends ConsumerWidget {
                 height: 48,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: (enabled
-                          ? Theme.of(context).colorScheme.secondary
-                          : glassTheme.textSecondary)
-                      .withValues(alpha: 0.15),
+                  color:
+                      (enabled
+                              ? Theme.of(context).colorScheme.secondary
+                              : glassTheme.textSecondary)
+                          .withValues(alpha: 0.15),
                 ),
                 child: Icon(
                   icon,

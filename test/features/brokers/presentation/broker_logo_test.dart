@@ -54,4 +54,22 @@ void main() {
 
     expect(find.byType(SvgPicture), findsOneWidget);
   });
+
+  testWidgets('logo direct SVG → SvgPicture', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        const BrokerLogo(
+          broker: Broker(
+            id: 1,
+            slug: 'x',
+            name: 'X',
+            logo:
+                '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"></svg>',
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(SvgPicture), findsOneWidget);
+  });
 }

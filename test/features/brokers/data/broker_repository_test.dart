@@ -145,4 +145,95 @@ void main() {
     expect(calls, 2);
     expect(brokers, isEmpty);
   });
+
+  group('CRUD operations', () {
+    test(
+      'createBroker → envia POST a /admin/brokers y retorna el Broker creado',
+      () async {
+        final payload = {
+          'slug': 'test-broker',
+          'name': 'Test Broker',
+          'url': 'https://test.com',
+        };
+
+        when(
+          () => dio.post<Map<String, dynamic>>('/admin/brokers', data: payload),
+        ).thenAnswer(
+          (_) async => ok({
+            'broker': {
+              'id': 10,
+              'slug': 'test-broker',
+              'name': 'Test Broker',
+              'url': 'https://test.com',
+              'urlSecondary': null,
+              'logo': null,
+              'favicon': null,
+              'icon': null,
+            },
+          }),
+        );
+
+        final broker = await repo.createBroker(payload);
+
+        expect(broker.id, 10);
+        expect(broker.slug, 'test-broker');
+        expect(broker.name, 'Test Broker');
+        expect(broker.url, 'https://test.com');
+        verify(
+          () => dio.post<Map<String, dynamic>>('/admin/brokers', data: payload),
+        ).called(1);
+      },
+    );
+
+    test(
+      'updateBroker → envia PATCH a /admin/brokers/{id} y retorna el Broker actualizado',
+      () async {
+        final payload = {'name': 'Updated Broker'};
+
+        when(
+          () => dio.patch<Map<String, dynamic>>(
+            '/admin/brokers/10',
+            data: payload,
+          ),
+        ).thenAnswer(
+          (_) async => ok({
+            'broker': {
+              'id': 10,
+              'slug': 'test-broker',
+              'name': 'Updated Broker',
+              'url': 'https://test.com',
+              'urlSecondary': null,
+              'logo': null,
+              'favicon': null,
+              'icon': null,
+            },
+          }),
+        );
+
+        final broker = await repo.updateBroker(10, payload);
+
+        expect(broker.id, 10);
+        expect(broker.name, 'Updated Broker');
+        verify(
+          () => dio.patch<Map<String, dynamic>>(
+            '/admin/brokers/10',
+            data: payload,
+          ),
+        ).called(1);
+      },
+    );
+
+    test('deleteBroker → envia DELETE a /admin/brokers/{id}', () async {
+      when(() => dio.delete<void>('/admin/brokers/10')).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: '/'),
+          statusCode: 200,
+        ),
+      );
+
+      await repo.deleteBroker(10);
+
+      verify(() => dio.delete<void>('/admin/brokers/10')).called(1);
+    });
+  });
 }

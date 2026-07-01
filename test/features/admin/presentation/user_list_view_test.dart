@@ -41,9 +41,7 @@ void main() {
 
   Widget createTestWidget() {
     return ProviderScope(
-      overrides: [
-        adminRepositoryProvider.overrideWithValue(repo),
-      ],
+      overrides: [adminRepositoryProvider.overrideWithValue(repo)],
       child: Consumer(
         builder: (context, ref, _) {
           final locale = ref.watch(localeProvider);
@@ -62,77 +60,97 @@ void main() {
     );
   }
 
-  testWidgets('Renderiza lista de usuarios con nombres, emails, tags de rol y badges', (tester) async {
-    when(() => repo.getUsers()).thenAnswer((_) async => [userAdmin, userRegular]);
+  testWidgets(
+    'Renderiza lista de usuarios con nombres, emails, tags de rol y badges',
+    (tester) async {
+      when(
+        () => repo.getUsers(),
+      ).thenAnswer((_) async => [userAdmin, userRegular]);
 
-    await tester.pumpWidget(createTestWidget());
-    await tester.pump(); // Inicia carga
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump(); // Inicia carga
+      await tester.pumpAndSettle();
 
-    // Comprobar textos
-    expect(find.text('Admin User'), findsOneWidget);
-    expect(find.text('admin@example.com'), findsOneWidget);
-    expect(find.text('Regular User'), findsOneWidget);
-    expect(find.text('user@example.com'), findsOneWidget);
+      // Comprobar textos
+      expect(find.text('Admin User'), findsOneWidget);
+      expect(find.text('admin@example.com'), findsOneWidget);
+      expect(find.text('Regular User'), findsOneWidget);
+      expect(find.text('user@example.com'), findsOneWidget);
 
-    // Tags de rol
-    expect(find.text('Admin'), findsOneWidget);
-    expect(find.text('User'), findsOneWidget);
+      // Tags de rol
+      expect(find.text('Admin'), findsOneWidget);
+      expect(find.text('User'), findsOneWidget);
 
-    // Badge "Forzar Clave" (solo el admin tiene mustResetPassword: true)
-    expect(find.text('Forzar Clave'), findsOneWidget);
-  });
+      // Badge "Forzar Clave" (solo el admin tiene mustResetPassword: true)
+      expect(find.text('Forzar Clave'), findsOneWidget);
+    },
+  );
 
-  testWidgets('Al presionar FAB (+) abre el diálogo de aprovisionamiento de usuario', (tester) async {
-    when(() => repo.getUsers()).thenAnswer((_) async => []);
+  testWidgets(
+    'Al presionar FAB (+) abre el diálogo de aprovisionamiento de usuario',
+    (tester) async {
+      when(() => repo.getUsers()).thenAnswer((_) async => []);
 
-    await tester.pumpWidget(createTestWidget());
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-    // Tap en FAB
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pumpAndSettle();
+      // Tap en FAB
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
 
-    // Debe abrir UserFormDialog
-    expect(find.byType(UserFormDialog), findsOneWidget);
-    expect(find.text('Aprovisionar Usuario'), findsOneWidget);
-  });
+      // Debe abrir UserFormDialog
+      expect(find.byType(UserFormDialog), findsOneWidget);
+      expect(find.text('Aprovisionar Usuario'), findsOneWidget);
+    },
+  );
 
-  testWidgets('Al presionar editar en una tarjeta abre el formulario cargado con sus datos', (tester) async {
-    when(() => repo.getUsers()).thenAnswer((_) async => [userRegular]);
+  testWidgets(
+    'Al presionar editar en una tarjeta abre el formulario cargado con sus datos',
+    (tester) async {
+      when(() => repo.getUsers()).thenAnswer((_) async => [userRegular]);
 
-    await tester.pumpWidget(createTestWidget());
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-    // Tocar botón de edición (primer IconButton o Icon con LucideIcons.edit3)
-    await tester.tap(find.byIcon(LucideIcons.edit3).first);
-    await tester.pumpAndSettle();
+      // Tocar botón de edición (primer IconButton o Icon con LucideIcons.edit3)
+      await tester.tap(find.byIcon(LucideIcons.edit3).first);
+      await tester.pumpAndSettle();
 
-    // Debe abrir UserFormDialog en modo edición
-    expect(find.byType(UserFormDialog), findsOneWidget);
-    expect(find.text('Editar Usuario'), findsOneWidget);
-    expect(find.text('Regular User'), findsWidgets); // En la tarjeta y en el input
-  });
+      // Debe abrir UserFormDialog en modo edición
+      expect(find.byType(UserFormDialog), findsOneWidget);
+      expect(find.text('Editar Usuario'), findsOneWidget);
+      expect(
+        find.text('Regular User'),
+        findsWidgets,
+      ); // En la tarjeta y en el input
+    },
+  );
 
-  testWidgets('Al presionar eliminar muestra diálogo de confirmación y llama al repositorio en confirmación', (tester) async {
-    when(() => repo.getUsers()).thenAnswer((_) async => [userRegular]);
-    when(() => repo.deleteUser('u-2')).thenAnswer((_) async => {});
+  testWidgets(
+    'Al presionar eliminar muestra diálogo de confirmación y llama al repositorio en confirmación',
+    (tester) async {
+      when(() => repo.getUsers()).thenAnswer((_) async => [userRegular]);
+      when(() => repo.deleteUser('u-2')).thenAnswer((_) async => {});
 
-    await tester.pumpWidget(createTestWidget());
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-    // Tocar botón de eliminar (el segundo IconButton o el icono de basura)
-    await tester.tap(find.byType(IconButton).at(1));
-    await tester.pumpAndSettle();
+      // Tocar botón de eliminar (el segundo IconButton o el icono de basura)
+      await tester.tap(find.byType(IconButton).at(1));
+      await tester.pumpAndSettle();
 
-    // Debe mostrar diálogo de confirmación
-    expect(find.text('¿Eliminar usuario?'), findsOneWidget);
-    expect(find.textContaining('Esta acción es destructiva e irreversible.'), findsOneWidget);
+      // Debe mostrar diálogo de confirmación
+      expect(find.text('¿Eliminar usuario?'), findsOneWidget);
+      expect(
+        find.textContaining('Esta acción es destructiva e irreversible.'),
+        findsOneWidget,
+      );
 
-    // Confirmar
-    await tester.tap(find.text('Eliminar'));
-    await tester.pumpAndSettle();
+      // Confirmar
+      await tester.tap(find.text('Eliminar'));
+      await tester.pumpAndSettle();
 
-    verify(() => repo.deleteUser('u-2')).called(1);
-  });
+      verify(() => repo.deleteUser('u-2')).called(1);
+    },
+  );
 }

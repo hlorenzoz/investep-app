@@ -139,7 +139,8 @@ class MainShell extends ConsumerWidget {
                             onDestinationSelected: (idx) {
                               navigationShell.goBranch(
                                 idx,
-                                initialLocation: idx == navigationShell.currentIndex,
+                                initialLocation:
+                                    idx == navigationShell.currentIndex,
                               );
                             },
                             labelType: NavigationRailLabelType.all,

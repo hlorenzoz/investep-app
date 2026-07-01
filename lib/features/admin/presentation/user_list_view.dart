@@ -56,7 +56,8 @@ class UserListView extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
-                    onPressed: () => ref.read(adminUsersProvider.notifier).refresh(),
+                    onPressed: () =>
+                        ref.read(adminUsersProvider.notifier).refresh(),
                     icon: const Icon(LucideIcons.refreshCw, size: 16),
                     label: const Text('Reintentar'),
                   ),
@@ -144,7 +145,9 @@ class _UserCard extends ConsumerWidget {
             height: 44,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.1),
             ),
             child: Center(
               child: Text(
@@ -197,11 +200,19 @@ class _UserCard extends ConsumerWidget {
           const SizedBox(width: 8),
           // Botones de acción
           IconButton(
-            icon: Icon(LucideIcons.edit3, color: glassTheme.textSecondary, size: 20),
+            icon: Icon(
+              LucideIcons.edit3,
+              color: glassTheme.textSecondary,
+              size: 20,
+            ),
             onPressed: () => _showEditForm(context),
           ),
           IconButton(
-            icon: const Icon(LucideIcons.trash2, color: AppColors.negative, size: 20),
+            icon: const Icon(
+              LucideIcons.trash2,
+              color: AppColors.negative,
+              size: 20,
+            ),
             onPressed: () => _confirmDelete(context, ref),
           ),
         ],
@@ -311,7 +322,9 @@ class _UserCard extends ConsumerWidget {
             ),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.negative),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.negative,
+            ),
             onPressed: () async {
               Navigator.pop(context);
               try {

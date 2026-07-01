@@ -69,7 +69,9 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
 
     try {
       if (_isEditing) {
-        await ref.read(adminUsersProvider.notifier).updateUser(widget.user!.id, data);
+        await ref
+            .read(adminUsersProvider.notifier)
+            .updateUser(widget.user!.id, data);
       } else {
         await ref.read(adminUsersProvider.notifier).createUser(data);
       }
@@ -164,7 +166,9 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
                   keyboardType: TextInputType.emailAddress,
                   style: TextStyle(color: glassTheme.textPrimary),
                   validator: (val) {
-                    if (val == null || val.isEmpty) return 'El correo es requerido';
+                    if (val == null || val.isEmpty) {
+                      return 'El correo es requerido';
+                    }
                     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
                     if (!emailRegex.hasMatch(val.trim())) {
                       return 'Formato de correo inválido';
@@ -220,7 +224,9 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
                   controller: _passwordController,
                   enabled: !_isLoading,
                   decoration: InputDecoration(
-                    labelText: _isEditing ? 'Nueva Contraseña (Opcional)' : 'Contraseña (Opcional)',
+                    labelText: _isEditing
+                        ? 'Nueva Contraseña (Opcional)'
+                        : 'Contraseña (Opcional)',
                     prefixIcon: const Icon(LucideIcons.lock, size: 20),
                     helperText: _isEditing
                         ? 'Si se modifica, obligará a resetearla en su próximo login.'
@@ -239,7 +245,9 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
                   runSpacing: 8,
                   children: [
                     TextButton(
-                      onPressed: _isLoading ? null : () => Navigator.pop(context),
+                      onPressed: _isLoading
+                          ? null
+                          : () => Navigator.pop(context),
                       child: Text(
                         'Cancelar',
                         style: TextStyle(color: glassTheme.textSecondary),
@@ -253,10 +261,14 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
                               height: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation(Colors.white),
+                                valueColor: AlwaysStoppedAnimation(
+                                  Colors.white,
+                                ),
                               ),
                             )
-                          : Text(_isEditing ? 'Guardar Cambios' : 'Aprovisionar'),
+                          : Text(
+                              _isEditing ? 'Guardar Cambios' : 'Aprovisionar',
+                            ),
                     ),
                   ],
                 ),

@@ -42,5 +42,5 @@ class AdminUsersNotifier extends AsyncNotifier<List<UserAdmin>> {
 
 final adminUsersProvider =
     AsyncNotifierProvider<AdminUsersNotifier, List<UserAdmin>>(
-  AdminUsersNotifier.new,
-);
+      AdminUsersNotifier.new,
+    );

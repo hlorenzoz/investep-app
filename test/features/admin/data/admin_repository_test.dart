@@ -16,22 +16,22 @@ void main() {
   });
 
   Response<Map<String, dynamic>> ok(Map<String, dynamic> data) => Response(
-        requestOptions: RequestOptions(path: '/'),
-        statusCode: 200,
-        data: data,
-      );
+    requestOptions: RequestOptions(path: '/'),
+    statusCode: 200,
+    data: data,
+  );
 
   DioException dioErr(int status, String code, String message) => DioException(
-        requestOptions: RequestOptions(path: '/'),
-        type: DioExceptionType.badResponse,
-        response: Response(
-          requestOptions: RequestOptions(path: '/'),
-          statusCode: status,
-          data: {
-            'error': {'code': code, 'message': message},
-          },
-        ),
-      );
+    requestOptions: RequestOptions(path: '/'),
+    type: DioExceptionType.badResponse,
+    response: Response(
+      requestOptions: RequestOptions(path: '/'),
+      statusCode: status,
+      data: {
+        'error': {'code': code, 'message': message},
+      },
+    ),
+  );
 
   final userRaw = {
     'id': 'u-1',
@@ -46,7 +46,7 @@ void main() {
     test('200 → parsea lista de usuarios correctamente', () async {
       when(() => dio.get<Map<String, dynamic>>('/admin/users')).thenAnswer(
         (_) async => ok({
-          'users': [userRaw]
+          'users': [userRaw],
         }),
       );
 
@@ -56,24 +56,27 @@ void main() {
       expect(users[0].role, 'admin');
     });
 
-    test('503 transitorio → reintenta y arroja error tras 3 intentos', () async {
-      when(() => dio.get<Map<String, dynamic>>('/admin/users')).thenThrow(
-        dioErr(503, 'SERVICE_UNAVAILABLE', 'Backend temporalmente inactivo'),
-      );
+    test(
+      '503 transitorio → reintenta y arroja error tras 3 intentos',
+      () async {
+        when(() => dio.get<Map<String, dynamic>>('/admin/users')).thenThrow(
+          dioErr(503, 'SERVICE_UNAVAILABLE', 'Backend temporalmente inactivo'),
+        );
 
-      await expectLater(
-        repo.getUsers(),
-        throwsA(isA<ApiException>().having((e) => e.status, 'status', 503)),
-      );
-      verify(() => dio.get<Map<String, dynamic>>('/admin/users')).called(3);
-    });
+        await expectLater(
+          repo.getUsers(),
+          throwsA(isA<ApiException>().having((e) => e.status, 'status', 503)),
+        );
+        verify(() => dio.get<Map<String, dynamic>>('/admin/users')).called(3);
+      },
+    );
   });
 
   group('getUser', () {
     test('200 → parsea el detalle del usuario', () async {
-      when(() => dio.get<Map<String, dynamic>>('/admin/users/u-1')).thenAnswer(
-        (_) async => ok({'user': userRaw}),
-      );
+      when(
+        () => dio.get<Map<String, dynamic>>('/admin/users/u-1'),
+      ).thenAnswer((_) async => ok({'user': userRaw}));
 
       final user = await repo.getUser('u-1');
       expect(user.id, 'u-1');
@@ -88,8 +91,9 @@ void main() {
         'fullName': 'New',
         'role': 'user',
       };
-      when(() => dio.post<Map<String, dynamic>>('/admin/users', data: input))
-          .thenAnswer((_) async => ok({'user': userRaw}));
+      when(
+        () => dio.post<Map<String, dynamic>>('/admin/users', data: input),
+      ).thenAnswer((_) async => ok({'user': userRaw}));
 
       final created = await repo.createUser(input);
       expect(created.id, 'u-1');
@@ -97,8 +101,9 @@ void main() {
 
     test('POST falla con 409 → propaga ApiException', () async {
       final input = {'email': 'dup@test.com'};
-      when(() => dio.post<Map<String, dynamic>>('/admin/users', data: input))
-          .thenThrow(dioErr(409, 'CONFLICT', 'Email ya en uso'));
+      when(
+        () => dio.post<Map<String, dynamic>>('/admin/users', data: input),
+      ).thenThrow(dioErr(409, 'CONFLICT', 'Email ya en uso'));
 
       await expectLater(
         repo.createUser(input),
@@ -114,8 +119,12 @@ void main() {
   group('updateUser', () {
     test('PATCH exitoso → retorna usuario modificado', () async {
       final updateData = {'fullName': 'Name changed'};
-      when(() => dio.patch<Map<String, dynamic>>('/admin/users/u-1', data: updateData))
-          .thenAnswer((_) async => ok({'user': userRaw}));
+      when(
+        () => dio.patch<Map<String, dynamic>>(
+          '/admin/users/u-1',
+          data: updateData,
+        ),
+      ).thenAnswer((_) async => ok({'user': userRaw}));
 
       final updated = await repo.updateUser('u-1', updateData);
       expect(updated.id, 'u-1');

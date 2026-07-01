@@ -4,7 +4,12 @@ import 'package:investep_app/core/auth/auth_gate.dart';
 import 'package:investep_app/features/auth/domain/auth_user.dart';
 
 void main() {
-  final user = AuthUser(id: 'u', email: 'u@e.com', role: 'user', mustResetPassword: false);
+  final user = AuthUser(
+    id: 'u',
+    email: 'u@e.com',
+    role: 'user',
+    mustResetPassword: false,
+  );
 
   group('gateRedirect', () {
     test('GateChecking → siempre /splash salvo si ya está', () {
