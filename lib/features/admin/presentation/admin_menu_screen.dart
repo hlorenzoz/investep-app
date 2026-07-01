@@ -69,7 +69,8 @@ class AdminMenuScreen extends ConsumerWidget {
                 _buildMenuCard(
                   context,
                   title: 'Configuración de Activos (Tickers)',
-                  subtitle: 'Gestionar el catálogo de activos del sistema y sus relaciones.',
+                  subtitle:
+                      'Gestionar el catálogo de activos del sistema y sus relaciones.',
                   icon: LucideIcons.candlestickChart,
                   route: '/admin/tickers',
                   enabled: true,

@@ -28,10 +28,7 @@ class TickerRepository {
   }) {
     return retryWithBackoff(
       () async {
-        final queryParams = <String, dynamic>{
-          'page': page,
-          'limit': limit,
-        };
+        final queryParams = <String, dynamic>{'page': page, 'limit': limit};
         if (q != null && q.isNotEmpty) queryParams['q'] = q;
         if (assetClass != null && assetClass.isNotEmpty) {
           queryParams['assetClass'] = assetClass;

@@ -61,7 +61,10 @@ class AdminTickersScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
               child: GlassCard(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: Column(
                   children: [
                     TextField(
@@ -69,7 +72,9 @@ class AdminTickersScreen extends ConsumerWidget {
                         prefixIcon: const Icon(LucideIcons.search, size: 18),
                         hintText: 'Buscar por símbolo o nombre...',
                         hintStyle: TextStyle(
-                          color: glassTheme.textSecondary.withValues(alpha: 0.5),
+                          color: glassTheme.textSecondary.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
@@ -78,7 +83,9 @@ class AdminTickersScreen extends ConsumerWidget {
                       style: TextStyle(color: glassTheme.textPrimary),
                       onChanged: (val) {
                         ref.read(tickerPageProvider.notifier).setPage(1);
-                        ref.read(tickerSearchQueryProvider.notifier).search(val);
+                        ref
+                            .read(tickerSearchQueryProvider.notifier)
+                            .search(val);
                       },
                     ),
                     const Divider(color: Colors.white10),
@@ -97,24 +104,41 @@ class AdminTickersScreen extends ConsumerWidget {
                                   fontSize: 13,
                                 ),
                               ),
-                              dropdownColor: Theme.of(context).colorScheme.surface,
-                              style: TextStyle(color: glassTheme.textPrimary, fontSize: 13),
+                              dropdownColor: Theme.of(
+                                context,
+                              ).colorScheme.surface,
+                              style: TextStyle(
+                                color: glassTheme.textPrimary,
+                                fontSize: 13,
+                              ),
                               items: [
                                 const DropdownMenuItem<String?>(
                                   value: null,
                                   child: Text('Todas las clases'),
                                 ),
-                                ...['stock', 'etf', 'index', 'crypto', 'commodity', 'currency']
-                                    .map(
-                                      (type) => DropdownMenuItem(
-                                        value: type,
-                                        child: Text(type.toUpperCase()),
-                                      ),
-                                    ),
+                                ...[
+                                  'stock',
+                                  'etf',
+                                  'index',
+                                  'crypto',
+                                  'commodity',
+                                  'currency',
+                                ].map(
+                                  (type) => DropdownMenuItem(
+                                    value: type,
+                                    child: Text(type.toUpperCase()),
+                                  ),
+                                ),
                               ],
                               onChanged: (val) {
-                                ref.read(tickerPageProvider.notifier).setPage(1);
-                                ref.read(tickerAssetClassFilterProvider.notifier).setFilter(val);
+                                ref
+                                    .read(tickerPageProvider.notifier)
+                                    .setPage(1);
+                                ref
+                                    .read(
+                                      tickerAssetClassFilterProvider.notifier,
+                                    )
+                                    .setFilter(val);
                               },
                             ),
                           ),
@@ -133,8 +157,13 @@ class AdminTickersScreen extends ConsumerWidget {
                                   fontSize: 13,
                                 ),
                               ),
-                              dropdownColor: Theme.of(context).colorScheme.surface,
-                              style: TextStyle(color: glassTheme.textPrimary, fontSize: 13),
+                              dropdownColor: Theme.of(
+                                context,
+                              ).colorScheme.surface,
+                              style: TextStyle(
+                                color: glassTheme.textPrimary,
+                                fontSize: 13,
+                              ),
                               items: [
                                 const DropdownMenuItem<String?>(
                                   value: null,
@@ -148,8 +177,12 @@ class AdminTickersScreen extends ConsumerWidget {
                                 ),
                               ],
                               onChanged: (val) {
-                                ref.read(tickerPageProvider.notifier).setPage(1);
-                                ref.read(tickerSectorFilterProvider.notifier).setFilter(val);
+                                ref
+                                    .read(tickerPageProvider.notifier)
+                                    .setPage(1);
+                                ref
+                                    .read(tickerSectorFilterProvider.notifier)
+                                    .setFilter(val);
                               },
                             ),
                           ),
@@ -209,9 +242,13 @@ class AdminTickersScreen extends ConsumerWidget {
                     children: [
                       Expanded(
                         child: RefreshIndicator(
-                          onRefresh: () async => ref.invalidate(tickersListProvider),
+                          onRefresh: () async =>
+                              ref.invalidate(tickersListProvider),
                           child: ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 8,
+                            ),
                             itemCount: tickers.length,
                             itemBuilder: (context, index) {
                               final ticker = tickers[index];
@@ -226,16 +263,24 @@ class AdminTickersScreen extends ConsumerWidget {
                       // Controles de Paginación
                       if (totalPages > 1)
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 20,
+                          ),
                           child: GlassCard(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 IconButton(
                                   icon: const Icon(LucideIcons.chevronLeft),
                                   onPressed: page > 1
-                                      ? () => ref.read(tickerPageProvider.notifier).decrement()
+                                      ? () => ref
+                                            .read(tickerPageProvider.notifier)
+                                            .decrement()
                                       : null,
                                 ),
                                 Text(
@@ -248,7 +293,9 @@ class AdminTickersScreen extends ConsumerWidget {
                                 IconButton(
                                   icon: const Icon(LucideIcons.chevronRight),
                                   onPressed: page < totalPages
-                                      ? () => ref.read(tickerPageProvider.notifier).increment()
+                                      ? () => ref
+                                            .read(tickerPageProvider.notifier)
+                                            .increment()
                                       : null,
                                 ),
                               ],
@@ -332,9 +379,14 @@ class _TickerCard extends ConsumerWidget {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -454,7 +506,9 @@ class _TickerCard extends ConsumerWidget {
             onPressed: () async {
               Navigator.pop(context);
               try {
-                await ref.read(adminTickersProvider.notifier).deleteTicker(ticker.id);
+                await ref
+                    .read(adminTickersProvider.notifier)
+                    .deleteTicker(ticker.id);
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -569,7 +623,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
       _psRatioController.text = t.psRatio?.toString() ?? '';
       _pbRatioController.text = t.pbRatio?.toString() ?? '';
       _dividendYieldController.text = t.dividendYield?.toString() ?? '';
-      _financialsController.text = const JsonEncoder.withIndent('  ').convert(t.financials);
+      _financialsController.text = const JsonEncoder.withIndent(
+        '  ',
+      ).convert(t.financials);
     }
   }
 
@@ -613,7 +669,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
     Map<String, dynamic> rawFinancials = {};
     if (_financialsController.text.trim().isNotEmpty) {
       try {
-        rawFinancials = jsonDecode(_financialsController.text.trim()) as Map<String, dynamic>;
+        rawFinancials =
+            jsonDecode(_financialsController.text.trim())
+                as Map<String, dynamic>;
       } catch (e) {
         setState(() {
           _errorMessage = 'Formato de JSON financiero inválido: $e';
@@ -627,10 +685,18 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
       'symbol': _symbolController.text.trim().toUpperCase(),
       'name': _nameController.text.trim(),
       'assetClass': _selectedAssetClass,
-      'exchange': _exchangeController.text.trim().isEmpty ? null : _exchangeController.text.trim(),
-      'sector': _sectorController.text.trim().isEmpty ? null : _sectorController.text.trim(),
-      'industry': _industryController.text.trim().isEmpty ? null : _industryController.text.trim(),
-      'country': _countryController.text.trim().isEmpty ? null : _countryController.text.trim(),
+      'exchange': _exchangeController.text.trim().isEmpty
+          ? null
+          : _exchangeController.text.trim(),
+      'sector': _sectorController.text.trim().isEmpty
+          ? null
+          : _sectorController.text.trim(),
+      'industry': _industryController.text.trim().isEmpty
+          ? null
+          : _industryController.text.trim(),
+      'country': _countryController.text.trim().isEmpty
+          ? null
+          : _countryController.text.trim(),
       'price': double.tryParse(_priceController.text),
       'changePct': double.tryParse(_changePctController.text),
       'prevClose': double.tryParse(_prevCloseController.text),
@@ -662,7 +728,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              _isEditing ? 'Activo actualizado con éxito.' : 'Activo creado con éxito.',
+              _isEditing
+                  ? 'Activo actualizado con éxito.'
+                  : 'Activo creado con éxito.',
             ),
             backgroundColor: AppColors.positive,
           ),
@@ -692,7 +760,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
     });
 
     try {
-      final res = await ref.read(tickerRepositoryProvider).getTickers(q: query, limit: 100);
+      final res = await ref
+          .read(tickerRepositoryProvider)
+          .getTickers(q: query, limit: 100);
       Ticker? match;
       for (final t in res.tickers) {
         if (t.symbol.toUpperCase() == query) {
@@ -732,23 +802,27 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
 
     if (multiplier == null || multiplier == 0) {
       setState(() {
-        _relationError = 'El multiplicador no puede ser cero y debe ser numérico.';
+        _relationError =
+            'El multiplicador no puede ser cero y debe ser numérico.';
       });
       return;
     }
 
     // Validación lógica de signos
-    if ((_selectedRelationType == 'inverse' || _selectedRelationType == 'leveraged_short') &&
+    if ((_selectedRelationType == 'inverse' ||
+            _selectedRelationType == 'leveraged_short') &&
         multiplier >= 0) {
       setState(() {
-        _relationError = 'El multiplicador debe ser negativo para relaciones inversas/cortas.';
+        _relationError =
+            'El multiplicador debe ser negativo para relaciones inversas/cortas.';
       });
       return;
     }
 
     if (_selectedRelationType == 'leveraged_long' && multiplier <= 0) {
       setState(() {
-        _relationError = 'El multiplicador debe ser positivo para relaciones largas.';
+        _relationError =
+            'El multiplicador debe ser positivo para relaciones largas.';
       });
       return;
     }
@@ -759,7 +833,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
     });
 
     try {
-      await ref.read(adminTickersProvider.notifier).addRelation(
+      await ref
+          .read(adminTickersProvider.notifier)
+          .addRelation(
             widget.ticker!.id,
             relatedTickerId: _foundRelatedTicker!.id,
             relationType: _selectedRelationType,
@@ -793,7 +869,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
 
     try {
       // Necesitamos buscar el id de la relación por su símbolo
-      final res = await ref.read(tickerRepositoryProvider).getTickers(q: rel.symbol, limit: 100);
+      final res = await ref
+          .read(tickerRepositoryProvider)
+          .getTickers(q: rel.symbol, limit: 100);
       Ticker? match;
       for (final t in res.tickers) {
         if (t.symbol.toUpperCase() == rel.symbol.toUpperCase()) {
@@ -802,7 +880,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
         }
       }
       if (match != null) {
-        await ref.read(adminTickersProvider.notifier).deleteRelation(
+        await ref
+            .read(adminTickersProvider.notifier)
+            .deleteRelation(
               widget.ticker!.id,
               relatedTickerId: match.id,
               relationType: rel.relationType,
@@ -810,7 +890,8 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
             );
       } else {
         setState(() {
-          _errorMessage = 'No se pudo encontrar el ID del activo relacionado para remover.';
+          _errorMessage =
+              'No se pudo encontrar el ID del activo relacionado para remover.';
         });
       }
     } catch (e) {
@@ -831,17 +912,13 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
 
     try {
       if (associated) {
-        await ref.read(adminTickersProvider.notifier).deletePlan(
-              widget.ticker!.id,
-              planId,
-              widget.ticker!.symbol,
-            );
+        await ref
+            .read(adminTickersProvider.notifier)
+            .deletePlan(widget.ticker!.id, planId, widget.ticker!.symbol);
       } else {
-        await ref.read(adminTickersProvider.notifier).addPlan(
-              widget.ticker!.id,
-              planId,
-              widget.ticker!.symbol,
-            );
+        await ref
+            .read(adminTickersProvider.notifier)
+            .addPlan(widget.ticker!.id, planId, widget.ticker!.symbol);
       }
     } catch (e) {
       setState(() {
@@ -948,7 +1025,8 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height * 0.5,
                       child: TabBarView(
-                        physics: const NeverScrollableScrollPhysics(), // Evitar jank
+                        physics:
+                            const NeverScrollableScrollPhysics(), // Evitar jank
                         children: [
                           // Tab 1: Datos Básicos
                           _buildBasicTab(glassTheme),
@@ -968,7 +1046,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: _isLoading ? null : () => Navigator.pop(context),
+                        onPressed: _isLoading
+                            ? null
+                            : () => Navigator.pop(context),
                         child: Text(
                           'Cerrar',
                           style: TextStyle(color: glassTheme.textSecondary),
@@ -981,7 +1061,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
                             ? const SizedBox(
                                 width: 20,
                                 height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : Text(
                                 _isEditing ? 'Guardar Cambios' : 'Crear Activo',
@@ -1008,7 +1090,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
             Expanded(
               child: TextFormField(
                 controller: _symbolController,
-                enabled: !_isLoading && !_isEditing, // Símbolo es único y PK, no mutable al editar
+                enabled:
+                    !_isLoading &&
+                    !_isEditing, // Símbolo es único y PK, no mutable al editar
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
                   labelText: 'Símbolo',
@@ -1039,14 +1123,15 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
                 ),
                 dropdownColor: Theme.of(context).colorScheme.surface,
                 style: TextStyle(color: glassTheme.textPrimary),
-                items: ['stock', 'etf', 'index', 'crypto', 'commodity', 'currency']
-                    .map(
-                      (type) => DropdownMenuItem(
-                        value: type,
-                        child: Text(type.toUpperCase()),
-                      ),
-                    )
-                    .toList(),
+                items:
+                    ['stock', 'etf', 'index', 'crypto', 'commodity', 'currency']
+                        .map(
+                          (type) => DropdownMenuItem(
+                            value: type,
+                            child: Text(type.toUpperCase()),
+                          ),
+                        )
+                        .toList(),
                 onChanged: _isLoading
                     ? null
                     : (val) {
@@ -1156,7 +1241,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
               child: TextFormField(
                 controller: _priceController,
                 enabled: !_isLoading,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Precio',
                   labelStyle: TextStyle(color: glassTheme.textSecondary),
@@ -1169,7 +1256,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
               child: TextFormField(
                 controller: _changePctController,
                 enabled: !_isLoading,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Cambio %',
                   labelStyle: TextStyle(color: glassTheme.textSecondary),
@@ -1187,7 +1276,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
               child: TextFormField(
                 controller: _prevCloseController,
                 enabled: !_isLoading,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Cierre Prev.',
                   labelStyle: TextStyle(color: glassTheme.textSecondary),
@@ -1200,7 +1291,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
               child: TextFormField(
                 controller: _dividendYieldController,
                 enabled: !_isLoading,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Rend. Dividendo %',
                   labelStyle: TextStyle(color: glassTheme.textSecondary),
@@ -1249,7 +1342,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
               child: TextFormField(
                 controller: _fiftyTwoWHighController,
                 enabled: !_isLoading,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Máx. 52 Semanas',
                   labelStyle: TextStyle(color: glassTheme.textSecondary),
@@ -1262,7 +1357,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
               child: TextFormField(
                 controller: _fiftyTwoWLowController,
                 enabled: !_isLoading,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Mín. 52 Semanas',
                   labelStyle: TextStyle(color: glassTheme.textSecondary),
@@ -1292,7 +1389,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
               child: TextFormField(
                 controller: _peRatioController,
                 enabled: !_isLoading,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'PE Ratio',
                   labelStyle: TextStyle(color: glassTheme.textSecondary),
@@ -1305,7 +1404,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
               child: TextFormField(
                 controller: _forwardPeController,
                 enabled: !_isLoading,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Forward PE',
                   labelStyle: TextStyle(color: glassTheme.textSecondary),
@@ -1323,7 +1424,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
               child: TextFormField(
                 controller: _pegRatioController,
                 enabled: !_isLoading,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'PEG Ratio',
                   labelStyle: TextStyle(color: glassTheme.textSecondary),
@@ -1336,7 +1439,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
               child: TextFormField(
                 controller: _psRatioController,
                 enabled: !_isLoading,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'PS Ratio',
                   labelStyle: TextStyle(color: glassTheme.textSecondary),
@@ -1349,7 +1454,9 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
               child: TextFormField(
                 controller: _pbRatioController,
                 enabled: !_isLoading,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'PB Ratio',
                   labelStyle: TextStyle(color: glassTheme.textSecondary),
@@ -1387,11 +1494,13 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
 
     return detailAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Error al cargar detalle del activo: $err')),
+      error: (err, stack) =>
+          Center(child: Text('Error al cargar detalle del activo: $err')),
       data: (detail) {
         return academyPlansAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, stack) => Center(child: Text('Error al cargar planes de membresía: $err')),
+          error: (err, stack) =>
+              Center(child: Text('Error al cargar planes de membresía: $err')),
           data: (allPlans) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1432,17 +1541,27 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
                                 style: TextStyle(
                                   color: associated
                                       ? Colors.white
-                                      : glassTheme.textPrimary.withValues(alpha: 0.8),
-                                  fontWeight: associated ? FontWeight.bold : FontWeight.normal,
+                                      : glassTheme.textPrimary.withValues(
+                                          alpha: 0.8,
+                                        ),
+                                  fontWeight: associated
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
                                 ),
                               ),
                               selected: associated,
-                              selectedColor: Theme.of(context).colorScheme.primary,
+                              selectedColor: Theme.of(
+                                context,
+                              ).colorScheme.primary,
                               checkmarkColor: Colors.white,
                               onSelected: _isLoading
                                   ? null
                                   : (selected) {
-                                      _togglePlan(plan.slug, plan.id, associated);
+                                      _togglePlan(
+                                        plan.slug,
+                                        plan.id,
+                                        associated,
+                                      );
                                     },
                             );
                           }).toList(),
@@ -1461,7 +1580,8 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
 
     return detailAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Error al cargar relaciones: $err')),
+      error: (err, stack) =>
+          Center(child: Text('Error al cargar relaciones: $err')),
       data: (detail) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1494,20 +1614,31 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
                           textCapitalization: TextCapitalization.characters,
                           decoration: InputDecoration(
                             labelText: 'Activo Relacionado',
-                            labelStyle: TextStyle(color: glassTheme.textSecondary, fontSize: 12),
+                            labelStyle: TextStyle(
+                              color: glassTheme.textSecondary,
+                              fontSize: 12,
+                            ),
                             hintText: 'ej. TSLL',
                             suffixIcon: _searchingRelated
                                 ? const SizedBox(
                                     width: 16,
                                     height: 16,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
                                   )
                                 : IconButton(
-                                    icon: const Icon(LucideIcons.search, size: 16),
+                                    icon: const Icon(
+                                      LucideIcons.search,
+                                      size: 16,
+                                    ),
                                     onPressed: _searchRelated,
                                   ),
                           ),
-                          style: TextStyle(color: glassTheme.textPrimary, fontSize: 13),
+                          style: TextStyle(
+                            color: glassTheme.textPrimary,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -1517,17 +1648,37 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
                           value: _selectedRelationType,
                           decoration: InputDecoration(
                             labelText: 'Tipo Relación',
-                            labelStyle: TextStyle(color: glassTheme.textSecondary, fontSize: 12),
+                            labelStyle: TextStyle(
+                              color: glassTheme.textSecondary,
+                              fontSize: 12,
+                            ),
                           ),
                           dropdownColor: Theme.of(context).colorScheme.surface,
-                          style: TextStyle(color: glassTheme.textPrimary, fontSize: 13),
+                          style: TextStyle(
+                            color: glassTheme.textPrimary,
+                            fontSize: 13,
+                          ),
                           items: const [
-                            DropdownMenuItem(value: 'leveraged_long', child: Text('Long Apalanc.')),
                             DropdownMenuItem(
-                                value: 'leveraged_short', child: Text('Short Apalanc.')),
-                            DropdownMenuItem(value: 'inverse', child: Text('Inverso')),
-                            DropdownMenuItem(value: 'underlying', child: Text('Subyacente')),
-                            DropdownMenuItem(value: 'peer', child: Text('Par (Peer)')),
+                              value: 'leveraged_long',
+                              child: Text('Long Apalanc.'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'leveraged_short',
+                              child: Text('Short Apalanc.'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'inverse',
+                              child: Text('Inverso'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'underlying',
+                              child: Text('Subyacente'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'peer',
+                              child: Text('Par (Peer)'),
+                            ),
                           ],
                           onChanged: (val) {
                             if (val != null) {
@@ -1548,10 +1699,16 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
                           ),
                           decoration: InputDecoration(
                             labelText: 'Multiplicador',
-                            labelStyle: TextStyle(color: glassTheme.textSecondary, fontSize: 12),
+                            labelStyle: TextStyle(
+                              color: glassTheme.textSecondary,
+                              fontSize: 12,
+                            ),
                             hintText: 'ej. 2.0 o -1.0',
                           ),
-                          style: TextStyle(color: glassTheme.textPrimary, fontSize: 13),
+                          style: TextStyle(
+                            color: glassTheme.textPrimary,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ],
@@ -1560,21 +1717,32 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
                     const SizedBox(height: 8),
                     Text(
                       'Subyacente encontrado: ${_foundRelatedTicker!.name}',
-                      style: const TextStyle(color: AppColors.positive, fontSize: 11),
+                      style: const TextStyle(
+                        color: AppColors.positive,
+                        fontSize: 11,
+                      ),
                     ),
                   ],
                   if (_relationError != null) ...[
                     const SizedBox(height: 8),
                     Text(
                       _relationError!,
-                      style: const TextStyle(color: AppColors.negative, fontSize: 11),
+                      style: const TextStyle(
+                        color: AppColors.negative,
+                        fontSize: 11,
+                      ),
                     ),
                   ],
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
-                    onPressed: _foundRelatedTicker != null && !_isLoading ? _addRelation : null,
+                    onPressed: _foundRelatedTicker != null && !_isLoading
+                        ? _addRelation
+                        : null,
                     icon: const Icon(LucideIcons.plus, size: 14),
-                    label: const Text('Asociar Relación', style: TextStyle(fontSize: 12)),
+                    label: const Text(
+                      'Asociar Relación',
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ),
                 ],
               ),
@@ -1586,7 +1754,10 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
                   ? Center(
                       child: Text(
                         'No hay relaciones financieras configuradas.',
-                        style: TextStyle(color: glassTheme.textSecondary, fontSize: 12),
+                        style: TextStyle(
+                          color: glassTheme.textSecondary,
+                          fontSize: 12,
+                        ),
                       ),
                     )
                   : ListView.builder(
@@ -1600,15 +1771,24 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
                             dense: true,
                             title: Text(
                               '${rel.symbol} (${rel.relationType})',
-                              style: TextStyle(color: glassTheme.textPrimary, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                color: glassTheme.textPrimary,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             subtitle: Text(
                               'Multiplicador: ${rel.multiplier} · ${rel.name}',
                               style: TextStyle(color: glassTheme.textSecondary),
                             ),
                             trailing: IconButton(
-                              icon: const Icon(LucideIcons.trash2, color: AppColors.negative, size: 16),
-                              onPressed: _isLoading ? null : () => _deleteRelation(rel),
+                              icon: const Icon(
+                                LucideIcons.trash2,
+                                color: AppColors.negative,
+                                size: 16,
+                              ),
+                              onPressed: _isLoading
+                                  ? null
+                                  : () => _deleteRelation(rel),
                             ),
                           ),
                         );

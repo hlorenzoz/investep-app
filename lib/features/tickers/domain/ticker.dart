@@ -123,7 +123,8 @@ class Ticker {
 class TickerRelationInfo {
   final String symbol;
   final String name;
-  final String relationType; // leveraged_long, leveraged_short, inverse, underlying, peer
+  final String
+  relationType; // leveraged_long, leveraged_short, inverse, underlying, peer
   final double multiplier;
 
   const TickerRelationInfo({
@@ -206,11 +207,12 @@ class PaginatedTickers {
     final pagination = json['pagination'] as Map<String, dynamic>? ?? {};
 
     return PaginatedTickers(
-      tickers: list.map((e) => Ticker.fromJson(e as Map<String, dynamic>)).toList(),
+      tickers: list
+          .map((e) => Ticker.fromJson(e as Map<String, dynamic>))
+          .toList(),
       page: (pagination['page'] as num? ?? 1).toInt(),
       limit: (pagination['limit'] as num? ?? 20).toInt(),
       total: (pagination['total'] as num? ?? 0).toInt(),
     );
   }
 }
-

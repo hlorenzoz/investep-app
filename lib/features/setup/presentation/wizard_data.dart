@@ -22,7 +22,7 @@ class DepositInput {
   /// > 0 y no superar [available]. Lo usan el wizard y la edición de cuenta.
   bool isValid({required num total, required num available}) {
     final d = resolved(total);
-    return d > 0 && d <= available;
+    return d > 0;
   }
 
   DepositInput copyWith({DepositMode? mode, num? pct, num? amount}) =>

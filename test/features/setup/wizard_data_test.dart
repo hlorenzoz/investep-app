@@ -31,14 +31,14 @@ void main() {
       expect(data.resolvedDeposit, 400);
     });
 
-    test('depositIsValid: > 0 y <= available', () {
+    test('depositIsValid: > 0 sin restricción de disponible', () {
       const data = WizardData(
         totalCapital: 10000,
         deposit: DepositInput(mode: DepositMode.amount, amount: 3000),
       );
       expect(data.depositIsValid(4000), isTrue);
-      expect(data.depositIsValid(3000), isTrue); // límite exacto
-      expect(data.depositIsValid(2999), isFalse); // supera disponible
+      expect(data.depositIsValid(3000), isTrue);
+      expect(data.depositIsValid(2999), isTrue);
     });
 
     test('depositIsValid: 0 o negativo es inválido', () {

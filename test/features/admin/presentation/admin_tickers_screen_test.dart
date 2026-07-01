@@ -15,6 +15,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class MockTickerRepository extends Mock implements TickerRepository {}
+
 class MockAcademyRepository extends Mock implements AcademyRepository {}
 
 void main() {
@@ -64,23 +65,29 @@ void main() {
       overrides: [
         tickerRepositoryProvider.overrideWithValue(repo),
         academyRepositoryProvider.overrideWithValue(academyRepo),
-        academyPlansProvider.overrideWith((ref) async => [
-          const AcademyPlan(
-            id: 1,
-            slug: 'gold',
-            name: 'Gold Plan',
-            priceRegular: 99.0,
-            currency: 'USD',
-            features: [],
+        academyPlansProvider.overrideWith(
+          (ref) async => [
+            const AcademyPlan(
+              id: 1,
+              slug: 'gold',
+              name: 'Gold Plan',
+              priceRegular: 99.0,
+              currency: 'USD',
+              features: [],
+            ),
+          ],
+        ),
+        tickersListProvider.overrideWith(
+          (ref) async => PaginatedTickers(
+            tickers: [testTicker],
+            page: 1,
+            limit: 20,
+            total: 1,
           ),
-        ]),
-        tickersListProvider.overrideWith((ref) async => PaginatedTickers(
-          tickers: [testTicker],
-          page: 1,
-          limit: 20,
-          total: 1,
-        )),
-        tickerDetailProvider.overrideWith((ref, symbol) async => testTickerDetail),
+        ),
+        tickerDetailProvider.overrideWith(
+          (ref, symbol) async => testTickerDetail,
+        ),
       ],
       child: Consumer(
         builder: (context, ref, _) {
@@ -100,158 +107,194 @@ void main() {
     );
   }
 
-  testWidgets('Renderiza listado de activos con símbolo, nombre, clase, precio y cambio %', (tester) async {
-    await tester.pumpWidget(createTestWidget());
-    await tester.pump();
-    await tester.pumpAndSettle();
+  testWidgets(
+    'Renderiza listado de activos con símbolo, nombre, clase, precio y cambio %',
+    (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+      await tester.pumpAndSettle();
 
-    // Validar visualización de datos principales
-    expect(find.text('TSLA'), findsOneWidget);
-    expect(find.text('Tesla, Inc.'), findsOneWidget);
-    expect(find.text('STOCK'), findsOneWidget);
-    expect(find.text('\$426.64'), findsOneWidget);
-    expect(find.text('+1.44%'), findsOneWidget);
-  });
+      // Validar visualización de datos principales
+      expect(find.text('TSLA'), findsOneWidget);
+      expect(find.text('Tesla, Inc.'), findsOneWidget);
+      expect(find.text('STOCK'), findsOneWidget);
+      expect(find.text('\$426.64'), findsOneWidget);
+      expect(find.text('+1.44%'), findsOneWidget);
+    },
+  );
 
-  testWidgets('FAB (+) abre el diálogo de creación de activo con inputs limpios', (tester) async {
-    await tester.pumpWidget(createTestWidget());
-    await tester.pumpAndSettle();
+  testWidgets(
+    'FAB (+) abre el diálogo de creación de activo con inputs limpios',
+    (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-    // Abrir formulario de creación
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pumpAndSettle();
+      // Abrir formulario de creación
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
 
-    // Verificar campos del diálogo
-    expect(find.text('Crear Activo'), findsNWidgets(2)); // En el título y en el botón
-    expect(find.widgetWithText(TextFormField, 'Símbolo'), findsOneWidget);
-    expect(find.widgetWithText(TextFormField, 'Nombre'), findsOneWidget);
-    expect(find.widgetWithText(TextFormField, 'Mercado / Exchange'), findsOneWidget);
-  });
+      // Verificar campos del diálogo
+      expect(
+        find.text('Crear Activo'),
+        findsNWidgets(2),
+      ); // En el título y en el botón
+      expect(find.widgetWithText(TextFormField, 'Símbolo'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'Nombre'), findsOneWidget);
+      expect(
+        find.widgetWithText(TextFormField, 'Mercado / Exchange'),
+        findsOneWidget,
+      );
+    },
+  );
 
-  testWidgets('Editar abre el diálogo con tabs, precargado con los datos del activo', (tester) async {
-    await tester.pumpWidget(createTestWidget());
-    await tester.pump();
-    await tester.pumpAndSettle();
+  testWidgets(
+    'Editar abre el diálogo con tabs, precargado con los datos del activo',
+    (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+      await tester.pumpAndSettle();
 
-    // Tap en editar
-    await tester.tap(find.byTooltip('Editar Activo'));
-    await tester.pumpAndSettle();
+      // Tap en editar
+      await tester.tap(find.byTooltip('Editar Activo'));
+      await tester.pumpAndSettle();
 
-    // Verificar presencia de tabs
-    expect(find.text('Datos Básicos'), findsOneWidget);
-    expect(find.text('Planes'), findsOneWidget);
-    expect(find.text('Relaciones'), findsOneWidget);
+      // Verificar presencia de tabs
+      expect(find.text('Datos Básicos'), findsOneWidget);
+      expect(find.text('Planes'), findsOneWidget);
+      expect(find.text('Relaciones'), findsOneWidget);
 
-    // Verificar precarga del formulario básico
-    expect(find.widgetWithText(TextFormField, 'TSLA'), findsOneWidget);
-    expect(find.widgetWithText(TextFormField, 'Tesla, Inc.'), findsOneWidget);
-    expect(find.widgetWithText(TextFormField, 'NASDAQ'), findsOneWidget);
-  });
+      // Verificar precarga del formulario básico
+      expect(find.widgetWithText(TextFormField, 'TSLA'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'Tesla, Inc.'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'NASDAQ'), findsOneWidget);
+    },
+  );
 
-  testWidgets('El layout responsivo se contrae al 80% en viewports grandes y se expande en chicos', (tester) async {
-    // Caso 1: Viewport grande (Desktop: 1000 de ancho)
-    tester.view.physicalSize = const Size(1000, 800);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
+  testWidgets(
+    'El layout responsivo se contrae al 80% en viewports grandes y se expande en chicos',
+    (tester) async {
+      // Caso 1: Viewport grande (Desktop: 1000 de ancho)
+      tester.view.physicalSize = const Size(1000, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
-    await tester.pumpWidget(createTestWidget());
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-    // El ancho de la lista Scaffold debe estar constreñido al 80% (800 dp)
-    final scaffoldWidgetFinder = find.descendant(
-      of: find.byType(AdminTickersScreen),
-      matching: find.byType(Scaffold),
-    );
-    final size = tester.getSize(scaffoldWidgetFinder);
-    expect(size.width, 800.0);
+      // El ancho de la lista Scaffold debe estar constreñido al 80% (800 dp)
+      final scaffoldWidgetFinder = find.descendant(
+        of: find.byType(AdminTickersScreen),
+        matching: find.byType(Scaffold),
+      );
+      final size = tester.getSize(scaffoldWidgetFinder);
+      expect(size.width, 800.0);
 
-    // Caso 2: Viewport chico (Mobile: 400 de ancho)
-    tester.view.physicalSize = const Size(400, 800);
-    await tester.pumpAndSettle();
+      // Caso 2: Viewport chico (Mobile: 400 de ancho)
+      tester.view.physicalSize = const Size(400, 800);
+      await tester.pumpAndSettle();
 
-    final sizeChico = tester.getSize(scaffoldWidgetFinder);
-    expect(sizeChico.width, 400.0);
-  });
+      final sizeChico = tester.getSize(scaffoldWidgetFinder);
+      expect(sizeChico.width, 400.0);
+    },
+  );
 
-  testWidgets('Pestaña Planes: permite asociar y desasociar planes mediante checkboxes', (tester) async {
-    when(() => repo.addPlan(any(), any())).thenAnswer((_) async => {});
-    when(() => repo.deletePlan(any(), any())).thenAnswer((_) async => {});
+  testWidgets(
+    'Pestaña Planes: permite asociar y desasociar planes mediante checkboxes',
+    (tester) async {
+      when(() => repo.addPlan(any(), any())).thenAnswer((_) async => {});
+      when(() => repo.deletePlan(any(), any())).thenAnswer((_) async => {});
 
-    await tester.pumpWidget(createTestWidget());
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Editar Activo'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Editar Activo'));
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Planes'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.text('Planes'));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Gold Plan'), findsOneWidget);
+      expect(find.text('Gold Plan'), findsOneWidget);
 
-    final chipFinder = find.byType(FilterChip);
-    expect(chipFinder, findsOneWidget);
-    
-    await tester.tap(chipFinder);
-    await tester.pump();
-    await tester.pumpAndSettle();
+      final chipFinder = find.byType(FilterChip);
+      expect(chipFinder, findsOneWidget);
 
-    verify(() => repo.deletePlan(1, 1)).called(1);
-  });
+      await tester.tap(chipFinder);
+      await tester.pump();
+      await tester.pumpAndSettle();
 
-  testWidgets('Pestaña Relaciones: permite buscar, asociar y desasociar relaciones', (tester) async {
-    final searchTicker = Ticker(
-      id: 2,
-      symbol: 'AAPL',
-      name: 'Apple Inc.',
-      assetClass: 'stock',
-      financials: const {},
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
+      verify(() => repo.deletePlan(1, 1)).called(1);
+    },
+  );
 
-    when(() => repo.getTickers(q: 'AAPL', limit: 100)).thenAnswer((_) async => PaginatedTickers(
-      tickers: [searchTicker],
-      page: 1,
-      limit: 20,
-      total: 1,
-    ));
-    when(() => repo.addRelation(
-      any(),
-      relatedTickerId: any(named: 'relatedTickerId'),
-      relationType: any(named: 'relationType'),
-      multiplier: any(named: 'multiplier'),
-    )).thenAnswer((_) async => {});
+  testWidgets(
+    'Pestaña Relaciones: permite buscar, asociar y desasociar relaciones',
+    (tester) async {
+      final searchTicker = Ticker(
+        id: 2,
+        symbol: 'AAPL',
+        name: 'Apple Inc.',
+        assetClass: 'stock',
+        financials: const {},
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
 
-    await tester.pumpWidget(createTestWidget());
-    await tester.pumpAndSettle();
+      when(() => repo.getTickers(q: 'AAPL', limit: 100)).thenAnswer(
+        (_) async => PaginatedTickers(
+          tickers: [searchTicker],
+          page: 1,
+          limit: 20,
+          total: 1,
+        ),
+      );
+      when(
+        () => repo.addRelation(
+          any(),
+          relatedTickerId: any(named: 'relatedTickerId'),
+          relationType: any(named: 'relationType'),
+          multiplier: any(named: 'multiplier'),
+        ),
+      ).thenAnswer((_) async => {});
 
-    await tester.tap(find.byTooltip('Editar Activo'));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Relaciones'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Editar Activo'));
+      await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Activo Relacionado'), 'AAPL');
-    await tester.tap(find.byIcon(LucideIcons.search).last);
-    await tester.pumpAndSettle();
+      await tester.tap(find.text('Relaciones'));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Subyacente encontrado: Apple Inc.'), findsOneWidget);
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Activo Relacionado'),
+        'AAPL',
+      );
+      await tester.tap(find.byIcon(LucideIcons.search).last);
+      await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Multiplicador'), '2.0');
-    await tester.pumpAndSettle();
+      expect(find.text('Subyacente encontrado: Apple Inc.'), findsOneWidget);
 
-    await tester.tap(find.text('Asociar Relación'));
-    await tester.pump();
-    await tester.pumpAndSettle();
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Multiplicador'),
+        '2.0',
+      );
+      await tester.pumpAndSettle();
 
-    verify(() => repo.addRelation(
-      1,
-      relatedTickerId: 2,
-      relationType: 'leveraged_long',
-      multiplier: 2.0,
-    )).called(1);
-  });
+      await tester.tap(find.text('Asociar Relación'));
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      verify(
+        () => repo.addRelation(
+          1,
+          relatedTickerId: 2,
+          relationType: 'leveraged_long',
+          multiplier: 2.0,
+        ),
+      ).called(1);
+    },
+  );
 }

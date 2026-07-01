@@ -33,7 +33,7 @@ final tickerSearchQueryProvider =
 class TickerAssetClassFilterNotifier extends Notifier<String?> {
   @override
   String? build() => null;
-  
+
   void setFilter(String? val) {
     state = val;
   }
@@ -48,7 +48,7 @@ final tickerAssetClassFilterProvider =
 class TickerSectorFilterNotifier extends Notifier<String?> {
   @override
   String? build() => null;
-  
+
   void setFilter(String? val) {
     state = val;
   }
@@ -63,7 +63,7 @@ final tickerSectorFilterProvider =
 class TickerPageNotifier extends Notifier<int> {
   @override
   int build() => 1;
-  
+
   void setPage(int val) {
     state = val;
   }
@@ -89,17 +89,19 @@ final tickersListProvider = FutureProvider.autoDispose<PaginatedTickers>((ref) {
   final sector = ref.watch(tickerSectorFilterProvider);
   final page = ref.watch(tickerPageProvider);
 
-  return ref.watch(tickerRepositoryProvider).getTickers(
-    q: query.trim().isEmpty ? null : query.trim(),
-    assetClass: assetClass,
-    sector: sector,
-    page: page,
-  );
+  return ref
+      .watch(tickerRepositoryProvider)
+      .getTickers(
+        q: query.trim().isEmpty ? null : query.trim(),
+        assetClass: assetClass,
+        sector: sector,
+        page: page,
+      );
 });
 
 /// Provider para obtener el detalle de un activo por símbolo.
-final tickerDetailProvider =
-    FutureProvider.autoDispose.family<TickerDetail, String>((ref, symbol) {
+final tickerDetailProvider = FutureProvider.autoDispose
+    .family<TickerDetail, String>((ref, symbol) {
       return ref.watch(tickerRepositoryProvider).getTickerDetail(symbol);
     });
 
@@ -116,7 +118,11 @@ class AdminTickersNotifier extends AsyncNotifier<void> {
     });
   }
 
-  Future<void> updateTicker(int id, Map<String, dynamic> data, String symbolForInvalidate) async {
+  Future<void> updateTicker(
+    int id,
+    Map<String, dynamic> data,
+    String symbolForInvalidate,
+  ) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await ref.read(tickerRepositoryProvider).updateTicker(id, data);
@@ -142,12 +148,14 @@ class AdminTickersNotifier extends AsyncNotifier<void> {
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await ref.read(tickerRepositoryProvider).addRelation(
-        id,
-        relatedTickerId: relatedTickerId,
-        relationType: relationType,
-        multiplier: multiplier,
-      );
+      await ref
+          .read(tickerRepositoryProvider)
+          .addRelation(
+            id,
+            relatedTickerId: relatedTickerId,
+            relationType: relationType,
+            multiplier: multiplier,
+          );
       ref.invalidate(tickerDetailProvider(symbolForInvalidate));
     });
   }
@@ -160,11 +168,13 @@ class AdminTickersNotifier extends AsyncNotifier<void> {
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await ref.read(tickerRepositoryProvider).deleteRelation(
-        id,
-        relatedTickerId: relatedTickerId,
-        relationType: relationType,
-      );
+      await ref
+          .read(tickerRepositoryProvider)
+          .deleteRelation(
+            id,
+            relatedTickerId: relatedTickerId,
+            relationType: relationType,
+          );
       ref.invalidate(tickerDetailProvider(symbolForInvalidate));
     });
   }
@@ -177,7 +187,11 @@ class AdminTickersNotifier extends AsyncNotifier<void> {
     });
   }
 
-  Future<void> deletePlan(int id, int planId, String symbolForInvalidate) async {
+  Future<void> deletePlan(
+    int id,
+    int planId,
+    String symbolForInvalidate,
+  ) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await ref.read(tickerRepositoryProvider).deletePlan(id, planId);
@@ -186,7 +200,6 @@ class AdminTickersNotifier extends AsyncNotifier<void> {
   }
 }
 
-final adminTickersProvider =
-    AsyncNotifierProvider<AdminTickersNotifier, void>(
-      AdminTickersNotifier.new,
-    );
+final adminTickersProvider = AsyncNotifierProvider<AdminTickersNotifier, void>(
+  AdminTickersNotifier.new,
+);

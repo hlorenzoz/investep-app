@@ -42,7 +42,7 @@
   "depositModePercent": "% del capital",
   "depositModeAmount": "Monto",
   "depositAvailable": "Disponible",
-  "depositInvalid": "El depósito debe ser mayor a 0 y no superar el disponible",
+  "depositInvalid": "El depósito debe ser mayor a 0",
 
   "summaryTitle": "Revisá y confirmá",
   "summaryEditHint": "Tocá un campo para editarlo",

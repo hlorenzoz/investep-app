@@ -42,7 +42,7 @@
   "depositModePercent": "% of capital",
   "depositModeAmount": "Amount",
   "depositAvailable": "Available",
-  "depositInvalid": "Deposit must be greater than 0 and not exceed the available amount",
+  "depositInvalid": "Deposit must be greater than 0",
 
   "summaryTitle": "Review and confirm",
   "summaryEditHint": "Tap a field to edit it",

@@ -16,7 +16,7 @@ class MockBrokerRepository extends Mock implements BrokerRepository {}
 void main() {
   late MockBrokerRepository repo;
 
-  final testBroker = const Broker(
+  const testBroker = Broker(
     id: 1,
     slug: 'interactive-brokers',
     name: 'Interactive Brokers',
@@ -54,19 +54,22 @@ void main() {
     );
   }
 
-  testWidgets('Renderiza listado de brokers con nombre, slug, url y BrokerLogo', (tester) async {
-    when(() => repo.getBrokers()).thenAnswer((_) async => [testBroker]);
+  testWidgets(
+    'Renderiza listado de brokers con nombre, slug, url y BrokerLogo',
+    (tester) async {
+      when(() => repo.getBrokers()).thenAnswer((_) async => [testBroker]);
 
-    await tester.pumpWidget(createTestWidget());
-    await tester.pump();
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+      await tester.pumpAndSettle();
 
-    // Validar visualización de datos principales
-    expect(find.text('Interactive Brokers'), findsOneWidget);
-    expect(find.text('Slug: interactive-brokers'), findsOneWidget);
-    expect(find.text('https://www.interactivebrokers.com'), findsOneWidget);
-    expect(find.byType(BrokerLogo), findsOneWidget);
-  });
+      // Validar visualización de datos principales
+      expect(find.text('Interactive Brokers'), findsOneWidget);
+      expect(find.text('Slug: interactive-brokers'), findsOneWidget);
+      expect(find.text('https://www.interactivebrokers.com'), findsOneWidget);
+      expect(find.byType(BrokerLogo), findsOneWidget);
+    },
+  );
 
   testWidgets(
     'FAB (+) abre el dialogo de creacion de broker con inputs limpios y previsualizacion',
