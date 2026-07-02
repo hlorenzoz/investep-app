@@ -305,7 +305,7 @@ abstract class AppLocalizations {
   /// No description provided for @depositInvalid.
   ///
   /// In es, this message translates to:
-  /// **'El depósito debe ser mayor a 0 y no superar el disponible'**
+  /// **'El depósito debe ser mayor a 0'**
   String get depositInvalid;
 
   /// No description provided for @summaryTitle.

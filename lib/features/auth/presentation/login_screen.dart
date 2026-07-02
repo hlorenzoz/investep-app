@@ -208,6 +208,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       case LoginInitial() || LoginFailure():
         return Column(
           children: [
+            Image.asset(
+              'web/investep/logo.webp',
+              height: 60,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 24),
             if (state is LoginFailure) ...[
               _buildErrorCard(state.message),
               const SizedBox(height: 16),

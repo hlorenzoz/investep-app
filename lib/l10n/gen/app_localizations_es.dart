@@ -112,8 +112,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get depositAvailable => 'Disponible';
 
   @override
-  String get depositInvalid =>
-      'El depósito debe ser mayor a 0 y no superar el disponible';
+  String get depositInvalid => 'El depósito debe ser mayor a 0';
 
   @override
   String get summaryTitle => 'Revisá y confirmá';

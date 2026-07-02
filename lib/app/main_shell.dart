@@ -130,7 +130,14 @@ class MainShell extends ConsumerWidget {
                     ),
                     child: Column(
                       children: [
-                        const SizedBox(height: 28),
+                        const SizedBox(height: 20),
+                        Image.asset(
+                          'web/investep/favicon.webp',
+                          width: 32,
+                          height: 32,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(height: 20),
                         Expanded(
                           child: NavigationRail(
                             selectedIndex: navigationShell.currentIndex < 2
