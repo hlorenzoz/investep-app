@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../core/auth/auth_gate.dart';
+import '../core/providers/supabase_provider.dart';
 import '../l10n/gen/app_localizations.dart';
+import '../shared/widgets/glass/glass_card.dart';
 import 'theme/app_theme.dart';
 
 /// Contenedor de navegación responsivo y adaptativo.
@@ -164,21 +166,28 @@ class MainShell extends ConsumerWidget {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: NavigationRail(
-                            selectedIndex: bottomRailSelectedIndex,
-                            onDestinationSelected: onBottomRailSelected,
-                            labelType: NavigationRailLabelType.all,
-                            destinations: [
-                              if (isAdminOrManager)
-                                NavigationRailDestination(
-                                  icon: const Icon(LucideIcons.shieldAlert),
-                                  label: Text(l10n.navAdmin),
-                                ),
-                              NavigationRailDestination(
-                                icon: const Icon(LucideIcons.settings),
-                                label: Text(l10n.navSettings),
+                          padding: const EdgeInsets.only(bottom: 24.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              NavigationRail(
+                                selectedIndex: bottomRailSelectedIndex,
+                                onDestinationSelected: onBottomRailSelected,
+                                labelType: NavigationRailLabelType.all,
+                                destinations: [
+                                  if (isAdminOrManager)
+                                    NavigationRailDestination(
+                                      icon: const Icon(LucideIcons.shieldAlert),
+                                      label: Text(l10n.navAdmin),
+                                    ),
+                                  NavigationRailDestination(
+                                    icon: const Icon(LucideIcons.settings),
+                                    label: Text(l10n.navSettings),
+                                  ),
+                                ],
                               ),
+                              const SizedBox(height: 12),
+                              const _LogoutButton(),
                             ],
                           ),
                         ),
@@ -194,4 +203,105 @@ class MainShell extends ConsumerWidget {
       ),
     );
   }
+}
+
+class _LogoutButton extends ConsumerWidget {
+  const _LogoutButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final glassTheme = context.glass;
+
+    return InkWell(
+      onTap: () => _showSignOutDialog(context, ref),
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(LucideIcons.logOut, color: glassTheme.negative, size: 24),
+            const SizedBox(height: 4),
+            Text(
+              l10n.settingsSignOut,
+              style: TextStyle(
+                color: glassTheme.negative,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void _showSignOutDialog(BuildContext context, WidgetRef ref) {
+  final l10n = AppLocalizations.of(context);
+  final glassTheme = context.glass;
+
+  showDialog<void>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      contentPadding: EdgeInsets.zero,
+      content: GlassCard(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Icon(LucideIcons.logOut, size: 40, color: glassTheme.negative),
+            const SizedBox(height: 16),
+            Text(
+              '¿Cerrar sesión?',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: glassTheme.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Vas a salir de tu sesión actual y vas a tener que re-autenticarte para volver a ingresar.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: glassTheme.textSecondary,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: Text(l10n.commonCancel),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: glassTheme.negative,
+                    ),
+                    onPressed: () async {
+                      Navigator.of(ctx).pop();
+                      await ref.read(supabaseClientProvider).auth.signOut();
+                    },
+                    child: Text(l10n.confirm),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
