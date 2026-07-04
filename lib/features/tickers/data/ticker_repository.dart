@@ -23,6 +23,7 @@ class TickerRepository {
     String? assetClass,
     String? sector,
     String? planSlug,
+    bool? favorite,
     int page = 1,
     int limit = 20,
   }) {
@@ -37,6 +38,7 @@ class TickerRepository {
         if (planSlug != null && planSlug.isNotEmpty) {
           queryParams['planSlug'] = planSlug;
         }
+        if (favorite == true) queryParams['favorite'] = true;
 
         final res = await _dio.get<Map<String, dynamic>>(
           '/tickers',
@@ -55,6 +57,42 @@ class TickerRepository {
       () async {
         final res = await _dio.get<Map<String, dynamic>>('/tickers/$symbol');
         return TickerDetail.fromJson(res.data!);
+      },
+      baseDelay: _retryBaseDelay,
+      maxAttempts: _maxAttempts,
+    );
+  }
+
+  /// `GET /tickers?favorite=true` → solo los activos favoritos del usuario.
+  Future<List<Ticker>> getFavorites() async {
+    final result = await getTickers(favorite: true, limit: 100);
+    return result.tickers;
+  }
+
+  /// `PUT /tickers/{symbol}/favorite` → marca el activo como favorito.
+  /// Idempotente. Devuelve el estado final (`favorite`).
+  Future<bool> addFavorite(String symbol) {
+    return retryWithBackoff(
+      () async {
+        final res = await _dio.put<Map<String, dynamic>>(
+          '/tickers/$symbol/favorite',
+        );
+        return res.data?['favorite'] as bool? ?? true;
+      },
+      baseDelay: _retryBaseDelay,
+      maxAttempts: _maxAttempts,
+    );
+  }
+
+  /// `DELETE /tickers/{symbol}/favorite` → desmarca el activo.
+  /// Idempotente. Devuelve el estado final (`favorite`).
+  Future<bool> removeFavorite(String symbol) {
+    return retryWithBackoff(
+      () async {
+        final res = await _dio.delete<Map<String, dynamic>>(
+          '/tickers/$symbol/favorite',
+        );
+        return res.data?['favorite'] as bool? ?? false;
       },
       baseDelay: _retryBaseDelay,
       maxAttempts: _maxAttempts,

@@ -470,6 +470,102 @@ abstract class AppLocalizations {
   /// **'Ajustes'**
   String get navSettings;
 
+  /// No description provided for @navRelations.
+  ///
+  /// In es, this message translates to:
+  /// **'Relaciones'**
+  String get navRelations;
+
+  /// No description provided for @relationsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Relaciones entre activos'**
+  String get relationsTitle;
+
+  /// No description provided for @relationsAssetsSection.
+  ///
+  /// In es, this message translates to:
+  /// **'Activos'**
+  String get relationsAssetsSection;
+
+  /// No description provided for @relationsSectorsSection.
+  ///
+  /// In es, this message translates to:
+  /// **'Sectores'**
+  String get relationsSectorsSection;
+
+  /// No description provided for @relationsColPrincipal.
+  ///
+  /// In es, this message translates to:
+  /// **'Activo Principal'**
+  String get relationsColPrincipal;
+
+  /// No description provided for @relationsColEtfs.
+  ///
+  /// In es, this message translates to:
+  /// **'ETFs (x2, x3)'**
+  String get relationsColEtfs;
+
+  /// No description provided for @relationsColInverse.
+  ///
+  /// In es, this message translates to:
+  /// **'Activo Inverso'**
+  String get relationsColInverse;
+
+  /// No description provided for @relationsColSector.
+  ///
+  /// In es, this message translates to:
+  /// **'Sector'**
+  String get relationsColSector;
+
+  /// No description provided for @relationsFavorites.
+  ///
+  /// In es, this message translates to:
+  /// **'Favoritos'**
+  String get relationsFavorites;
+
+  /// No description provided for @favoriteError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo actualizar el favorito. Intentá de nuevo.'**
+  String get favoriteError;
+
+  /// No description provided for @relationsSearchHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar activo por símbolo o nombre…'**
+  String get relationsSearchHint;
+
+  /// No description provided for @relationsNoResults.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay activos que coincidan con la búsqueda.'**
+  String get relationsNoResults;
+
+  /// No description provided for @relationsAssetsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay activos con relaciones cargadas.'**
+  String get relationsAssetsEmpty;
+
+  /// No description provided for @relationsSectorsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay sectores cargados.'**
+  String get relationsSectorsEmpty;
+
+  /// No description provided for @relationsError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudieron cargar las relaciones entre activos.'**
+  String get relationsError;
+
+  /// No description provided for @relationsRetry.
+  ///
+  /// In es, this message translates to:
+  /// **'Reintentar'**
+  String get relationsRetry;
+
   /// No description provided for @settingsInterface.
   ///
   /// In es, this message translates to:
@@ -631,6 +727,114 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Error de Autenticación'**
   String get loginAuthError;
+
+  /// No description provided for @operationNewTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva Operación'**
+  String get operationNewTitle;
+
+  /// No description provided for @operationEditTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar Operación'**
+  String get operationEditTitle;
+
+  /// No description provided for @operationTicker.
+  ///
+  /// In es, this message translates to:
+  /// **'Ticker / Símbolo'**
+  String get operationTicker;
+
+  /// No description provided for @operationOpenedAt.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha de Compra'**
+  String get operationOpenedAt;
+
+  /// No description provided for @operationQty.
+  ///
+  /// In es, this message translates to:
+  /// **'Cantidad'**
+  String get operationQty;
+
+  /// No description provided for @operationBuyPrice.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio de Compra'**
+  String get operationBuyPrice;
+
+  /// No description provided for @operationLimitPrice.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio Límite (Opcional)'**
+  String get operationLimitPrice;
+
+  /// No description provided for @operationStrategy.
+  ///
+  /// In es, this message translates to:
+  /// **'Estrategia (Opcional)'**
+  String get operationStrategy;
+
+  /// No description provided for @operationNotes.
+  ///
+  /// In es, this message translates to:
+  /// **'Notas'**
+  String get operationNotes;
+
+  /// No description provided for @operationUrl.
+  ///
+  /// In es, this message translates to:
+  /// **'URL de Referencia'**
+  String get operationUrl;
+
+  /// No description provided for @operationStrike.
+  ///
+  /// In es, this message translates to:
+  /// **'Strike (Precio Ejercicio)'**
+  String get operationStrike;
+
+  /// No description provided for @operationExpirationDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha de Expiración'**
+  String get operationExpirationDate;
+
+  /// No description provided for @operationContractType.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipo de Contrato'**
+  String get operationContractType;
+
+  /// No description provided for @operationSave.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get operationSave;
+
+  /// No description provided for @operationDelete.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar'**
+  String get operationDelete;
+
+  /// No description provided for @operationDeleted.
+  ///
+  /// In es, this message translates to:
+  /// **'Operación eliminada con éxito'**
+  String get operationDeleted;
+
+  /// No description provided for @operationSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Operación guardada con éxito'**
+  String get operationSaved;
+
+  /// No description provided for @operationSuggestUrl.
+  ///
+  /// In es, this message translates to:
+  /// **'Sugerir URL de Yahoo Finance'**
+  String get operationSuggestUrl;
 }
 
 class _AppLocalizationsDelegate

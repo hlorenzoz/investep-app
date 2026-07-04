@@ -15,9 +15,11 @@ import '../features/auth/presentation/change_password_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/splash_screen.dart';
 import '../features/portfolio/presentation/portfolio_screen.dart';
+import '../features/relations/presentation/relations_screen.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../features/setup/presentation/broker_setup_flow.dart';
 import '../features/setup/presentation/setup_mode.dart';
+import '../features/operations/presentation/operation_form_screen.dart';
 import 'main_shell.dart';
 
 /// Decisión de redirección a partir del estado del gate y la ubicación actual.
@@ -87,6 +89,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) =>
             EditAllocationScreen(allocationId: state.pathParameters['id']!),
       ),
+      GoRoute(
+        path: '/account/:id/operations/new',
+        name: 'operation_new',
+        builder: (context, state) =>
+            OperationFormScreen(allocationId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/account/:id/operations/:operationId/edit',
+        name: 'operation_edit',
+        builder: (context, state) =>
+            OperationFormScreen(
+              allocationId: state.pathParameters['id']!,
+              operationId: state.pathParameters['operationId']!,
+            ),
+      ),
       // Menú de navegación global responsivo con persistencia de estado por rama
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -108,6 +125,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/academy',
                 name: 'academy',
                 builder: (context, state) => const AcademyScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/relations',
+                name: 'relations',
+                builder: (context, state) => const RelationsScreen(),
               ),
             ],
           ),

@@ -32,17 +32,24 @@ class MainShell extends ConsumerWidget {
     final role = gate is GateAuthenticated ? gate.user.role : 'user';
     final isAdminOrManager = role == 'admin' || role == 'manager';
 
+    // Índices de rama (StatefulShellRoute):
+    //   0 Portafolio · 1 Academia · 2 Relaciones · 3 Admin · 4 Configuración
+    // Admin (rama 3) se oculta si el usuario no es admin/manager, por eso el
+    // mapeo entre índices de UI e índices de rama es manual.
+
     // Mapeo para NavigationBar (Móvil)
     int branchToUiIndex(int branchIndex) {
       if (isAdminOrManager) return branchIndex;
-      if (branchIndex >= 3) return branchIndex - 1;
+      // Sin Admin: Configuración (rama 4) baja un lugar en la UI.
+      if (branchIndex >= 4) return branchIndex - 1;
       return branchIndex;
     }
 
     void onDestinationSelected(int uiIndex) {
       int branchIndex = uiIndex;
       if (!isAdminOrManager) {
-        if (uiIndex >= 2) {
+        // Sin Admin visible, la UI a partir de Configuración salta la rama 3.
+        if (uiIndex >= 3) {
           branchIndex = uiIndex + 1;
         }
       }
@@ -52,22 +59,22 @@ class MainShell extends ConsumerWidget {
       );
     }
 
-    // Mapeo para bottom NavigationRail (Tablet/Desktop)
+    // Mapeo para bottom NavigationRail (Tablet/Desktop): rama 3 Admin + rama 4 Config.
     final int? bottomRailSelectedIndex;
     if (isAdminOrManager) {
-      bottomRailSelectedIndex = navigationShell.currentIndex >= 2
-          ? navigationShell.currentIndex - 2
+      bottomRailSelectedIndex = navigationShell.currentIndex >= 3
+          ? navigationShell.currentIndex - 3
           : null;
     } else {
-      bottomRailSelectedIndex = navigationShell.currentIndex == 3 ? 0 : null;
+      bottomRailSelectedIndex = navigationShell.currentIndex == 4 ? 0 : null;
     }
 
     void onBottomRailSelected(int uiIndex) {
       final int targetBranch;
       if (isAdminOrManager) {
-        targetBranch = uiIndex + 2;
+        targetBranch = uiIndex + 3;
       } else {
-        targetBranch = 3; // Solo Configuración está disponible
+        targetBranch = 4; // Solo Configuración está disponible
       }
       navigationShell.goBranch(
         targetBranch,
@@ -102,6 +109,10 @@ class MainShell extends ConsumerWidget {
                     NavigationDestination(
                       icon: const Icon(LucideIcons.graduationCap),
                       label: l10n.navAcademy,
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(LucideIcons.waypoints),
+                      label: l10n.navRelations,
                     ),
                     if (isAdminOrManager)
                       NavigationDestination(
@@ -142,7 +153,7 @@ class MainShell extends ConsumerWidget {
                         const SizedBox(height: 20),
                         Expanded(
                           child: NavigationRail(
-                            selectedIndex: navigationShell.currentIndex < 2
+                            selectedIndex: navigationShell.currentIndex < 3
                                 ? navigationShell.currentIndex
                                 : null,
                             onDestinationSelected: (idx) {
@@ -161,6 +172,10 @@ class MainShell extends ConsumerWidget {
                               NavigationRailDestination(
                                 icon: const Icon(LucideIcons.graduationCap),
                                 label: Text(l10n.navAcademy),
+                              ),
+                              NavigationRailDestination(
+                                icon: const Icon(LucideIcons.waypoints),
+                                label: Text(l10n.navRelations),
                               ),
                             ],
                           ),

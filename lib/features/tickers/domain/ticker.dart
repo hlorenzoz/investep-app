@@ -25,6 +25,7 @@ class Ticker {
   final Map<String, dynamic> financials;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final bool isFavorite;
 
   const Ticker({
     required this.id,
@@ -52,6 +53,7 @@ class Ticker {
     required this.financials,
     required this.createdAt,
     required this.updatedAt,
+    this.isFavorite = false,
   });
 
   factory Ticker.fromJson(Map<String, dynamic> json) {
@@ -85,6 +87,38 @@ class Ticker {
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'] as String)
           : DateTime.now(),
+      isFavorite: json['isFavorite'] as bool? ?? false,
+    );
+  }
+
+  Ticker copyWith({bool? isFavorite}) {
+    return Ticker(
+      id: id,
+      symbol: symbol,
+      name: name,
+      assetClass: assetClass,
+      exchange: exchange,
+      sector: sector,
+      industry: industry,
+      country: country,
+      price: price,
+      changePct: changePct,
+      prevClose: prevClose,
+      volume: volume,
+      avgVolume: avgVolume,
+      fiftyTwoWHigh: fiftyTwoWHigh,
+      fiftyTwoWLow: fiftyTwoWLow,
+      marketCap: marketCap,
+      peRatio: peRatio,
+      forwardPe: forwardPe,
+      pegRatio: pegRatio,
+      psRatio: psRatio,
+      pbRatio: pbRatio,
+      dividendYield: dividendYield,
+      financials: financials,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 
@@ -115,6 +149,7 @@ class Ticker {
       'financials': financials,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
+      'isFavorite': isFavorite,
     };
   }
 }
@@ -126,12 +161,14 @@ class TickerRelationInfo {
   final String
   relationType; // leveraged_long, leveraged_short, inverse, underlying, peer
   final double multiplier;
+  final bool isFavorite;
 
   const TickerRelationInfo({
     required this.symbol,
     required this.name,
     required this.relationType,
     required this.multiplier,
+    this.isFavorite = false,
   });
 
   factory TickerRelationInfo.fromJson(Map<String, dynamic> json) {
@@ -140,6 +177,17 @@ class TickerRelationInfo {
       name: json['name'] as String,
       relationType: json['relationType'] as String,
       multiplier: (json['multiplier'] as num).toDouble(),
+      isFavorite: json['isFavorite'] as bool? ?? false,
+    );
+  }
+
+  TickerRelationInfo copyWith({bool? isFavorite}) {
+    return TickerRelationInfo(
+      symbol: symbol,
+      name: name,
+      relationType: relationType,
+      multiplier: multiplier,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 
@@ -149,6 +197,7 @@ class TickerRelationInfo {
       'name': name,
       'relationType': relationType,
       'multiplier': multiplier,
+      'isFavorite': isFavorite,
     };
   }
 }

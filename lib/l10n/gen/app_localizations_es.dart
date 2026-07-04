@@ -197,6 +197,57 @@ class AppLocalizationsEs extends AppLocalizations {
   String get navSettings => 'Ajustes';
 
   @override
+  String get navRelations => 'Relaciones';
+
+  @override
+  String get relationsTitle => 'Relaciones entre activos';
+
+  @override
+  String get relationsAssetsSection => 'Activos';
+
+  @override
+  String get relationsSectorsSection => 'Sectores';
+
+  @override
+  String get relationsColPrincipal => 'Activo Principal';
+
+  @override
+  String get relationsColEtfs => 'ETFs (x2, x3)';
+
+  @override
+  String get relationsColInverse => 'Activo Inverso';
+
+  @override
+  String get relationsColSector => 'Sector';
+
+  @override
+  String get relationsFavorites => 'Favoritos';
+
+  @override
+  String get favoriteError =>
+      'No se pudo actualizar el favorito. Intentá de nuevo.';
+
+  @override
+  String get relationsSearchHint => 'Buscar activo por símbolo o nombre…';
+
+  @override
+  String get relationsNoResults =>
+      'No hay activos que coincidan con la búsqueda.';
+
+  @override
+  String get relationsAssetsEmpty => 'No hay activos con relaciones cargadas.';
+
+  @override
+  String get relationsSectorsEmpty => 'No hay sectores cargados.';
+
+  @override
+  String get relationsError =>
+      'No se pudieron cargar las relaciones entre activos.';
+
+  @override
+  String get relationsRetry => 'Reintentar';
+
+  @override
   String get settingsInterface => 'Interfaz';
 
   @override
@@ -280,4 +331,58 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get loginAuthError => 'Error de Autenticación';
+
+  @override
+  String get operationNewTitle => 'Nueva Operación';
+
+  @override
+  String get operationEditTitle => 'Editar Operación';
+
+  @override
+  String get operationTicker => 'Ticker / Símbolo';
+
+  @override
+  String get operationOpenedAt => 'Fecha de Compra';
+
+  @override
+  String get operationQty => 'Cantidad';
+
+  @override
+  String get operationBuyPrice => 'Precio de Compra';
+
+  @override
+  String get operationLimitPrice => 'Precio Límite (Opcional)';
+
+  @override
+  String get operationStrategy => 'Estrategia (Opcional)';
+
+  @override
+  String get operationNotes => 'Notas';
+
+  @override
+  String get operationUrl => 'URL de Referencia';
+
+  @override
+  String get operationStrike => 'Strike (Precio Ejercicio)';
+
+  @override
+  String get operationExpirationDate => 'Fecha de Expiración';
+
+  @override
+  String get operationContractType => 'Tipo de Contrato';
+
+  @override
+  String get operationSave => 'Guardar';
+
+  @override
+  String get operationDelete => 'Eliminar';
+
+  @override
+  String get operationDeleted => 'Operación eliminada con éxito';
+
+  @override
+  String get operationSaved => 'Operación guardada con éxito';
+
+  @override
+  String get operationSuggestUrl => 'Sugerir URL de Yahoo Finance';
 }
