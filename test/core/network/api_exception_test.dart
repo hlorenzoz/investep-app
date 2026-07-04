@@ -75,11 +75,19 @@ void main() {
   });
 
   group('ApiException.isRetryable', () {
-    test('true para 500/503, false para 400/401/422', () {
+    test('true sólo para transitorios reales (503/429)', () {
       expect(const ApiException(503, 'X', 'm').isRetryable, isTrue);
-      expect(const ApiException(500, 'X', 'm').isRetryable, isTrue);
+      expect(const ApiException(429, 'X', 'm').isRetryable, isTrue);
+    });
+
+    test('500 NO se reintenta (error interno, reintentar no lo arregla)', () {
+      expect(const ApiException(500, 'INTERNAL_ERROR', 'm').isRetryable, isFalse);
+    });
+
+    test('false para 4xx no transitorios (400/401/404/422)', () {
       expect(const ApiException(400, 'X', 'm').isRetryable, isFalse);
       expect(const ApiException(401, 'X', 'm').isRetryable, isFalse);
+      expect(const ApiException(404, 'X', 'm').isRetryable, isFalse);
       expect(const ApiException(422, 'X', 'm').isRetryable, isFalse);
     });
   });

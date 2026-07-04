@@ -21,12 +21,16 @@ class ApiException implements Exception {
 
   const ApiException(this.status, this.code, this.message);
 
-  /// `true` para errores transitorios donde reintentar tiene sentido:
-  /// 503 (Supabase caído/throttleado) y 500 (error inesperado del servidor).
+  /// `true` sólo para errores REALMENTE transitorios donde reintentar puede
+  /// resolver: 503 (Supabase caído/throttleado) y 429 (rate limit). Los
+  /// timeouts / caída de red se mapean a 503 (ver [fromDioException]), así que
+  /// también entran acá.
   ///
-  /// NUNCA reintentamos un 401 (token muerto → re-login) ni los 4xx de
+  /// Un 500 es un error INTERNO del servidor: reintentarlo no lo arregla, sólo
+  /// multiplica la carga y demora el error real que ve el usuario → NO se
+  /// reintenta. Tampoco un 401 (token muerto → re-login) ni los 4xx de
   /// validación (400/422): reintentar el mismo request daría el mismo error.
-  bool get isRetryable => status == 503 || status == 500;
+  bool get isRetryable => status == 503 || status == 429;
 
   /// Normaliza un [DioException] al contrato de error de la API.
   ///
