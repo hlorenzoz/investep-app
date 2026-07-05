@@ -9,7 +9,7 @@ class Allocation {
   final int brokerId;
   final String brokerSlug;
   final AccountType accountType;
-  final int investmentPlanId;
+  final int? investmentPlanId;
   final num targetMonthlyPct;
   final num initialDeposit;
   final String currency;
@@ -20,7 +20,7 @@ class Allocation {
     required this.brokerId,
     required this.brokerSlug,
     required this.accountType,
-    required this.investmentPlanId,
+    this.investmentPlanId,
     required this.targetMonthlyPct,
     required this.initialDeposit,
     required this.currency,
@@ -32,7 +32,7 @@ class Allocation {
     brokerId: (json['brokerId'] as num).toInt(),
     brokerSlug: json['brokerSlug'] as String,
     accountType: AccountType.fromApi(json['accountType'] as String),
-    investmentPlanId: (json['investmentPlanId'] as num).toInt(),
+    investmentPlanId: (json['investmentPlanId'] as num?)?.toInt(),
     targetMonthlyPct: json['targetMonthlyPct'] as num,
     initialDeposit: json['initialDeposit'] as num,
     currency: json['currency'] as String,

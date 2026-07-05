@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../capital/domain/allocation.dart';
+import '../../capital/presentation/capital_controller.dart';
+import '../../plans/data/projection_repository.dart';
 import '../../plans/domain/compound_interest_calculator.dart';
 
 class AccountDetailState {
@@ -72,60 +74,109 @@ class AccountDetailController extends Notifier<AccountDetailState> {
       clearDrillDown: true,
     );
   }
-
-  List<CompoundInterestPeriodResult> getProjections(Allocation allocation) {
-    final now = DateTime.now();
-    final creationDate = allocation.createdAt ?? now;
-
-    DateTime? filterStart;
-    DateTime? filterEnd;
-
-    if (state.drillDownDate != null) {
-      final drillDate = state.drillDownDate!;
-      if (state.grouping == CompoundInterestGrouping.monthly) {
-        filterStart = DateTime(drillDate.year, 1, 1);
-        filterEnd = DateTime(drillDate.year, 12, 31);
-      } else if (state.grouping == CompoundInterestGrouping.daily) {
-        filterStart = DateTime(drillDate.year, drillDate.month, 1);
-        filterEnd = DateTime(drillDate.year, drillDate.month + 1, 0);
-      }
-    } else {
-      filterStart = creationDate;
-      if (state.grouping == CompoundInterestGrouping.daily ||
-          state.grouping == CompoundInterestGrouping.weekly) {
-        filterEnd = DateTime(
-          creationDate.year + 1,
-          creationDate.month,
-          creationDate.day,
-        );
-      } else if (state.grouping == CompoundInterestGrouping.monthly) {
-        filterEnd = DateTime(
-          creationDate.year + 3,
-          creationDate.month,
-          creationDate.day,
-        );
-      } else if (state.grouping == CompoundInterestGrouping.yearly) {
-        filterEnd = DateTime(
-          creationDate.year + 5,
-          creationDate.month,
-          creationDate.day,
-        );
-      }
-    }
-
-    return CompoundInterestCalculator.calculate(
-      baseAmount: allocation.initialDeposit.toDouble(),
-      monthlyRatePct: allocation.targetMonthlyPct.toDouble(),
-      grouping: state.grouping,
-      accountCreationDate: creationDate,
-      years: 5,
-      filterStartDate: filterStart,
-      filterEndDate: filterEnd,
-    );
-  }
 }
 
 final accountDetailControllerProvider = NotifierProvider.autoDispose
     .family<AccountDetailController, AccountDetailState, String>(
       AccountDetailController.new,
     );
+
+final accountProjectionProvider = FutureProvider.autoDispose
+    .family<List<CompoundInterestPeriodResult>, String>((ref, allocationId) async {
+  final overview = await ref.watch(capitalControllerProvider.future);
+  final matching = overview.allocations.where((a) => a.id == allocationId);
+  if (matching.isEmpty) return const [];
+  final Allocation allocation = matching.first;
+
+  final state = ref.watch(accountDetailControllerProvider(allocationId));
+  if (allocation.investmentPlanId == null || allocation.initialDeposit <= 0) {
+    return const [];
+  }
+
+  final creationDate = allocation.createdAt ?? DateTime.now();
+
+  final series = await ref.read(projectionRepositoryProvider).getProjection(
+        planId: allocation.investmentPlanId!,
+        baseAmount: allocation.initialDeposit.toDouble(),
+        startDate: creationDate,
+        grouping: state.grouping,
+      );
+
+  return _applyDrillDownFilter(series, state, creationDate);
+});
+
+List<CompoundInterestPeriodResult> _applyDrillDownFilter(
+  List<CompoundInterestPeriodResult> rawPeriods,
+  AccountDetailState state,
+  DateTime creationDate,
+) {
+  DateTime? filterStart;
+  DateTime? filterEnd;
+
+  if (state.drillDownDate != null) {
+    final drillDate = state.drillDownDate!;
+    if (state.grouping == CompoundInterestGrouping.monthly) {
+      filterStart = DateTime(drillDate.year, 1, 1);
+      filterEnd = DateTime(drillDate.year, 12, 31);
+    } else if (state.grouping == CompoundInterestGrouping.daily) {
+      filterStart = DateTime(drillDate.year, drillDate.month, 1);
+      filterEnd = DateTime(drillDate.year, drillDate.month + 1, 0);
+    }
+  } else {
+    filterStart = creationDate;
+    if (state.grouping == CompoundInterestGrouping.daily ||
+        state.grouping == CompoundInterestGrouping.weekly) {
+      filterEnd = DateTime(
+        creationDate.year + 1,
+        creationDate.month,
+        creationDate.day,
+      );
+    } else if (state.grouping == CompoundInterestGrouping.monthly) {
+      filterEnd = DateTime(
+        creationDate.year + 3,
+        creationDate.month,
+        creationDate.day,
+      );
+    } else if (state.grouping == CompoundInterestGrouping.yearly) {
+      filterEnd = DateTime(
+        creationDate.year + 5,
+        creationDate.month,
+        creationDate.day,
+      );
+    }
+  }
+
+  var filtered = rawPeriods;
+  if (filterStart != null) {
+    final start = filterStart;
+    filtered = filtered
+        .where(
+          (p) =>
+              p.date.isAfter(start) ||
+              p.date.isAtSameMomentAs(start),
+        )
+        .toList();
+  }
+  if (filterEnd != null) {
+    final end = filterEnd;
+    filtered = filtered
+        .where(
+          (p) =>
+              p.date.isBefore(end) ||
+              p.date.isAtSameMomentAs(end),
+        )
+        .toList();
+  }
+
+  return List.generate(filtered.length, (index) {
+    final p = filtered[index];
+    return CompoundInterestPeriodResult(
+      periodIndex: index + 1,
+      label: p.label,
+      startBalance: p.startBalance,
+      yieldAmount: p.yieldAmount,
+      endBalance: p.endBalance,
+      date: p.date,
+    );
+  });
+}
