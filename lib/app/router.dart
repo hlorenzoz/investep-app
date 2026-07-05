@@ -19,6 +19,7 @@ import '../features/relations/presentation/relations_screen.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../features/setup/presentation/broker_setup_flow.dart';
 import '../features/setup/presentation/setup_mode.dart';
+import '../features/operations/presentation/operation_detail_screen.dart';
 import '../features/operations/presentation/operation_form_screen.dart';
 import 'main_shell.dart';
 
@@ -94,6 +95,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'operation_new',
         builder: (context, state) =>
             OperationFormScreen(allocationId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/account/:id/operations/:operationId',
+        name: 'operation_detail',
+        builder: (context, state) => OperationDetailScreen(
+          allocationId: state.pathParameters['id']!,
+          operationId: state.pathParameters['operationId']!,
+        ),
       ),
       GoRoute(
         path: '/account/:id/operations/:operationId/edit',
