@@ -32,6 +32,7 @@ class _BrokerLogoState extends State<BrokerLogo> {
   void didUpdateWidget(covariant BrokerLogo oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.broker.id != widget.broker.id ||
+        oldWidget.broker.slug != widget.broker.slug ||
         oldWidget.broker.logo != widget.broker.logo ||
         oldWidget.broker.icon != widget.broker.icon ||
         oldWidget.broker.favicon != widget.broker.favicon) {
@@ -40,12 +41,66 @@ class _BrokerLogoState extends State<BrokerLogo> {
   }
 
   void _initSources() {
-    _sources = [
-      widget.broker.logo,
-      widget.broker.icon,
-      widget.broker.favicon,
-    ].whereType<String>().where((s) => s.isNotEmpty).toList();
+    final localSvg = _getLocalSvg(widget.broker.slug);
+    if (localSvg != null) {
+      _sources = [localSvg];
+    } else {
+      _sources = [
+        widget.broker.logo,
+        widget.broker.icon,
+        widget.broker.favicon,
+      ].whereType<String>().where((s) => s.isNotEmpty).toList();
+    }
     _currentIndex = 0;
+  }
+
+  String? _getLocalSvg(String slug) {
+    switch (slug.toLowerCase()) {
+      case 'ibkr':
+      case 'interactive-brokers':
+        return '''
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="24" fill="url(#ibkrGrad)"/>
+  <text x="50" y="65" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="42" fill="#FFFFFF" text-anchor="middle">IBKR</text>
+  <defs>
+    <linearGradient id="ibkrGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E50000"/>
+      <stop offset="1" stop-color="#990000"/>
+    </linearGradient>
+  </defs>
+</svg>
+''';
+      case 'tastytrade':
+        return '''
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="24" fill="url(#tastyGrad)"/>
+  <text x="50" y="68" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="55" fill="#FFFFFF" text-anchor="middle">t</text>
+  <defs>
+    <linearGradient id="tastyGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F20056"/>
+      <stop offset="1" stop-color="#80002A"/>
+    </linearGradient>
+  </defs>
+</svg>
+''';
+      case 'etrade':
+      case 'e-trade':
+        return '''
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="24" fill="url(#etradeGrad)"/>
+  <text x="45" y="68" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="50" fill="#FFFFFF" text-anchor="middle">e</text>
+  <circle cx="70" cy="30" r="10" fill="#00FF00"/>
+  <defs>
+    <linearGradient id="etradeGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#622E90"/>
+      <stop offset="1" stop-color="#3B175B"/>
+    </linearGradient>
+  </defs>
+</svg>
+''';
+      default:
+        return null;
+    }
   }
 
   void _onError() {

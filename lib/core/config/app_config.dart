@@ -3,7 +3,8 @@
 /// se pasan al construir/ejecutar y quedan fuera del control de versiones.
 ///
 /// Ejemplo:
-///   flutter run --dart-define=API_BASE_URL=https://api.investepacademy.com \
+//    flutter run --dart-define=API_BASE_URL=https://api.investepacademy.com \
+///   flutter run --dart-define=API_BASE_URL=https://api-investep.hlorenzoz.com \
 ///               --dart-define=SUPABASE_URL=... \
 ///               --dart-define=SUPABASE_ANON_KEY=...
 ///
@@ -12,12 +13,13 @@
 abstract final class AppConfig {
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://api.investepacademy.com',
+    // defaultValue: 'https://api.investepacademy.com',
+    defaultValue: 'https://api-investep.hlorenzoz.com',
   );
 
-  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  static String supabaseUrl = const String.fromEnvironment('SUPABASE_URL');
 
-  static const String supabaseAnonKey = String.fromEnvironment(
+  static String supabaseAnonKey = const String.fromEnvironment(
     'SUPABASE_ANON_KEY',
   );
 

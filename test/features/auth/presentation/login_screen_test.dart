@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:investep_app/app/theme/theme_provider.dart';
 import 'package:investep_app/core/l10n/locale_provider.dart';
 import 'package:investep_app/core/providers/supabase_provider.dart';
+import 'package:investep_app/core/config/app_config.dart';
 import 'package:investep_app/features/auth/presentation/login_screen.dart';
 import 'package:investep_app/l10n/gen/app_localizations.dart';
 import 'package:investep_app/shared/widgets/language_selector.dart';
@@ -18,6 +19,11 @@ class MockGoTrueClient extends Mock implements GoTrueClient {}
 void main() {
   late MockSupabaseClient mockSupabase;
   late MockGoTrueClient mockAuth;
+
+  setUpAll(() {
+    AppConfig.supabaseUrl = 'https://example.supabase.co';
+    AppConfig.supabaseAnonKey = 'someanonkey';
+  });
 
   setUp(() {
     mockSupabase = MockSupabaseClient();
@@ -69,6 +75,52 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Sign In'), findsWidgets);
+    },
+  );
+
+  testWidgets(
+    'Validador de contraseña para cuenta no-demo requiere min 6 caracteres',
+    (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      final emailFinder = find.byType(TextFormField).at(0);
+      await tester.enterText(emailFinder, 'normal@example.com');
+      await tester.pump();
+
+      final passwordFormField = tester.widget<TextFormField>(
+        find.byType(TextFormField).at(1),
+      );
+
+      final validator = passwordFormField.validator;
+      expect(validator, isNotNull);
+      
+      expect(validator!('12345'), 'La contraseña debe tener al menos 6 caracteres');
+      expect(validator('123456'), isNull);
+      expect(validator(''), 'Por favor ingresá tu contraseña');
+    },
+  );
+
+  testWidgets(
+    'Validador de contraseña para cuenta demo NO requiere min 6 caracteres',
+    (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      final emailFinder = find.byType(TextFormField).at(0);
+      await tester.enterText(emailFinder, 'demo@hlorenzoz.com');
+      await tester.pump();
+
+      final passwordFormField = tester.widget<TextFormField>(
+        find.byType(TextFormField).at(1),
+      );
+
+      final validator = passwordFormField.validator;
+      expect(validator, isNotNull);
+      
+      expect(validator!('demo'), isNull);
+      expect(validator('123'), isNull);
+      expect(validator(''), 'Por favor ingresá tu contraseña');
     },
   );
 }

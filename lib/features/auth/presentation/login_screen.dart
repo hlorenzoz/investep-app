@@ -369,7 +369,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 if (value == null || value.isEmpty) {
                   return 'Por favor ingresá tu contraseña';
                 }
-                if (value.length < 6) {
+                final email = _emailController.text.trim().toLowerCase();
+                final isDemo = email == 'demo@hlorenzoz.com';
+                if (!isDemo && value.length < 6) {
                   return 'La contraseña debe tener al menos 6 caracteres';
                 }
                 return null;
