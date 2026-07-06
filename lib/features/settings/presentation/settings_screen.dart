@@ -221,23 +221,7 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 28),
 
-                  // --- SECCIÓN ADMINISTRACIÓN ---
-                  const _SectionHeader(title: 'ADMINISTRACIÓN'),
-                  const SizedBox(height: 10),
-                  GlassCard(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        OutlinedButton.icon(
-                          onPressed: () => context.push('/admin'),
-                          icon: const Icon(LucideIcons.shieldAlert, size: 18),
-                          label: const Text('Panel de Administración'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 28),
+
 
                   // --- SECCIÓN CUENTA ---
                   _SectionHeader(title: l10n.settingsAccount),
