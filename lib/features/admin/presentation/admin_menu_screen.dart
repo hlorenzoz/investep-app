@@ -18,6 +18,80 @@ class AdminMenuScreen extends ConsumerWidget {
     final gate = ref.watch(authGateProvider);
     final role = gate is GateAuthenticated ? gate.user.role : 'user';
     final isAdmin = role == 'admin';
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isLargeScreen = screenWidth >= 600;
+
+    Widget bodyContent = ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      children: [
+        _buildMenuCard(
+          context,
+          title: 'Academia',
+          subtitle:
+              'Gestionar paquetes de membresía, precios y características globales.',
+          icon: LucideIcons.graduationCap,
+          route: '/admin/academy',
+        ),
+        if (isAdmin) ...[
+          const SizedBox(height: 16),
+          _buildMenuCard(
+            context,
+            title: 'Gestión de Usuarios',
+            subtitle:
+                'Visualizar perfiles de usuario, roles y aprovisionar.',
+            icon: LucideIcons.users2,
+            route: '/admin/users',
+            enabled: true,
+          ),
+          const SizedBox(height: 16),
+          _buildMenuCard(
+            context,
+            title: 'Configuración de Brókers',
+            subtitle: 'Gestionar el catálogo de brókers del sistema.',
+            icon: LucideIcons.building2,
+            route: '/admin/brokers',
+            enabled: true,
+          ),
+          const SizedBox(height: 16),
+          _buildMenuCard(
+            context,
+            title: 'Configuración de Activos (Tickers)',
+            subtitle:
+                'Gestionar el catálogo de activos del sistema y sus relaciones.',
+            icon: LucideIcons.candlestickChart,
+            route: '/admin/tickers',
+            enabled: true,
+          ),
+          const SizedBox(height: 16),
+          _buildMenuCard(
+            context,
+            title: 'Gestión de Tienda',
+            subtitle: 'Gestionar el catálogo de productos de la tienda.',
+            icon: LucideIcons.store,
+            route: '/admin/store',
+            enabled: true,
+          ),
+        ],
+        const SizedBox(height: 16),
+        _buildMenuCard(
+          context,
+          title: 'Configuración Global',
+          subtitle: 'Configuración general del sistema y métricas.',
+          icon: LucideIcons.sliders,
+          route: null,
+          enabled: false,
+        ),
+      ],
+    );
+
+    if (isLargeScreen) {
+      bodyContent = Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: screenWidth * 0.8),
+          child: bodyContent,
+        ),
+      );
+    }
 
     return Container(
       decoration: BoxDecoration(gradient: glassTheme.backgroundGradient),
@@ -33,70 +107,7 @@ class AdminMenuScreen extends ConsumerWidget {
             ],
           ),
         ),
-        body: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-            children: [
-              _buildMenuCard(
-                context,
-                title: 'Academia',
-                subtitle:
-                    'Gestionar paquetes de membresía, precios y características globales.',
-                icon: LucideIcons.graduationCap,
-                route: '/admin/academy',
-              ),
-              if (isAdmin) ...[
-                const SizedBox(height: 16),
-                _buildMenuCard(
-                  context,
-                  title: 'Gestión de Usuarios',
-                  subtitle:
-                      'Visualizar perfiles de usuario, roles y aprovisionar.',
-                  icon: LucideIcons.users2,
-                  route: '/admin/users',
-                  enabled: true,
-                ),
-                const SizedBox(height: 16),
-                _buildMenuCard(
-                  context,
-                  title: 'Configuración de Brókers',
-                  subtitle: 'Gestionar el catálogo de brókers del sistema.',
-                  icon: LucideIcons.building2,
-                  route: '/admin/brokers',
-                  enabled: true,
-                ),
-                const SizedBox(height: 16),
-                _buildMenuCard(
-                  context,
-                  title: 'Configuración de Activos (Tickers)',
-                  subtitle:
-                      'Gestionar el catálogo de activos del sistema y sus relaciones.',
-                  icon: LucideIcons.candlestickChart,
-                  route: '/admin/tickers',
-                  enabled: true,
-                ),
-                const SizedBox(height: 16),
-                _buildMenuCard(
-                  context,
-                  title: 'Gestión de Tienda',
-                  subtitle: 'Gestionar el catálogo de productos de la tienda.',
-                  icon: LucideIcons.store,
-                  route: '/admin/store',
-                  enabled: true,
-                ),
-              ],
-              const SizedBox(height: 16),
-              _buildMenuCard(
-                context,
-                title: 'Configuración Global',
-                subtitle: 'Configuración general del sistema y métricas.',
-                icon: LucideIcons.sliders,
-                route: null,
-                enabled: false,
-              ),
-            ],
-          ),
-        ),
+        body: SafeArea(child: bodyContent),
       ),
     );
   }
