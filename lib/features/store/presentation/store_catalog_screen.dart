@@ -69,7 +69,7 @@ class StoreCatalogScreen extends ConsumerWidget {
                       crossAxisCount: crossAxisCount,
                       crossAxisSpacing: 20,
                       mainAxisSpacing: 20,
-                      childAspectRatio: crossAxisCount == 1 ? 1.3 : 0.8,
+                      childAspectRatio: crossAxisCount == 1 ? 2.3 : 0.72,
                     ),
                     itemCount: products.length,
                     itemBuilder: (context, index) {
@@ -227,10 +227,10 @@ class _ProductGridCard extends StatelessWidget {
       padding: EdgeInsets.zero,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final isHorizontal = constraints.maxHeight < 240;
+          final isHorizontal = constraints.maxWidth > constraints.maxHeight;
 
           final imageWidget = AspectRatio(
-            aspectRatio: isHorizontal ? 1.0 : 1.2,
+            aspectRatio: isHorizontal ? 1.0 : 1.4,
             child: Container(
               color: Colors.black.withValues(alpha: 0.15),
               child: product.imageUrl.isNotEmpty
@@ -262,63 +262,59 @@ class _ProductGridCard extends StatelessWidget {
           );
 
           final detailsWidget = Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(isHorizontal ? 12 : 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Categoría Badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.secondary.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          _getCategoryLabel(context, product.category),
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      // Título
-                      Text(
-                        product.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: glassTheme.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      // Descripción
-                      if (product.description != null)
-                        Text(
-                          product.description!,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: glassTheme.textSecondary,
-                          ),
-                        ),
-                    ],
+                // Categoría Badge
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.secondary.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    _getCategoryLabel(context, product.category),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
+                const SizedBox(height: 8),
+                // Título
+                Text(
+                  product.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: glassTheme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                // Descripción
+                if (product.description != null)
+                  Flexible(
+                    child: Text(
+                      product.description!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: glassTheme.textSecondary,
+                      ),
+                    ),
+                  ),
+                const Spacer(),
+                const SizedBox(height: 8),
                 // Precio e info de compra
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
