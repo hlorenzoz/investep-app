@@ -385,4 +385,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get operationSuggestUrl => 'Sugerir URL de Yahoo Finance';
+
+  @override
+  String get loginRegisterButton => 'Registrarse';
+
+  @override
+  String get loginRegisterHint =>
+      'Para darse de alta póngase en contacto con el equipo comercial';
 }

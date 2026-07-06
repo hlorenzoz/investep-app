@@ -133,5 +133,7 @@
   "operationDelete": "Eliminar",
   "operationDeleted": "Operación eliminada con éxito",
   "operationSaved": "Operación guardada con éxito",
-  "operationSuggestUrl": "Sugerir URL de Yahoo Finance"
+  "operationSuggestUrl": "Sugerir URL de Yahoo Finance",
+  "loginRegisterButton": "Registrarse",
+  "loginRegisterHint": "Para darse de alta póngase en contacto con el equipo comercial"
 }

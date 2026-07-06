@@ -133,5 +133,7 @@
   "operationDelete": "Delete",
   "operationDeleted": "Operation deleted successfully",
   "operationSaved": "Operation saved successfully",
-  "operationSuggestUrl": "Suggest Yahoo Finance URL"
+  "operationSuggestUrl": "Suggest Yahoo Finance URL",
+  "loginRegisterButton": "Register",
+  "loginRegisterHint": "To register, please contact the sales team"
 }

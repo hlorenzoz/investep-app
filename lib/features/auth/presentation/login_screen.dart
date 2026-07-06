@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../core/config/app_config.dart';
@@ -403,6 +403,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const Icon(LucideIcons.arrowRight, size: 18),
                 ],
               ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () => launchUrl(
+                    Uri.parse('https://investepacademy.com/team'),
+                    mode: LaunchMode.externalApplication,
+                  ),
+                  child: Text(
+                    l10n.loginRegisterButton,
+                    style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              l10n.loginRegisterHint,
+              style: TextStyle(
+                color: glassTheme.textSecondary,
+                fontSize: 12,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),

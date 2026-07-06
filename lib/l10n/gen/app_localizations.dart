@@ -835,6 +835,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Sugerir URL de Yahoo Finance'**
   String get operationSuggestUrl;
+
+  /// No description provided for @loginRegisterButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Registrarse'**
+  String get loginRegisterButton;
+
+  /// No description provided for @loginRegisterHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Para darse de alta póngase en contacto con el equipo comercial'**
+  String get loginRegisterHint;
 }
 
 class _AppLocalizationsDelegate
