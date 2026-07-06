@@ -141,12 +141,14 @@ void main() {
       expect(favorites, hasLength(2));
       expect(favorites.first.symbol, 'AAPL');
       expect(favorites.first.isFavorite, isTrue);
-      final captured = verify(
-        () => dio.get<Map<String, dynamic>>(
-          '/tickers',
-          queryParameters: captureAny(named: 'queryParameters'),
-        ),
-      ).captured.single as Map<String, dynamic>;
+      final captured =
+          verify(
+                () => dio.get<Map<String, dynamic>>(
+                  '/tickers',
+                  queryParameters: captureAny(named: 'queryParameters'),
+                ),
+              ).captured.single
+              as Map<String, dynamic>;
       expect(captured['favorite'], true);
     });
   });

@@ -33,23 +33,23 @@ class MainShell extends ConsumerWidget {
     final isAdminOrManager = role == 'admin' || role == 'manager';
 
     // Índices de rama (StatefulShellRoute):
-    //   0 Portafolio · 1 Academia · 2 Relaciones · 3 Admin · 4 Configuración
-    // Admin (rama 3) se oculta si el usuario no es admin/manager, por eso el
+    //   0 Portafolio · 1 Academia · 2 Relaciones · 3 Tienda · 4 Admin · 5 Configuración
+    // Admin (rama 4) se oculta si el usuario no es admin/manager, por eso el
     // mapeo entre índices de UI e índices de rama es manual.
 
     // Mapeo para NavigationBar (Móvil)
     int branchToUiIndex(int branchIndex) {
       if (isAdminOrManager) return branchIndex;
-      // Sin Admin: Configuración (rama 4) baja un lugar en la UI.
-      if (branchIndex >= 4) return branchIndex - 1;
+      // Sin Admin: Configuración (rama 5) baja un lugar en la UI.
+      if (branchIndex >= 5) return branchIndex - 1;
       return branchIndex;
     }
 
     void onDestinationSelected(int uiIndex) {
       int branchIndex = uiIndex;
       if (!isAdminOrManager) {
-        // Sin Admin visible, la UI a partir de Configuración salta la rama 3.
-        if (uiIndex >= 3) {
+        // Sin Admin visible, la UI a partir de Configuración (uiIndex 4) salta la rama 4 (Admin).
+        if (uiIndex >= 4) {
           branchIndex = uiIndex + 1;
         }
       }
@@ -59,22 +59,22 @@ class MainShell extends ConsumerWidget {
       );
     }
 
-    // Mapeo para bottom NavigationRail (Tablet/Desktop): rama 3 Admin + rama 4 Config.
+    // Mapeo para bottom NavigationRail (Tablet/Desktop): rama 4 Admin + rama 5 Config.
     final int? bottomRailSelectedIndex;
     if (isAdminOrManager) {
-      bottomRailSelectedIndex = navigationShell.currentIndex >= 3
-          ? navigationShell.currentIndex - 3
+      bottomRailSelectedIndex = navigationShell.currentIndex >= 4
+          ? navigationShell.currentIndex - 4
           : null;
     } else {
-      bottomRailSelectedIndex = navigationShell.currentIndex == 4 ? 0 : null;
+      bottomRailSelectedIndex = navigationShell.currentIndex == 5 ? 0 : null;
     }
 
     void onBottomRailSelected(int uiIndex) {
       final int targetBranch;
       if (isAdminOrManager) {
-        targetBranch = uiIndex + 3;
+        targetBranch = uiIndex + 4;
       } else {
-        targetBranch = 4; // Solo Configuración está disponible
+        targetBranch = 5; // Solo Configuración está disponible
       }
       navigationShell.goBranch(
         targetBranch,
@@ -113,6 +113,10 @@ class MainShell extends ConsumerWidget {
                     NavigationDestination(
                       icon: const Icon(LucideIcons.waypoints),
                       label: l10n.navRelations,
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(LucideIcons.shoppingBag),
+                      label: l10n.navStore,
                     ),
                     if (isAdminOrManager)
                       NavigationDestination(
@@ -153,7 +157,7 @@ class MainShell extends ConsumerWidget {
                         const SizedBox(height: 20),
                         Expanded(
                           child: NavigationRail(
-                            selectedIndex: navigationShell.currentIndex < 3
+                            selectedIndex: navigationShell.currentIndex < 4
                                 ? navigationShell.currentIndex
                                 : null,
                             onDestinationSelected: (idx) {
@@ -176,6 +180,10 @@ class MainShell extends ConsumerWidget {
                               NavigationRailDestination(
                                 icon: const Icon(LucideIcons.waypoints),
                                 label: Text(l10n.navRelations),
+                              ),
+                              NavigationRailDestination(
+                                icon: const Icon(LucideIcons.shoppingBag),
+                                label: Text(l10n.navStore),
                               ),
                             ],
                           ),

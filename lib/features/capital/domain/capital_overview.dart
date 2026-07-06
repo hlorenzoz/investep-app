@@ -28,10 +28,11 @@ class CapitalOverview {
         .map((e) => Allocation.fromJson(e as Map<String, dynamic>))
         .toList();
     final totalAllocated = json['totalAllocated'] as num;
-    
+
     // Deriva 'available' o usa fallback a 0 si no viene de la API
     final totalCap = capital?.totalCapital ?? 0;
-    final availableVal = (json['available'] as num?) ?? (totalCap - totalAllocated);
+    final availableVal =
+        (json['available'] as num?) ?? (totalCap - totalAllocated);
     final available = availableVal < 0 ? 0 : availableVal;
 
     return CapitalOverview(

@@ -386,4 +386,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginRegisterHint => 'To register, please contact the sales team';
+
+  @override
+  String get navStore => 'Store';
+
+  @override
+  String get storeTitle => 'Store';
+
+  @override
+  String get storeEmpty => 'No products available in this category.';
+
+  @override
+  String get storeCategoryAll => 'All';
+
+  @override
+  String get storeCategoryBooks => 'Books';
+
+  @override
+  String get storeCategoryTshirts => 'T-Shirts';
+
+  @override
+  String get storeCategoryCaps => 'Caps';
+
+  @override
+  String get storeBuyAmazon => 'Buy on Amazon';
+
+  @override
+  String get storeBuyNow => 'Buy Now';
+
+  @override
+  String get storeAdminTitle => 'Store Management';
+
+  @override
+  String get storeAdminSubtitle => 'Manage product catalog and variants.';
+
+  @override
+  String get storeDeleteConfirmTitle => 'Delete product?';
+
+  @override
+  String storeDeleteConfirmMsg(Object name) {
+    return 'Are you sure you want to delete product \'$name\'? This action cannot be undone.';
+  }
+
+  @override
+  String get storeSaveSuccess => 'Product saved successfully';
+
+  @override
+  String get storeDeleteSuccess => 'Product deleted successfully';
+
+  @override
+  String get storeFormValidationPriceOrAmazon =>
+      'Define a price or an Amazon link (at least one).';
+
+  @override
+  String get storeFormValidationTshirtOnly =>
+      'Gender and Theme only apply to T-Shirts category.';
+
+  @override
+  String get storeFormValidationSlug =>
+      'Slug only allows lowercase letters, numbers, hyphen and underscore.';
 }

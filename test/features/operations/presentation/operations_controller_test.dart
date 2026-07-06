@@ -53,28 +53,33 @@ void main() {
       sellPrice: 120,
     );
 
-    final captured = verify(
-      () => repo.patchOperation('op-1', captureAny()),
-    ).captured.single as Map<String, dynamic>;
+    final captured =
+        verify(() => repo.patchOperation('op-1', captureAny())).captured.single
+            as Map<String, dynamic>;
 
     expect(captured['soldAt'], '2026-07-10'); // fecha sola, sin 'T'
     expect(captured['sellPrice'], 120);
   });
 
-  test('reopenOperation deshace la venta con soldAt y sellPrice en null', () async {
-    await container.read(operationsControllerProvider('alloc-1').future);
-    when(
-      () => repo.patchOperation(any(), any()),
-    ).thenAnswer((_) async => _op());
+  test(
+    'reopenOperation deshace la venta con soldAt y sellPrice en null',
+    () async {
+      await container.read(operationsControllerProvider('alloc-1').future);
+      when(
+        () => repo.patchOperation(any(), any()),
+      ).thenAnswer((_) async => _op());
 
-    await notifier().reopenOperation('op-1');
+      await notifier().reopenOperation('op-1');
 
-    final captured = verify(
-      () => repo.patchOperation('op-1', captureAny()),
-    ).captured.single as Map<String, dynamic>;
+      final captured =
+          verify(
+                () => repo.patchOperation('op-1', captureAny()),
+              ).captured.single
+              as Map<String, dynamic>;
 
-    expect(captured.containsKey('soldAt'), isTrue);
-    expect(captured['soldAt'], isNull);
-    expect(captured['sellPrice'], isNull);
-  });
+      expect(captured.containsKey('soldAt'), isTrue);
+      expect(captured['soldAt'], isNull);
+      expect(captured['sellPrice'], isNull);
+    },
+  );
 }

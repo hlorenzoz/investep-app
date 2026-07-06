@@ -427,10 +427,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const SizedBox(height: 4),
             Text(
               l10n.loginRegisterHint,
-              style: TextStyle(
-                color: glassTheme.textSecondary,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: glassTheme.textSecondary, fontSize: 12),
               textAlign: TextAlign.center,
             ),
           ],

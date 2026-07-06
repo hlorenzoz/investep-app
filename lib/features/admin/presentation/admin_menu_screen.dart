@@ -75,6 +75,15 @@ class AdminMenuScreen extends ConsumerWidget {
                   route: '/admin/tickers',
                   enabled: true,
                 ),
+                const SizedBox(height: 16),
+                _buildMenuCard(
+                  context,
+                  title: 'Gestión de Tienda',
+                  subtitle: 'Gestionar el catálogo de productos de la tienda.',
+                  icon: LucideIcons.store,
+                  route: '/admin/store',
+                  enabled: true,
+                ),
               ],
               const SizedBox(height: 16),
               _buildMenuCard(

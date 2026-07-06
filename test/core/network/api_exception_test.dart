@@ -81,7 +81,10 @@ void main() {
     });
 
     test('500 NO se reintenta (error interno, reintentar no lo arregla)', () {
-      expect(const ApiException(500, 'INTERNAL_ERROR', 'm').isRetryable, isFalse);
+      expect(
+        const ApiException(500, 'INTERNAL_ERROR', 'm').isRetryable,
+        isFalse,
+      );
     });
 
     test('false para 4xx no transitorios (400/401/404/422)', () {

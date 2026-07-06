@@ -847,6 +847,114 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Para darse de alta póngase en contacto con el equipo comercial'**
   String get loginRegisterHint;
+
+  /// No description provided for @navStore.
+  ///
+  /// In es, this message translates to:
+  /// **'Tienda'**
+  String get navStore;
+
+  /// No description provided for @storeTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Tienda'**
+  String get storeTitle;
+
+  /// No description provided for @storeEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay productos disponibles en esta categoría.'**
+  String get storeEmpty;
+
+  /// No description provided for @storeCategoryAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Todos'**
+  String get storeCategoryAll;
+
+  /// No description provided for @storeCategoryBooks.
+  ///
+  /// In es, this message translates to:
+  /// **'Libros'**
+  String get storeCategoryBooks;
+
+  /// No description provided for @storeCategoryTshirts.
+  ///
+  /// In es, this message translates to:
+  /// **'Remeras'**
+  String get storeCategoryTshirts;
+
+  /// No description provided for @storeCategoryCaps.
+  ///
+  /// In es, this message translates to:
+  /// **'Gorras'**
+  String get storeCategoryCaps;
+
+  /// No description provided for @storeBuyAmazon.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver en Amazon'**
+  String get storeBuyAmazon;
+
+  /// No description provided for @storeBuyNow.
+  ///
+  /// In es, this message translates to:
+  /// **'Comprar ahora'**
+  String get storeBuyNow;
+
+  /// No description provided for @storeAdminTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Gestión de Tienda'**
+  String get storeAdminTitle;
+
+  /// No description provided for @storeAdminSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Administrá el catálogo de productos y variantes.'**
+  String get storeAdminSubtitle;
+
+  /// No description provided for @storeDeleteConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Eliminar producto?'**
+  String get storeDeleteConfirmTitle;
+
+  /// No description provided for @storeDeleteConfirmMsg.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Estás seguro de que querés eliminar el producto \'{name}\'? Esta acción es irreversible.'**
+  String storeDeleteConfirmMsg(Object name);
+
+  /// No description provided for @storeSaveSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Producto guardado con éxito'**
+  String get storeSaveSuccess;
+
+  /// No description provided for @storeDeleteSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Producto eliminado con éxito'**
+  String get storeDeleteSuccess;
+
+  /// No description provided for @storeFormValidationPriceOrAmazon.
+  ///
+  /// In es, this message translates to:
+  /// **'Definí un precio o un enlace de Amazon (al menos uno).'**
+  String get storeFormValidationPriceOrAmazon;
+
+  /// No description provided for @storeFormValidationTshirtOnly.
+  ///
+  /// In es, this message translates to:
+  /// **'Género y Tema solo aplican para la categoría Remeras.'**
+  String get storeFormValidationTshirtOnly;
+
+  /// No description provided for @storeFormValidationSlug.
+  ///
+  /// In es, this message translates to:
+  /// **'El slug solo permite minúsculas, números, guión y guión bajo.'**
+  String get storeFormValidationSlug;
 }
 
 class _AppLocalizationsDelegate

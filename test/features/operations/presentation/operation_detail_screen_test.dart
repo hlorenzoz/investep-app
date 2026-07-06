@@ -80,10 +80,12 @@ void main() {
 
   setUp(() {
     mockOpsRepo = MockOperationsRepository();
-    when(() => mockOpsRepo.getOperations(
-          allocationId: any(named: 'allocationId'),
-          status: any(named: 'status'),
-        )).thenAnswer((_) async => <Operation>[_closedTrade()]);
+    when(
+      () => mockOpsRepo.getOperations(
+        allocationId: any(named: 'allocationId'),
+        status: any(named: 'status'),
+      ),
+    ).thenAnswer((_) async => <Operation>[_closedTrade()]);
   });
 
   testWidgets('trade cerrado → muestra estadísticas de venta y ganancia', (

@@ -73,19 +73,18 @@ void main() {
     expect(find.byType(SvgPicture), findsOneWidget);
   });
 
-  testWidgets('broker conocido por slug (ibkr) → renderiza SVG local (SvgPicture)', (tester) async {
-    await tester.pumpWidget(
-      _wrap(
-        const BrokerLogo(
-          broker: Broker(
-            id: 1,
-            slug: 'ibkr',
-            name: 'Interactive Brokers',
+  testWidgets(
+    'broker conocido por slug (ibkr) → renderiza SVG local (SvgPicture)',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const BrokerLogo(
+            broker: Broker(id: 1, slug: 'ibkr', name: 'Interactive Brokers'),
           ),
         ),
-      ),
-    );
+      );
 
-    expect(find.byType(SvgPicture), findsOneWidget);
-  });
+      expect(find.byType(SvgPicture), findsOneWidget);
+    },
+  );
 }

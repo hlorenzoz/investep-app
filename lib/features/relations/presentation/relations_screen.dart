@@ -480,11 +480,7 @@ class _AssetCard extends StatelessWidget {
               }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  longGroup,
-                  const SizedBox(height: 12),
-                  inverseGroup,
-                ],
+                children: [longGroup, const SizedBox(height: 12), inverseGroup],
               );
             },
           ),

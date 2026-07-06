@@ -98,7 +98,7 @@ void main() {
     test('sin operationId → inicializa vacío', () {
       const param = OperationFormParam(allocationId: 'alloc-equity');
       final s = state(param);
-      
+
       expect(s.ticker, '');
       expect(s.quantity, '');
       expect(s.buyPrice, '');
@@ -107,13 +107,21 @@ void main() {
 
     test('con operationId → carga la operación asíncronamente', () async {
       final op = mockOperationFixture();
-      when(() => repo.getOperationDetails('op-123')).thenAnswer((_) async => op);
+      when(
+        () => repo.getOperationDetails('op-123'),
+      ).thenAnswer((_) async => op);
 
-      const param = OperationFormParam(allocationId: 'alloc-options', operationId: 'op-123');
-      
+      const param = OperationFormParam(
+        allocationId: 'alloc-options',
+        operationId: 'op-123',
+      );
+
       // Mantenemos una suscripción activa para evitar auto-dispose inmediato durante la carga asíncrona
-      final sub = container.listen(operationFormControllerProvider(param), (prev, next) {});
-      
+      final sub = container.listen(
+        operationFormControllerProvider(param),
+        (prev, next) {},
+      );
+
       var s = state(param);
       expect(s.isLoading, isTrue);
 
@@ -134,100 +142,118 @@ void main() {
   });
 
   group('payload (contrato de la API)', () {
-    test('equity → openedAt como YYYY-MM-DD, sin accountType ni campos de opciones', () async {
-      const param = OperationFormParam(allocationId: 'alloc-equity');
-      final n = notifier(param);
+    test(
+      'equity → openedAt como YYYY-MM-DD, sin accountType ni campos de opciones',
+      () async {
+        const param = OperationFormParam(allocationId: 'alloc-equity');
+        final n = notifier(param);
 
-      n.setTicker('aapl');
-      n.setOpenedAt(DateTime(2026, 7, 4));
-      n.setQuantity('10.5');
-      n.setBuyPrice('150.0');
+        n.setTicker('aapl');
+        n.setOpenedAt(DateTime(2026, 7, 4));
+        n.setQuantity('10.5');
+        n.setBuyPrice('150.0');
 
-      when(() => repo.createOperation(any())).thenAnswer((_) async => mockOperationFixture());
+        when(
+          () => repo.createOperation(any()),
+        ).thenAnswer((_) async => mockOperationFixture());
 
-      await n.submit();
+        await n.submit();
 
-      final payload = verify(() => repo.createOperation(captureAny()))
-          .captured
-          .single as Map<String, dynamic>;
+        final payload =
+            verify(() => repo.createOperation(captureAny())).captured.single
+                as Map<String, dynamic>;
 
-      expect(payload['openedAt'], '2026-07-04'); // fecha sola, sin 'T'
-      expect(payload['ticker'], 'AAPL'); // normalizado a mayúsculas
-      expect(payload['quantity'], 10.5); // decimal permitido en equity
-      expect(payload.containsKey('accountType'), isFalse);
-      expect(payload.containsKey('strike'), isFalse);
-      expect(payload.containsKey('expirationDate'), isFalse);
-      expect(payload.containsKey('contractType'), isFalse);
-    });
+        expect(payload['openedAt'], '2026-07-04'); // fecha sola, sin 'T'
+        expect(payload['ticker'], 'AAPL'); // normalizado a mayúsculas
+        expect(payload['quantity'], 10.5); // decimal permitido en equity
+        expect(payload.containsKey('accountType'), isFalse);
+        expect(payload.containsKey('strike'), isFalse);
+        expect(payload.containsKey('expirationDate'), isFalse);
+        expect(payload.containsKey('contractType'), isFalse);
+      },
+    );
 
-    test('options → incluye strike/expiration/contractType y quantity entera', () async {
-      const param = OperationFormParam(allocationId: 'alloc-options');
-      final n = notifier(param);
+    test(
+      'options → incluye strike/expiration/contractType y quantity entera',
+      () async {
+        const param = OperationFormParam(allocationId: 'alloc-options');
+        final n = notifier(param);
 
-      n.setTicker('AAPL');
-      n.setOpenedAt(DateTime(2026, 7, 4));
-      n.setQuantity('12');
-      n.setBuyPrice('3.5');
-      n.setStrike('150');
-      n.setExpirationDate('2026-08-15');
-      n.setContractType('call');
+        n.setTicker('AAPL');
+        n.setOpenedAt(DateTime(2026, 7, 4));
+        n.setQuantity('12');
+        n.setBuyPrice('3.5');
+        n.setStrike('150');
+        n.setExpirationDate('2026-08-15');
+        n.setContractType('call');
 
-      when(() => repo.createOperation(any())).thenAnswer((_) async => mockOperationFixture());
+        when(
+          () => repo.createOperation(any()),
+        ).thenAnswer((_) async => mockOperationFixture());
 
-      await n.submit();
+        await n.submit();
 
-      final payload = verify(() => repo.createOperation(captureAny()))
-          .captured
-          .single as Map<String, dynamic>;
+        final payload =
+            verify(() => repo.createOperation(captureAny())).captured.single
+                as Map<String, dynamic>;
 
-      expect(payload['openedAt'], '2026-07-04');
-      expect(payload['quantity'], 12); // entera (int) en options
-      expect(payload['quantity'], isA<int>());
-      expect(payload['strike'], 150.0);
-      expect(payload['expirationDate'], '2026-08-15');
-      expect(payload['contractType'], 'call');
-      expect(payload.containsKey('accountType'), isFalse);
-    });
+        expect(payload['openedAt'], '2026-07-04');
+        expect(payload['quantity'], 12); // entera (int) en options
+        expect(payload['quantity'], isA<int>());
+        expect(payload['strike'], 150.0);
+        expect(payload['expirationDate'], '2026-08-15');
+        expect(payload['contractType'], 'call');
+        expect(payload.containsKey('accountType'), isFalse);
+      },
+    );
   });
 
   group('validations', () {
-    test('cuenta de activos (equity) → cantidad decimal permitida y omite campos de opciones', () async {
-      const param = OperationFormParam(allocationId: 'alloc-equity');
-      final n = notifier(param);
+    test(
+      'cuenta de activos (equity) → cantidad decimal permitida y omite campos de opciones',
+      () async {
+        const param = OperationFormParam(allocationId: 'alloc-equity');
+        final n = notifier(param);
 
-      n.setTicker('AAPL');
-      n.setQuantity('10.5'); // fraccional
-      n.setBuyPrice('150.0');
+        n.setTicker('AAPL');
+        n.setQuantity('10.5'); // fraccional
+        n.setBuyPrice('150.0');
 
-      when(() => repo.createOperation(any())).thenAnswer((_) async => mockOperationFixture());
+        when(
+          () => repo.createOperation(any()),
+        ).thenAnswer((_) async => mockOperationFixture());
 
-      await n.submit();
+        await n.submit();
 
-      final s = state(param);
-      expect(s.errorMessage, isNull);
-      expect(s.tickerError, isNull);
-      expect(s.quantityError, isNull);
-      expect(s.buyPriceError, isNull);
-      expect(s.isSuccess, isTrue);
-    });
+        final s = state(param);
+        expect(s.errorMessage, isNull);
+        expect(s.tickerError, isNull);
+        expect(s.quantityError, isNull);
+        expect(s.buyPriceError, isNull);
+        expect(s.isSuccess, isTrue);
+      },
+    );
 
-    test('cuenta de opciones (options) → cantidad decimal arroja error y requiere strike/expiracion/tipo', () async {
-      const param = OperationFormParam(allocationId: 'alloc-options');
-      final n = notifier(param);
+    test(
+      'cuenta de opciones (options) → cantidad decimal arroja error y requiere strike/expiracion/tipo',
+      () async {
+        const param = OperationFormParam(allocationId: 'alloc-options');
+        final n = notifier(param);
 
-      n.setTicker('AAPL');
-      n.setQuantity('10.5'); // fraccional en opciones → inválido
-      n.setBuyPrice('3.5');
-      n.setStrike('0'); // strike 0 → inválido
-      n.setExpirationDate(''); // vacío → inválido
+        n.setTicker('AAPL');
+        n.setQuantity('10.5'); // fraccional en opciones → inválido
+        n.setBuyPrice('3.5');
+        n.setStrike('0'); // strike 0 → inválido
+        n.setExpirationDate(''); // vacío → inválido
 
-      await n.submit();
+        await n.submit();
 
-      final s = state(param);
-      expect(s.isSuccess, isFalse);
-      expect(s.quantityError, 'La cantidad en opciones debe ser entera');
-      expect(s.strikeError, 'El strike es obligatorio y mayor a 0');
-      expect(s.expirationDateError, 'Fecha de expiración es obligatoria');
-    });
+        final s = state(param);
+        expect(s.isSuccess, isFalse);
+        expect(s.quantityError, 'La cantidad en opciones debe ser entera');
+        expect(s.strikeError, 'El strike es obligatorio y mayor a 0');
+        expect(s.expirationDateError, 'Fecha de expiración es obligatoria');
+      },
+    );
   });
 }

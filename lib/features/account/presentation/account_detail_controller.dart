@@ -82,28 +82,34 @@ final accountDetailControllerProvider = NotifierProvider.autoDispose
     );
 
 final accountProjectionProvider = FutureProvider.autoDispose
-    .family<List<CompoundInterestPeriodResult>, String>((ref, allocationId) async {
-  final overview = await ref.watch(capitalControllerProvider.future);
-  final matching = overview.allocations.where((a) => a.id == allocationId);
-  if (matching.isEmpty) return const [];
-  final Allocation allocation = matching.first;
+    .family<List<CompoundInterestPeriodResult>, String>((
+      ref,
+      allocationId,
+    ) async {
+      final overview = await ref.watch(capitalControllerProvider.future);
+      final matching = overview.allocations.where((a) => a.id == allocationId);
+      if (matching.isEmpty) return const [];
+      final Allocation allocation = matching.first;
 
-  final state = ref.watch(accountDetailControllerProvider(allocationId));
-  if (allocation.investmentPlanId == null || allocation.initialDeposit <= 0) {
-    return const [];
-  }
+      final state = ref.watch(accountDetailControllerProvider(allocationId));
+      if (allocation.investmentPlanId == null ||
+          allocation.initialDeposit <= 0) {
+        return const [];
+      }
 
-  final creationDate = allocation.createdAt ?? DateTime.now();
+      final creationDate = allocation.createdAt ?? DateTime.now();
 
-  final series = await ref.read(projectionRepositoryProvider).getProjection(
-        planId: allocation.investmentPlanId!,
-        baseAmount: allocation.initialDeposit.toDouble(),
-        startDate: creationDate,
-        grouping: state.grouping,
-      );
+      final series = await ref
+          .read(projectionRepositoryProvider)
+          .getProjection(
+            planId: allocation.investmentPlanId!,
+            baseAmount: allocation.initialDeposit.toDouble(),
+            startDate: creationDate,
+            grouping: state.grouping,
+          );
 
-  return _applyDrillDownFilter(series, state, creationDate);
-});
+      return _applyDrillDownFilter(series, state, creationDate);
+    });
 
 List<CompoundInterestPeriodResult> _applyDrillDownFilter(
   List<CompoundInterestPeriodResult> rawPeriods,
@@ -150,21 +156,13 @@ List<CompoundInterestPeriodResult> _applyDrillDownFilter(
   if (filterStart != null) {
     final start = filterStart;
     filtered = filtered
-        .where(
-          (p) =>
-              p.date.isAfter(start) ||
-              p.date.isAtSameMomentAs(start),
-        )
+        .where((p) => p.date.isAfter(start) || p.date.isAtSameMomentAs(start))
         .toList();
   }
   if (filterEnd != null) {
     final end = filterEnd;
     filtered = filtered
-        .where(
-          (p) =>
-              p.date.isBefore(end) ||
-              p.date.isAtSameMomentAs(end),
-        )
+        .where((p) => p.date.isBefore(end) || p.date.isAtSameMomentAs(end))
         .toList();
   }
 

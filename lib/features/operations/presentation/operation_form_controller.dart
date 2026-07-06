@@ -88,7 +88,9 @@ class OperationFormState {
       limitPrice: limitPrice ?? this.limitPrice,
       strike: strike ?? this.strike,
       expirationDate: expirationDate ?? this.expirationDate,
-      contractType: clearContractType ? null : (contractType ?? this.contractType),
+      contractType: clearContractType
+          ? null
+          : (contractType ?? this.contractType),
       strategy: strategy ?? this.strategy,
       notes: notes ?? this.notes,
       url: url ?? this.url,
@@ -100,7 +102,9 @@ class OperationFormState {
       quantityError: clearErrors ? null : (quantityError ?? this.quantityError),
       buyPriceError: clearErrors ? null : (buyPriceError ?? this.buyPriceError),
       strikeError: clearErrors ? null : (strikeError ?? this.strikeError),
-      expirationDateError: clearErrors ? null : (expirationDateError ?? this.expirationDateError),
+      expirationDateError: clearErrors
+          ? null
+          : (expirationDateError ?? this.expirationDateError),
     );
   }
 }
@@ -109,10 +113,7 @@ class OperationFormParam {
   final String allocationId;
   final String? operationId;
 
-  const OperationFormParam({
-    required this.allocationId,
-    this.operationId,
-  });
+  const OperationFormParam({required this.allocationId, this.operationId});
 
   @override
   bool operator ==(Object other) =>
@@ -136,14 +137,9 @@ class OperationFormController extends Notifier<OperationFormState> {
     // Si estamos editando, cargamos de forma asíncrona los detalles de la operación
     if (param.operationId != null) {
       Future.microtask(() => _loadOperation(param.operationId!));
-      return OperationFormState(
-        openedAt: DateTime.now(),
-        isLoading: true,
-      );
+      return OperationFormState(openedAt: DateTime.now(), isLoading: true);
     }
-    return OperationFormState(
-      openedAt: DateTime.now(),
-    );
+    return OperationFormState(openedAt: DateTime.now());
   }
 
   /// Busca la allocation correspondiente en el capital controller.
@@ -158,7 +154,9 @@ class OperationFormController extends Notifier<OperationFormState> {
 
   Future<void> _loadOperation(String opId) async {
     try {
-      final op = await ref.read(operationsRepositoryProvider).getOperationDetails(opId);
+      final op = await ref
+          .read(operationsRepositoryProvider)
+          .getOperationDetails(opId);
       if (!ref.mounted) return;
       state = OperationFormState(
         ticker: op.ticker,
@@ -353,7 +351,9 @@ class OperationFormController extends Notifier<OperationFormState> {
       }
 
       if (isEdit) {
-        await ref.read(operationsRepositoryProvider).patchOperation(param.operationId!, payload);
+        await ref
+            .read(operationsRepositoryProvider)
+            .patchOperation(param.operationId!, payload);
       } else {
         await ref.read(operationsRepositoryProvider).createOperation(payload);
       }
@@ -362,7 +362,7 @@ class OperationFormController extends Notifier<OperationFormState> {
 
       // Refrescamos la lista de operaciones
       ref.invalidate(operationsControllerProvider(param.allocationId));
-      
+
       state = state.copyWith(isSubmitting: false, isSuccess: true);
     } catch (e) {
       if (!ref.mounted) return;

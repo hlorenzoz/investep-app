@@ -45,7 +45,9 @@ class OperationDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final glassTheme = context.glass;
     final allocation = _findAllocation(ref);
-    final operationsAsync = ref.watch(operationsControllerProvider(allocationId));
+    final operationsAsync = ref.watch(
+      operationsControllerProvider(allocationId),
+    );
 
     Operation? op;
     for (final o in operationsAsync.value ?? const <Operation>[]) {
@@ -72,9 +74,7 @@ class OperationDetailScreen extends ConsumerWidget {
               ),
           ],
         ),
-        body: SafeArea(
-          child: _buildBody(context, allocation, op, glassTheme),
-        ),
+        body: SafeArea(child: _buildBody(context, allocation, op, glassTheme)),
       ),
     );
   }
@@ -102,8 +102,9 @@ class OperationDetailScreen extends ConsumerWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final isDesktop = constraints.maxWidth >= 600;
-          final targetWidth =
-              isDesktop ? constraints.maxWidth * 0.8 : double.infinity;
+          final targetWidth = isDesktop
+              ? constraints.maxWidth * 0.8
+              : double.infinity;
 
           return ConstrainedBox(
             constraints: BoxConstraints(maxWidth: targetWidth),
@@ -120,8 +121,11 @@ class OperationDetailScreen extends ConsumerWidget {
                       // Datos de compra
                       _sectionTitle('Compra', glassTheme),
                       const SizedBox(height: 8),
-                      _statRow('Fecha de compra', _formatDate(op.openedAt),
-                          glassTheme),
+                      _statRow(
+                        'Fecha de compra',
+                        _formatDate(op.openedAt),
+                        glassTheme,
+                      ),
                       _statRow('Cantidad', _formatQty(op.quantity), glassTheme),
                       _statRow(
                         isOption ? 'Prima' : 'Precio de compra',
@@ -129,18 +133,31 @@ class OperationDetailScreen extends ConsumerWidget {
                         glassTheme,
                       ),
                       if (isOption) ...[
-                        _statRow('Strike',
-                            op.strike != null ? formatMoney(op.strike!, currency) : '—',
-                            glassTheme),
                         _statRow(
-                            'Vencimiento', op.expirationDate ?? '—', glassTheme),
+                          'Strike',
+                          op.strike != null
+                              ? formatMoney(op.strike!, currency)
+                              : '—',
+                          glassTheme,
+                        ),
+                        _statRow(
+                          'Vencimiento',
+                          op.expirationDate ?? '—',
+                          glassTheme,
+                        ),
                         if (op.contractType != null)
-                          _statRow('Tipo de contrato',
-                              op.contractType!.toUpperCase(), glassTheme),
+                          _statRow(
+                            'Tipo de contrato',
+                            op.contractType!.toUpperCase(),
+                            glassTheme,
+                          ),
                       ],
                       if (op.limitPrice != null)
-                        _statRow('Precio límite',
-                            formatMoney(op.limitPrice!, currency), glassTheme),
+                        _statRow(
+                          'Precio límite',
+                          formatMoney(op.limitPrice!, currency),
+                          glassTheme,
+                        ),
                       _statRow(
                         'Total invertido',
                         formatMoney(op.totalInvested, currency),
@@ -263,8 +280,11 @@ class OperationDetailScreen extends ConsumerWidget {
           if (op.soldAt != null)
             _statRow('Fecha de venta', _formatDate(op.soldAt!), glassTheme),
           if (op.sellPrice != null)
-            _statRow('Precio de venta',
-                formatMoney(op.sellPrice!, currency), glassTheme),
+            _statRow(
+              'Precio de venta',
+              formatMoney(op.sellPrice!, currency),
+              glassTheme,
+            ),
           _statRow(
             'Total de venta',
             formatMoney(op.totalSale ?? 0, currency),
@@ -275,8 +295,7 @@ class OperationDetailScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             Container(
               width: double.infinity,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
                 color: gainColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
@@ -380,8 +399,6 @@ class OperationDetailScreen extends ConsumerWidget {
   }
 
   String _formatQty(double qty) {
-    return qty == qty.roundToDouble()
-        ? qty.toInt().toString()
-        : qty.toString();
+    return qty == qty.roundToDouble() ? qty.toInt().toString() : qty.toString();
   }
 }

@@ -17,6 +17,11 @@ abstract final class AppConfig {
     defaultValue: 'https://api-investep.hlorenzoz.com',
   );
 
+  static const String r2AssetsBaseUrl = String.fromEnvironment(
+    'R2_ASSETS_BASE_URL',
+    defaultValue: '',
+  );
+
   static String supabaseUrl = const String.fromEnvironment('SUPABASE_URL');
 
   static String supabaseAnonKey = const String.fromEnvironment(

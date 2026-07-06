@@ -29,7 +29,8 @@ class OperationFormScreen extends ConsumerStatefulWidget {
   final String? operationId;
 
   @override
-  ConsumerState<OperationFormScreen> createState() => _OperationFormScreenState();
+  ConsumerState<OperationFormScreen> createState() =>
+      _OperationFormScreenState();
 }
 
 class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
@@ -141,7 +142,10 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
     }
 
     // Escuchamos el éxito para navegar hacia atrás y el cambio de carga para sembrar
-    ref.listen<OperationFormState>(operationFormControllerProvider(_param), (prev, next) {
+    ref.listen<OperationFormState>(operationFormControllerProvider(_param), (
+      prev,
+      next,
+    ) {
       if (next.isSuccess && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -207,7 +211,9 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final isDesktop = constraints.maxWidth >= 600;
-                final targetWidth = isDesktop ? constraints.maxWidth * 0.8 : double.infinity;
+                final targetWidth = isDesktop
+                    ? constraints.maxWidth * 0.8
+                    : double.infinity;
 
                 if (state.isLoading) {
                   return const Center(child: CircularProgressIndicator());
@@ -239,72 +245,87 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                               Autocomplete<Ticker>(
                                 textEditingController: _tickerController,
                                 focusNode: _tickerFocusNode,
-                                displayStringForOption: (Ticker option) => option.symbol,
-                                optionsBuilder: (TextEditingValue textEditingValue) async {
-                                  if (textEditingValue.text.trim().isEmpty) {
-                                    return const Iterable<Ticker>.empty();
-                                  }
-                                  try {
-                                    final results = await ref
-                                        .read(tickerRepositoryProvider)
-                                        .getTickers(
-                                          q: textEditingValue.text.trim(),
-                                          planSlug: planSlug,
-                                          limit: 10,
-                                        );
-                                    return results.tickers;
-                                  } catch (_) {
-                                    return const Iterable<Ticker>.empty();
-                                  }
-                                },
+                                displayStringForOption: (Ticker option) =>
+                                    option.symbol,
+                                optionsBuilder:
+                                    (TextEditingValue textEditingValue) async {
+                                      if (textEditingValue.text
+                                          .trim()
+                                          .isEmpty) {
+                                        return const Iterable<Ticker>.empty();
+                                      }
+                                      try {
+                                        final results = await ref
+                                            .read(tickerRepositoryProvider)
+                                            .getTickers(
+                                              q: textEditingValue.text.trim(),
+                                              planSlug: planSlug,
+                                              limit: 10,
+                                            );
+                                        return results.tickers;
+                                      } catch (_) {
+                                        return const Iterable<Ticker>.empty();
+                                      }
+                                    },
                                 onSelected: (Ticker selection) {
                                   _tickerController.text = selection.symbol;
                                   notifier.setTicker(selection.symbol);
                                   _suggestYahooUrl();
                                 },
-                                fieldViewBuilder: (
-                                  context,
-                                  textEditingController,
-                                  focusNode,
-                                  onFieldSubmitted,
-                                ) {
-                                  return TextFormField(
-                                    controller: textEditingController,
-                                    focusNode: focusNode,
-                                    style: TextStyle(color: glassTheme.textPrimary),
-                                    decoration: InputDecoration(
-                                      labelText: l10n.operationTicker,
-                                      labelStyle: TextStyle(color: glassTheme.textSecondary),
-                                      prefixIcon: Icon(
-                                        LucideIcons.activity,
-                                        color: glassTheme.textSecondary,
-                                      ),
-                                      errorText: state.tickerError,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: glassTheme.glassBorder,
+                                fieldViewBuilder:
+                                    (
+                                      context,
+                                      textEditingController,
+                                      focusNode,
+                                      onFieldSubmitted,
+                                    ) {
+                                      return TextFormField(
+                                        controller: textEditingController,
+                                        focusNode: focusNode,
+                                        style: TextStyle(
+                                          color: glassTheme.textPrimary,
                                         ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: theme.colorScheme.primary,
+                                        decoration: InputDecoration(
+                                          labelText: l10n.operationTicker,
+                                          labelStyle: TextStyle(
+                                            color: glassTheme.textSecondary,
+                                          ),
+                                          prefixIcon: Icon(
+                                            LucideIcons.activity,
+                                            color: glassTheme.textSecondary,
+                                          ),
+                                          errorText: state.tickerError,
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            borderSide: BorderSide(
+                                              color: glassTheme.glassBorder,
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            borderSide: BorderSide(
+                                              color: theme.colorScheme.primary,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                    onChanged: (val) {
-                                      notifier.setTicker(val);
-                                      _suggestYahooUrl();
+                                        onChanged: (val) {
+                                          notifier.setTicker(val);
+                                          _suggestYahooUrl();
+                                        },
+                                        onFieldSubmitted: (val) {
+                                          onFieldSubmitted();
+                                        },
+                                      );
                                     },
-                                    onFieldSubmitted: (val) {
-                                      onFieldSubmitted();
-                                    },
-                                  );
-                                },
                                 optionsViewBuilder: (context, onSelected, options) {
                                   final glassTheme = context.glass;
                                   final theme = Theme.of(context);
@@ -315,18 +336,24 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                       elevation: 4.0,
                                       child: Container(
                                         width: 320,
-                                        constraints: const BoxConstraints(maxHeight: 250),
+                                        constraints: const BoxConstraints(
+                                          maxHeight: 250,
+                                        ),
                                         margin: const EdgeInsets.only(top: 4.0),
                                         decoration: BoxDecoration(
                                           color: theme.colorScheme.surface
                                               .withValues(alpha: 0.95),
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                           border: Border.all(
                                             color: glassTheme.glassBorder,
                                           ),
                                         ),
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                           child: BackdropFilter(
                                             filter: ImageFilter.blur(
                                               sigmaX: 10,
@@ -336,56 +363,66 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                               padding: EdgeInsets.zero,
                                               shrinkWrap: true,
                                               itemCount: options.length,
-                                              separatorBuilder: (context, index) =>
-                                                  Divider(
+                                              separatorBuilder:
+                                                  (context, index) => Divider(
                                                     height: 1,
-                                                    color: glassTheme.glassBorder,
+                                                    color:
+                                                        glassTheme.glassBorder,
                                                   ),
-                                              itemBuilder: (
-                                                BuildContext context,
-                                                int index,
-                                              ) {
-                                                final Ticker option =
-                                                    options.elementAt(index);
-                                                return InkWell(
-                                                  onTap: () => onSelected(option),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 16,
-                                                          vertical: 12,
+                                              itemBuilder:
+                                                  (
+                                                    BuildContext context,
+                                                    int index,
+                                                  ) {
+                                                    final Ticker option =
+                                                        options.elementAt(
+                                                          index,
+                                                        );
+                                                    return InkWell(
+                                                      onTap: () =>
+                                                          onSelected(option),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 16,
+                                                              vertical: 12,
+                                                            ),
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              option.symbol,
+                                                              style: TextStyle(
+                                                                color: glassTheme
+                                                                    .textPrimary,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 15,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 2,
+                                                            ),
+                                                            Text(
+                                                              option.name,
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style: TextStyle(
+                                                                color: glassTheme
+                                                                    .textSecondary,
+                                                                fontSize: 12,
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text(
-                                                          option.symbol,
-                                                          style: TextStyle(
-                                                            color: glassTheme
-                                                                .textPrimary,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 15,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(height: 2),
-                                                        Text(
-                                                          option.name,
-                                                          maxLines: 1,
-                                                          overflow:
-                                                              TextOverflow.ellipsis,
-                                                          style: TextStyle(
-                                                            color: glassTheme
-                                                                .textSecondary,
-                                                            fontSize: 12,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              },
+                                                      ),
+                                                    );
+                                                  },
                                             ),
                                           ),
                                         ),
@@ -407,17 +444,28 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                 child: InputDecorator(
                                   decoration: InputDecoration(
                                     labelText: l10n.operationOpenedAt,
-                                    labelStyle: TextStyle(color: glassTheme.textSecondary),
-                                    prefixIcon: Icon(LucideIcons.calendar, color: glassTheme.textSecondary),
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    labelStyle: TextStyle(
+                                      color: glassTheme.textSecondary,
+                                    ),
+                                    prefixIcon: Icon(
+                                      LucideIcons.calendar,
+                                      color: glassTheme.textSecondary,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(color: glassTheme.glassBorder),
+                                      borderSide: BorderSide(
+                                        color: glassTheme.glassBorder,
+                                      ),
                                     ),
                                   ),
                                   child: Text(
                                     _formatDate(state.openedAt),
-                                    style: TextStyle(color: glassTheme.textPrimary),
+                                    style: TextStyle(
+                                      color: glassTheme.textPrimary,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -430,22 +478,39 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                   Expanded(
                                     child: TextFormField(
                                       controller: _qtyController,
-                                      style: TextStyle(color: glassTheme.textPrimary),
-                                      keyboardType: TextInputType.numberWithOptions(
-                                        decimal: !isOptions,
+                                      style: TextStyle(
+                                        color: glassTheme.textPrimary,
                                       ),
+                                      keyboardType:
+                                          TextInputType.numberWithOptions(
+                                            decimal: !isOptions,
+                                          ),
                                       decoration: InputDecoration(
                                         labelText: l10n.operationQty,
-                                        labelStyle: TextStyle(color: glassTheme.textSecondary),
+                                        labelStyle: TextStyle(
+                                          color: glassTheme.textSecondary,
+                                        ),
                                         errorText: state.quantityError,
-                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
                                         enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: BorderSide(color: glassTheme.glassBorder),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: glassTheme.glassBorder,
+                                          ),
                                         ),
                                         focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: BorderSide(color: theme.colorScheme.primary),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: theme.colorScheme.primary,
+                                          ),
                                         ),
                                       ),
                                       onChanged: notifier.setQuantity,
@@ -455,20 +520,39 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                   Expanded(
                                     child: TextFormField(
                                       controller: _buyPriceController,
-                                      style: TextStyle(color: glassTheme.textPrimary),
-                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                      style: TextStyle(
+                                        color: glassTheme.textPrimary,
+                                      ),
+                                      keyboardType:
+                                          const TextInputType.numberWithOptions(
+                                            decimal: true,
+                                          ),
                                       decoration: InputDecoration(
                                         labelText: l10n.operationBuyPrice,
-                                        labelStyle: TextStyle(color: glassTheme.textSecondary),
+                                        labelStyle: TextStyle(
+                                          color: glassTheme.textSecondary,
+                                        ),
                                         errorText: state.buyPriceError,
-                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
                                         enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: BorderSide(color: glassTheme.glassBorder),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: glassTheme.glassBorder,
+                                          ),
                                         ),
                                         focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          borderSide: BorderSide(color: theme.colorScheme.primary),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: theme.colorScheme.primary,
+                                          ),
                                         ),
                                       ),
                                       onChanged: notifier.setBuyPrice,
@@ -482,19 +566,33 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                               TextFormField(
                                 controller: _limitPriceController,
                                 style: TextStyle(color: glassTheme.textPrimary),
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
                                 decoration: InputDecoration(
                                   labelText: l10n.operationLimitPrice,
-                                  labelStyle: TextStyle(color: glassTheme.textSecondary),
-                                  prefixIcon: Icon(LucideIcons.target, color: glassTheme.textSecondary),
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                  labelStyle: TextStyle(
+                                    color: glassTheme.textSecondary,
+                                  ),
+                                  prefixIcon: Icon(
+                                    LucideIcons.target,
+                                    color: glassTheme.textSecondary,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: glassTheme.glassBorder),
+                                    borderSide: BorderSide(
+                                      color: glassTheme.glassBorder,
+                                    ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: theme.colorScheme.primary),
+                                    borderSide: BorderSide(
+                                      color: theme.colorScheme.primary,
+                                    ),
                                   ),
                                 ),
                                 onChanged: notifier.setLimitPrice,
@@ -521,7 +619,9 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                     Expanded(
                                       child: Text(
                                         l10n.operationContractType,
-                                        style: TextStyle(color: glassTheme.textPrimary),
+                                        style: TextStyle(
+                                          color: glassTheme.textPrimary,
+                                        ),
                                       ),
                                     ),
                                     ToggleButtons(
@@ -530,20 +630,28 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                         state.contractType == 'put',
                                       ],
                                       onPressed: (index) {
-                                        notifier.setContractType(index == 0 ? 'call' : 'put');
+                                        notifier.setContractType(
+                                          index == 0 ? 'call' : 'put',
+                                        );
                                       },
                                       borderRadius: BorderRadius.circular(12),
-                                      selectedBorderColor: theme.colorScheme.primary,
+                                      selectedBorderColor:
+                                          theme.colorScheme.primary,
                                       selectedColor: Colors.white,
-                                      fillColor: theme.colorScheme.primary.withValues(alpha: 0.2),
+                                      fillColor: theme.colorScheme.primary
+                                          .withValues(alpha: 0.2),
                                       color: glassTheme.textSecondary,
                                       children: const [
                                         Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 16),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                          ),
                                           child: Text('CALL'),
                                         ),
                                         Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 16),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                          ),
                                           child: Text('PUT'),
                                         ),
                                       ],
@@ -559,20 +667,39 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                     Expanded(
                                       child: TextFormField(
                                         controller: _strikeController,
-                                        style: TextStyle(color: glassTheme.textPrimary),
-                                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                        style: TextStyle(
+                                          color: glassTheme.textPrimary,
+                                        ),
+                                        keyboardType:
+                                            const TextInputType.numberWithOptions(
+                                              decimal: true,
+                                            ),
                                         decoration: InputDecoration(
                                           labelText: l10n.operationStrike,
-                                          labelStyle: TextStyle(color: glassTheme.textSecondary),
+                                          labelStyle: TextStyle(
+                                            color: glassTheme.textSecondary,
+                                          ),
                                           errorText: state.strikeError,
-                                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
                                           enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                            borderSide: BorderSide(color: glassTheme.glassBorder),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            borderSide: BorderSide(
+                                              color: glassTheme.glassBorder,
+                                            ),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                            borderSide: BorderSide(color: theme.colorScheme.primary),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            borderSide: BorderSide(
+                                              color: theme.colorScheme.primary,
+                                            ),
                                           ),
                                         ),
                                         onChanged: notifier.setStrike,
@@ -582,35 +709,58 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                     Expanded(
                                       child: TextFormField(
                                         controller: _expDateController,
-                                        style: TextStyle(color: glassTheme.textPrimary),
+                                        style: TextStyle(
+                                          color: glassTheme.textPrimary,
+                                        ),
                                         decoration: InputDecoration(
-                                          labelText: l10n.operationExpirationDate,
-                                          labelStyle: TextStyle(color: glassTheme.textSecondary),
+                                          labelText:
+                                              l10n.operationExpirationDate,
+                                          labelStyle: TextStyle(
+                                            color: glassTheme.textSecondary,
+                                          ),
                                           hintText: 'YYYY-MM-DD',
                                           errorText: state.expirationDateError,
                                           prefixIcon: IconButton(
-                                            icon: const Icon(LucideIcons.calendar),
+                                            icon: const Icon(
+                                              LucideIcons.calendar,
+                                            ),
                                             onPressed: () {
-                                              final initial = DateTime.tryParse(_expDateController.text) ?? DateTime.now().add(const Duration(days: 30));
-                                              _selectDate(
-                                                context,
-                                                initial,
-                                                (date) {
-                                                  final val = _formatDate(date);
-                                                  _expDateController.text = val;
-                                                  notifier.setExpirationDate(val);
-                                                },
-                                              );
+                                              final initial =
+                                                  DateTime.tryParse(
+                                                    _expDateController.text,
+                                                  ) ??
+                                                  DateTime.now().add(
+                                                    const Duration(days: 30),
+                                                  );
+                                              _selectDate(context, initial, (
+                                                date,
+                                              ) {
+                                                final val = _formatDate(date);
+                                                _expDateController.text = val;
+                                                notifier.setExpirationDate(val);
+                                              });
                                             },
                                           ),
-                                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
                                           enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                            borderSide: BorderSide(color: glassTheme.glassBorder),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            borderSide: BorderSide(
+                                              color: glassTheme.glassBorder,
+                                            ),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                            borderSide: BorderSide(color: theme.colorScheme.primary),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            borderSide: BorderSide(
+                                              color: theme.colorScheme.primary,
+                                            ),
                                           ),
                                         ),
                                         onChanged: notifier.setExpirationDate,
@@ -639,15 +789,23 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                 style: TextStyle(color: glassTheme.textPrimary),
                                 decoration: InputDecoration(
                                   labelText: l10n.operationStrategy,
-                                  labelStyle: TextStyle(color: glassTheme.textSecondary),
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                  labelStyle: TextStyle(
+                                    color: glassTheme.textSecondary,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: glassTheme.glassBorder),
+                                    borderSide: BorderSide(
+                                      color: glassTheme.glassBorder,
+                                    ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: theme.colorScheme.primary),
+                                    borderSide: BorderSide(
+                                      color: theme.colorScheme.primary,
+                                    ),
                                   ),
                                 ),
                                 onChanged: notifier.setStrategy,
@@ -660,7 +818,9 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                 style: TextStyle(color: glassTheme.textPrimary),
                                 decoration: InputDecoration(
                                   labelText: l10n.operationUrl,
-                                  labelStyle: TextStyle(color: glassTheme.textSecondary),
+                                  labelStyle: TextStyle(
+                                    color: glassTheme.textSecondary,
+                                  ),
                                   suffixIcon: TextButton(
                                     onPressed: _suggestYahooUrl,
                                     child: Text(
@@ -672,14 +832,20 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                       ),
                                     ),
                                   ),
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: glassTheme.glassBorder),
+                                    borderSide: BorderSide(
+                                      color: glassTheme.glassBorder,
+                                    ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: theme.colorScheme.primary),
+                                    borderSide: BorderSide(
+                                      color: theme.colorScheme.primary,
+                                    ),
                                   ),
                                 ),
                                 onChanged: notifier.setUrl,
@@ -693,15 +859,23 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                 maxLines: 3,
                                 decoration: InputDecoration(
                                   labelText: l10n.operationNotes,
-                                  labelStyle: TextStyle(color: glassTheme.textSecondary),
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                  labelStyle: TextStyle(
+                                    color: glassTheme.textSecondary,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: glassTheme.glassBorder),
+                                    borderSide: BorderSide(
+                                      color: glassTheme.glassBorder,
+                                    ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: theme.colorScheme.primary),
+                                    borderSide: BorderSide(
+                                      color: theme.colorScheme.primary,
+                                    ),
                                   ),
                                 ),
                                 onChanged: notifier.setNotes,
@@ -711,19 +885,26 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                                 const SizedBox(height: 16),
                                 Text(
                                   state.errorMessage!,
-                                  style: const TextStyle(color: AppColors.negative, fontSize: 13),
+                                  style: const TextStyle(
+                                    color: AppColors.negative,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ],
 
                               const SizedBox(height: 28),
 
                               ElevatedButton.icon(
-                                onPressed: state.isSubmitting ? null : notifier.submit,
+                                onPressed: state.isSubmitting
+                                    ? null
+                                    : notifier.submit,
                                 icon: state.isSubmitting
                                     ? const SizedBox(
                                         width: 18,
                                         height: 18,
-                                        child: CircularProgressIndicator(strokeWidth: 2),
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
                                       )
                                     : const Icon(LucideIcons.check, size: 18),
                                 label: Text(l10n.operationSave),
@@ -800,18 +981,25 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                         final messenger = ScaffoldMessenger.of(context);
                         final snackBar = SnackBar(
                           content: Text(l10n.operationDeleted),
-                          backgroundColor: glassTheme.positive.withValues(alpha: 0.8),
+                          backgroundColor: glassTheme.positive.withValues(
+                            alpha: 0.8,
+                          ),
                         );
                         final router = GoRouter.of(context);
 
-                        ref.read(operationsControllerProvider(widget.allocationId).notifier)
+                        ref
+                            .read(
+                              operationsControllerProvider(
+                                widget.allocationId,
+                              ).notifier,
+                            )
                             .delete(widget.operationId!)
                             .then((_) {
-                          if (mounted) {
-                            messenger.showSnackBar(snackBar);
-                            router.pop();
-                          }
-                        });
+                              if (mounted) {
+                                messenger.showSnackBar(snackBar);
+                                router.pop();
+                              }
+                            });
                       },
                       child: Text(l10n.operationDelete),
                     ),

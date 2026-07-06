@@ -16,6 +16,7 @@ import 'package:investep_app/features/plans/domain/compound_interest_calculator.
 import 'package:mocktail/mocktail.dart';
 
 class MockOperationsRepository extends Mock implements OperationsRepository {}
+
 class MockProjectionRepository extends Mock implements ProjectionRepository {}
 
 class _PopulatedCapital extends CapitalController {
@@ -75,26 +76,32 @@ void main() {
     mockOpsRepo = MockOperationsRepository();
     mockProjRepo = MockProjectionRepository();
 
-    when(() => mockOpsRepo.getOperations(
-          allocationId: any(named: 'allocationId'),
-          status: any(named: 'status'),
-        )).thenAnswer((_) async => <Operation>[]);
+    when(
+      () => mockOpsRepo.getOperations(
+        allocationId: any(named: 'allocationId'),
+        status: any(named: 'status'),
+      ),
+    ).thenAnswer((_) async => <Operation>[]);
 
-    when(() => mockProjRepo.getProjection(
-          planId: any(named: 'planId'),
-          baseAmount: any(named: 'baseAmount'),
-          startDate: any(named: 'startDate'),
-          grouping: any(named: 'grouping'),
-        )).thenAnswer((_) async => <CompoundInterestPeriodResult>[
-          CompoundInterestPeriodResult(
-            periodIndex: 1,
-            label: 'Jul 26',
-            date: DateTime(2026, 7, 1),
-            startBalance: 1000,
-            yieldAmount: 25,
-            endBalance: 1025,
-          ),
-        ]);
+    when(
+      () => mockProjRepo.getProjection(
+        planId: any(named: 'planId'),
+        baseAmount: any(named: 'baseAmount'),
+        startDate: any(named: 'startDate'),
+        grouping: any(named: 'grouping'),
+      ),
+    ).thenAnswer(
+      (_) async => <CompoundInterestPeriodResult>[
+        CompoundInterestPeriodResult(
+          periodIndex: 1,
+          label: 'Jul 26',
+          date: DateTime(2026, 7, 1),
+          startBalance: 1000,
+          yieldAmount: 25,
+          endBalance: 1025,
+        ),
+      ],
+    );
   });
 
   testWidgets('id válido → muestra broker vivo + botón abre la edición', (

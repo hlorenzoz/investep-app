@@ -40,7 +40,7 @@ class Operation {
   // Campos Exclusivos de Opciones (Null en Activos)
   final double? strike;
   final String? expirationDate; // Formato YYYY-MM-DD
-  final String? contractType;   // 'call' | 'put'
+  final String? contractType; // 'call' | 'put'
 
   const Operation({
     required this.id,
@@ -80,24 +80,44 @@ class Operation {
       openedAt: DateTime.parse(json['openedAt'] as String),
       quantity: (json['quantity'] as num).toDouble(),
       buyPrice: (json['buyPrice'] as num).toDouble(),
-      limitPrice: json['limitPrice'] != null ? (json['limitPrice'] as num).toDouble() : null,
-      soldAt: json['soldAt'] != null ? DateTime.parse(json['soldAt'] as String) : null,
-      sellPrice: json['sellPrice'] != null ? (json['sellPrice'] as num).toDouble() : null,
+      limitPrice: json['limitPrice'] != null
+          ? (json['limitPrice'] as num).toDouble()
+          : null,
+      soldAt: json['soldAt'] != null
+          ? DateTime.parse(json['soldAt'] as String)
+          : null,
+      sellPrice: json['sellPrice'] != null
+          ? (json['sellPrice'] as num).toDouble()
+          : null,
       strategy: json['strategy'] as String?,
       notes: json['notes'] as String?,
       url: json['url'] as String?,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt'] as String) : null,
-      
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'] as String)
+          : null,
+
       // Campos derivados
-      status: json['status'] as String? ?? (json['soldAt'] == null ? 'open' : 'closed'),
+      status:
+          json['status'] as String? ??
+          (json['soldAt'] == null ? 'open' : 'closed'),
       totalInvested: (json['totalInvested'] as num).toDouble(),
-      totalSale: json['totalSale'] != null ? (json['totalSale'] as num).toDouble() : null,
-      gainAmount: json['gainAmount'] != null ? (json['gainAmount'] as num).toDouble() : null,
-      gainPct: json['gainPct'] != null ? (json['gainPct'] as num).toDouble() : null,
-      
+      totalSale: json['totalSale'] != null
+          ? (json['totalSale'] as num).toDouble()
+          : null,
+      gainAmount: json['gainAmount'] != null
+          ? (json['gainAmount'] as num).toDouble()
+          : null,
+      gainPct: json['gainPct'] != null
+          ? (json['gainPct'] as num).toDouble()
+          : null,
+
       // Campos de opciones
-      strike: json['strike'] != null ? (json['strike'] as num).toDouble() : null,
+      strike: json['strike'] != null
+          ? (json['strike'] as num).toDouble()
+          : null,
       expirationDate: json['expirationDate'] as String?,
       contractType: json['contractType'] as String?,
     );

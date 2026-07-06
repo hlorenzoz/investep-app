@@ -392,4 +392,64 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get loginRegisterHint =>
       'Para darse de alta póngase en contacto con el equipo comercial';
+
+  @override
+  String get navStore => 'Tienda';
+
+  @override
+  String get storeTitle => 'Tienda';
+
+  @override
+  String get storeEmpty => 'No hay productos disponibles en esta categoría.';
+
+  @override
+  String get storeCategoryAll => 'Todos';
+
+  @override
+  String get storeCategoryBooks => 'Libros';
+
+  @override
+  String get storeCategoryTshirts => 'Remeras';
+
+  @override
+  String get storeCategoryCaps => 'Gorras';
+
+  @override
+  String get storeBuyAmazon => 'Ver en Amazon';
+
+  @override
+  String get storeBuyNow => 'Comprar ahora';
+
+  @override
+  String get storeAdminTitle => 'Gestión de Tienda';
+
+  @override
+  String get storeAdminSubtitle =>
+      'Administrá el catálogo de productos y variantes.';
+
+  @override
+  String get storeDeleteConfirmTitle => '¿Eliminar producto?';
+
+  @override
+  String storeDeleteConfirmMsg(Object name) {
+    return '¿Estás seguro de que querés eliminar el producto \'$name\'? Esta acción es irreversible.';
+  }
+
+  @override
+  String get storeSaveSuccess => 'Producto guardado con éxito';
+
+  @override
+  String get storeDeleteSuccess => 'Producto eliminado con éxito';
+
+  @override
+  String get storeFormValidationPriceOrAmazon =>
+      'Definí un precio o un enlace de Amazon (al menos uno).';
+
+  @override
+  String get storeFormValidationTshirtOnly =>
+      'Género y Tema solo aplican para la categoría Remeras.';
+
+  @override
+  String get storeFormValidationSlug =>
+      'El slug solo permite minúsculas, números, guión y guión bajo.';
 }

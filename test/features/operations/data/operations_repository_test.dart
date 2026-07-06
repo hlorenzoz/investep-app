@@ -87,45 +87,51 @@ void main() {
   };
 
   group('getOperations', () {
-    test('200 con operaciones de activos y opciones → parsea ambas correctamente', () async {
-      when(
-        () => dio.get<Map<String, dynamic>>(
-          '/operations',
-          queryParameters: any(named: 'queryParameters'),
-        ),
-      ).thenAnswer(
-        (_) async => ok({
-          'operations': [equityOperationJson(), optionsOperationJson()],
-        }),
-      );
+    test(
+      '200 con operaciones de activos y opciones → parsea ambas correctamente',
+      () async {
+        when(
+          () => dio.get<Map<String, dynamic>>(
+            '/operations',
+            queryParameters: any(named: 'queryParameters'),
+          ),
+        ).thenAnswer(
+          (_) async => ok({
+            'operations': [equityOperationJson(), optionsOperationJson()],
+          }),
+        );
 
-      final list = await repo.getOperations(allocationId: 'alloc-1', status: 'open');
+        final list = await repo.getOperations(
+          allocationId: 'alloc-1',
+          status: 'open',
+        );
 
-      expect(list, hasLength(2));
-      
-      final op1 = list[0];
-      expect(op1.id, 'op-1');
-      expect(op1.accountType, AccountType.equity);
-      expect(op1.quantity, 10.5);
-      expect(op1.buyPrice, 150.0);
-      expect(op1.isOpen, isTrue);
-      expect(op1.totalInvested, 1575.0);
-      expect(op1.strike, isNull);
+        expect(list, hasLength(2));
 
-      final op2 = list[1];
-      expect(op2.id, 'op-2');
-      expect(op2.accountType, AccountType.options);
-      expect(op2.quantity, 2.0);
-      expect(op2.buyPrice, 5.0);
-      expect(op2.isClosed, isTrue);
-      expect(op2.totalInvested, 1000.0);
-      expect(op2.totalSale, 1600.0);
-      expect(op2.gainAmount, 600.0);
-      expect(op2.gainPct, 60.0);
-      expect(op2.strike, 155.0);
-      expect(op2.expirationDate, '2026-07-17');
-      expect(op2.contractType, 'call');
-    });
+        final op1 = list[0];
+        expect(op1.id, 'op-1');
+        expect(op1.accountType, AccountType.equity);
+        expect(op1.quantity, 10.5);
+        expect(op1.buyPrice, 150.0);
+        expect(op1.isOpen, isTrue);
+        expect(op1.totalInvested, 1575.0);
+        expect(op1.strike, isNull);
+
+        final op2 = list[1];
+        expect(op2.id, 'op-2');
+        expect(op2.accountType, AccountType.options);
+        expect(op2.quantity, 2.0);
+        expect(op2.buyPrice, 5.0);
+        expect(op2.isClosed, isTrue);
+        expect(op2.totalInvested, 1000.0);
+        expect(op2.totalSale, 1600.0);
+        expect(op2.gainAmount, 600.0);
+        expect(op2.gainPct, 60.0);
+        expect(op2.strike, 155.0);
+        expect(op2.expirationDate, '2026-07-17');
+        expect(op2.contractType, 'call');
+      },
+    );
 
     test('reintenta ante 503 y resuelve en el 2º intento', () async {
       var calls = 0;
@@ -153,21 +159,19 @@ void main() {
           '/operations',
           data: any(named: 'data'),
         ),
-      ).thenAnswer(
-        (_) async => ok({
-          'operation': equityOperationJson(),
-        }),
-      );
+      ).thenAnswer((_) async => ok({'operation': equityOperationJson()}));
 
-      final payload = {'allocationId': 'alloc-1', 'ticker': 'AAPL', 'quantity': 10.5, 'buyPrice': 150.0};
+      final payload = {
+        'allocationId': 'alloc-1',
+        'ticker': 'AAPL',
+        'quantity': 10.5,
+        'buyPrice': 150.0,
+      };
       final op = await repo.createOperation(payload);
 
       expect(op.id, 'op-1');
       verify(
-        () => dio.post<Map<String, dynamic>>(
-          '/operations',
-          data: payload,
-        ),
+        () => dio.post<Map<String, dynamic>>('/operations', data: payload),
       ).called(1);
     });
 
@@ -181,7 +185,11 @@ void main() {
 
       await expectLater(
         repo.createOperation({}),
-        throwsA(isA<ApiException>().having((e) => e.status, 'status', 422).having((e) => e.message, 'message', 'Cantidad inválida')),
+        throwsA(
+          isA<ApiException>()
+              .having((e) => e.status, 'status', 422)
+              .having((e) => e.message, 'message', 'Cantidad inválida'),
+        ),
       );
     });
   });
@@ -193,21 +201,15 @@ void main() {
           '/operations/op-1',
           data: any(named: 'data'),
         ),
-      ).thenAnswer(
-        (_) async => ok({
-          'operation': optionsOperationJson(),
-        }),
-      );
+      ).thenAnswer((_) async => ok({'operation': optionsOperationJson()}));
 
       final payload = {'soldAt': '2026-07-02T15:00:00Z', 'sellPrice': 8.0};
       final op = await repo.patchOperation('op-1', payload);
 
       expect(op.id, 'op-2');
       verify(
-        () => dio.patch<Map<String, dynamic>>(
-          '/operations/op-1',
-          data: payload,
-        ),
+        () =>
+            dio.patch<Map<String, dynamic>>('/operations/op-1', data: payload),
       ).called(1);
     });
   });
@@ -216,13 +218,13 @@ void main() {
     test('envía DELETE exitosamente', () async {
       when(
         () => dio.delete<Map<String, dynamic>>('/operations/op-1'),
-      ).thenAnswer(
-        (_) async => ok({'deleted': true}),
-      );
+      ).thenAnswer((_) async => ok({'deleted': true}));
 
       await repo.deleteOperation('op-1');
 
-      verify(() => dio.delete<Map<String, dynamic>>('/operations/op-1')).called(1);
+      verify(
+        () => dio.delete<Map<String, dynamic>>('/operations/op-1'),
+      ).called(1);
     });
   });
 }

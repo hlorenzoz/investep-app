@@ -136,7 +136,8 @@ class AccountDetailScreen extends ConsumerWidget {
                                   height: 220,
                                   child: Center(
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           LucideIcons.alertTriangle,
@@ -166,7 +167,8 @@ class AccountDetailScreen extends ConsumerWidget {
                                   onTapPoint: (index) {
                                     if (index >= 0 &&
                                         index < projections.length) {
-                                      final targetDate = projections[index].date;
+                                      final targetDate =
+                                          projections[index].date;
                                       controller.handleDrillDown(targetDate);
                                     }
                                   },
@@ -263,7 +265,12 @@ class AccountDetailScreen extends ConsumerWidget {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: state.activeTab == 0
-                              ? _buildRegistrosTab(context, ref, allocation, glassTheme)
+                              ? _buildRegistrosTab(
+                                  context,
+                                  ref,
+                                  allocation,
+                                  glassTheme,
+                                )
                               : projectionAsync.when(
                                   loading: () => const Center(
                                     child: CircularProgressIndicator(),
@@ -272,7 +279,8 @@ class AccountDetailScreen extends ConsumerWidget {
                                     child: Padding(
                                       padding: const EdgeInsets.all(16.0),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Icon(
                                             LucideIcons.alertCircle,
@@ -364,7 +372,9 @@ class AccountDetailScreen extends ConsumerWidget {
     Allocation allocation,
     GlassThemeExtension glassTheme,
   ) {
-    final operationsAsync = ref.watch(operationsControllerProvider(allocation.id));
+    final operationsAsync = ref.watch(
+      operationsControllerProvider(allocation.id),
+    );
 
     return GlassCard(
       padding: EdgeInsets.zero,
@@ -385,11 +395,18 @@ class AccountDetailScreen extends ConsumerWidget {
                   ),
                 ),
                 ElevatedButton.icon(
-                  onPressed: () => context.push('/account/${allocation.id}/operations/new'),
+                  onPressed: () =>
+                      context.push('/account/${allocation.id}/operations/new'),
                   icon: const Icon(LucideIcons.plus, size: 14),
-                  label: const Text('Nuevo Trade', style: TextStyle(fontSize: 12)),
+                  label: const Text(
+                    'Nuevo Trade',
+                    style: TextStyle(fontSize: 12),
+                  ),
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                   ),
                 ),
               ],
@@ -406,21 +423,37 @@ class AccountDetailScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(LucideIcons.alertCircle, color: glassTheme.negative, size: 36),
+                      Icon(
+                        LucideIcons.alertCircle,
+                        color: glassTheme.negative,
+                        size: 36,
+                      ),
                       const SizedBox(height: 8),
                       Text(
                         'Error al cargar operaciones',
-                        style: TextStyle(color: glassTheme.textPrimary, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: glassTheme.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         err.toString(),
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: glassTheme.textSecondary, fontSize: 12),
+                        style: TextStyle(
+                          color: glassTheme.textSecondary,
+                          fontSize: 12,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       OutlinedButton(
-                        onPressed: () => ref.read(operationsControllerProvider(allocation.id).notifier).refresh(),
+                        onPressed: () => ref
+                            .read(
+                              operationsControllerProvider(
+                                allocation.id,
+                              ).notifier,
+                            )
+                            .refresh(),
                         child: const Text('Reintentar'),
                       ),
                     ],
@@ -438,7 +471,9 @@ class AccountDetailScreen extends ConsumerWidget {
                           children: [
                             Icon(
                               LucideIcons.folderOpen,
-                              color: glassTheme.textSecondary.withValues(alpha: 0.3),
+                              color: glassTheme.textSecondary.withValues(
+                                alpha: 0.3,
+                              ),
                               size: 40,
                             ),
                             const SizedBox(height: 12),
@@ -467,12 +502,24 @@ class AccountDetailScreen extends ConsumerWidget {
                 }
 
                 return ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   itemCount: operations.length,
-                  separatorBuilder: (context, index) => Divider(height: 1, color: glassTheme.glassBorder.withValues(alpha: 0.5)),
+                  separatorBuilder: (context, index) => Divider(
+                    height: 1,
+                    color: glassTheme.glassBorder.withValues(alpha: 0.5),
+                  ),
                   itemBuilder: (context, index) {
                     final op = operations[index];
-                    return _buildOperationTile(context, ref, allocation, op, glassTheme);
+                    return _buildOperationTile(
+                      context,
+                      ref,
+                      allocation,
+                      op,
+                      glassTheme,
+                    );
                   },
                 );
               },
@@ -517,203 +564,261 @@ class AccountDetailScreen extends ConsumerWidget {
     }
 
     return InkWell(
-      onTap: () => context.push(
-        '/account/${allocation.id}/operations/${op.id}',
-      ),
+      onTap: () =>
+          context.push('/account/${allocation.id}/operations/${op.id}'),
       borderRadius: BorderRadius.circular(12),
       child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Icono según tipo (Equity vs Option) e indicador de Gain si está cerrado
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: glassTheme.textPrimary.withValues(alpha: 0.05),
-              shape: BoxShape.circle,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Icono según tipo (Equity vs Option) e indicador de Gain si está cerrado
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: glassTheme.textPrimary.withValues(alpha: 0.05),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                isOption ? LucideIcons.layers : LucideIcons.activity,
+                color: theme.colorScheme.primary,
+                size: 20,
+              ),
             ),
-            child: Icon(
-              isOption ? LucideIcons.layers : LucideIcons.activity,
-              color: theme.colorScheme.primary,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Detalles de la operación
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      op.ticker,
-                      style: TextStyle(
-                        color: glassTheme.textPrimary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+            const SizedBox(width: 12),
+            // Detalles de la operación
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        op.ticker,
+                        style: TextStyle(
+                          color: glassTheme.textPrimary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    // Badge del tipo si es opción
-                    if (isOption && op.contractType != null)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: (op.contractType == 'call' ? Colors.blue : Colors.purple).withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: (op.contractType == 'call' ? Colors.blue : Colors.purple).withValues(alpha: 0.4),
+                      const SizedBox(width: 8),
+                      // Badge del tipo si es opción
+                      if (isOption && op.contractType != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                (op.contractType == 'call'
+                                        ? Colors.blue
+                                        : Colors.purple)
+                                    .withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color:
+                                  (op.contractType == 'call'
+                                          ? Colors.blue
+                                          : Colors.purple)
+                                      .withValues(alpha: 0.4),
+                            ),
+                          ),
+                          child: Text(
+                            op.contractType!.toUpperCase(),
+                            style: TextStyle(
+                              color: op.contractType == 'call'
+                                  ? Colors.blue
+                                  : Colors.purple,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
+                      const SizedBox(width: 8),
+                      // Badge de estado (Abierto/Cerrado)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color:
+                              (op.isOpen
+                                      ? glassTheme.positive
+                                      : glassTheme.textSecondary)
+                                  .withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
                         child: Text(
-                          op.contractType!.toUpperCase(),
+                          op.isOpen ? 'Abierta' : 'Cerrada',
                           style: TextStyle(
-                            color: op.contractType == 'call' ? Colors.blue : Colors.purple,
+                            color: op.isOpen
+                                ? glassTheme.positive
+                                : glassTheme.textSecondary,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                    const SizedBox(width: 8),
-                    // Badge de estado (Abierto/Cerrado)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: (op.isOpen ? glassTheme.positive : glassTheme.textSecondary).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  // Detalles de la compra/contrato
+                  Text(
+                    isOption
+                        ? 'Strike: ${op.strike} | Exp: ${op.expirationDate} | Qty: ${op.quantity.toInt()}'
+                        : 'Qty: ${op.quantity} @ ${formatMoney(op.buyPrice, allocation.currency)}',
+                    style: TextStyle(
+                      color: glassTheme.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
+                  if (isOption)
+                    Text(
+                      'Prima: ${formatMoney(op.buyPrice, allocation.currency)} | Total: ${formatMoney(op.totalInvested, allocation.currency)}',
+                      style: TextStyle(
+                        color: glassTheme.textSecondary,
+                        fontSize: 11,
                       ),
-                      child: Text(
-                        op.isOpen ? 'Abierta' : 'Cerrada',
-                        style: TextStyle(
-                          color: op.isOpen ? glassTheme.positive : glassTheme.textSecondary,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                    )
+                  else
+                    Text(
+                      'Total Invertido: ${formatMoney(op.totalInvested, allocation.currency)}',
+                      style: TextStyle(
+                        color: glassTheme.textSecondary,
+                        fontSize: 11,
+                      ),
+                    ),
+
+                  if (op.strategy != null && op.strategy!.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      'Estrategia: ${op.strategy}',
+                      style: TextStyle(
+                        color: glassTheme.textSecondary,
+                        fontSize: 11,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+
+                  // Detalles del cierre (si aplica)
+                  if (op.isClosed) ...[
+                    const SizedBox(height: 6),
+                    Divider(
+                      height: 1,
+                      color: glassTheme.glassBorder.withValues(alpha: 0.3),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Venta: ${_formatDate(op.soldAt!)} @ ${formatMoney(op.sellPrice ?? 0, allocation.currency)}',
+                      style: TextStyle(
+                        color: glassTheme.textPrimary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Total Venta: ${formatMoney(op.totalSale ?? 0, allocation.currency)}',
+                      style: TextStyle(
+                        color: glassTheme.textSecondary,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            // Lado derecho: Ganancia + Menú de acciones
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (gainWidget != null) ...[
+                  gainWidget,
+                  const SizedBox(height: 8),
+                ],
+                PopupMenuButton<String>(
+                  icon: Icon(
+                    LucideIcons.moreVertical,
+                    color: glassTheme.textSecondary,
+                    size: 18,
+                  ),
+                  color: theme.scaffoldBackgroundColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  onSelected: (value) =>
+                      _handleAction(context, ref, value, allocation, op),
+                  itemBuilder: (context) => [
+                    if (op.isOpen)
+                      const PopupMenuItem(
+                        value: 'sell',
+                        child: Row(
+                          children: [
+                            Icon(LucideIcons.banknote, size: 16),
+                            SizedBox(width: 8),
+                            Text('Registrar Venta'),
+                          ],
                         ),
+                      )
+                    else
+                      const PopupMenuItem(
+                        value: 'reopen',
+                        child: Row(
+                          children: [
+                            Icon(LucideIcons.rotateCcw, size: 16),
+                            SizedBox(width: 8),
+                            Text('Reabrir Operación'),
+                          ],
+                        ),
+                      ),
+                    const PopupMenuItem(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          Icon(LucideIcons.pencil, size: 16),
+                          SizedBox(width: 8),
+                          Text('Editar'),
+                        ],
+                      ),
+                    ),
+                    if (op.url != null && op.url!.isNotEmpty)
+                      const PopupMenuItem(
+                        value: 'url',
+                        child: Row(
+                          children: [
+                            Icon(LucideIcons.externalLink, size: 16),
+                            SizedBox(width: 8),
+                            Text('Ver Referencia'),
+                          ],
+                        ),
+                      ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(
+                            LucideIcons.trash2,
+                            size: 16,
+                            color: glassTheme.negative,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Eliminar',
+                            style: TextStyle(color: glassTheme.negative),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                // Detalles de la compra/contrato
-                Text(
-                  isOption
-                      ? 'Strike: ${op.strike} | Exp: ${op.expirationDate} | Qty: ${op.quantity.toInt()}'
-                      : 'Qty: ${op.quantity} @ ${formatMoney(op.buyPrice, allocation.currency)}',
-                  style: TextStyle(color: glassTheme.textSecondary, fontSize: 12),
-                ),
-                if (isOption)
-                  Text(
-                    'Prima: ${formatMoney(op.buyPrice, allocation.currency)} | Total: ${formatMoney(op.totalInvested, allocation.currency)}',
-                    style: TextStyle(color: glassTheme.textSecondary, fontSize: 11),
-                  )
-                else
-                  Text(
-                    'Total Invertido: ${formatMoney(op.totalInvested, allocation.currency)}',
-                    style: TextStyle(color: glassTheme.textSecondary, fontSize: 11),
-                  ),
-
-                if (op.strategy != null && op.strategy!.isNotEmpty) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    'Estrategia: ${op.strategy}',
-                    style: TextStyle(color: glassTheme.textSecondary, fontSize: 11, fontStyle: FontStyle.italic),
-                  ),
-                ],
-
-                // Detalles del cierre (si aplica)
-                if (op.isClosed) ...[
-                  const SizedBox(height: 6),
-                  Divider(height: 1, color: glassTheme.glassBorder.withValues(alpha: 0.3)),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Venta: ${_formatDate(op.soldAt!)} @ ${formatMoney(op.sellPrice ?? 0, allocation.currency)}',
-                    style: TextStyle(color: glassTheme.textPrimary, fontSize: 11, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Total Venta: ${formatMoney(op.totalSale ?? 0, allocation.currency)}',
-                    style: TextStyle(color: glassTheme.textSecondary, fontSize: 11),
-                  ),
-                ],
               ],
             ),
-          ),
-          const SizedBox(width: 8),
-          // Lado derecho: Ganancia + Menú de acciones
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (gainWidget != null) ...[
-                gainWidget,
-                const SizedBox(height: 8),
-              ],
-              PopupMenuButton<String>(
-                icon: Icon(LucideIcons.moreVertical, color: glassTheme.textSecondary, size: 18),
-                color: theme.scaffoldBackgroundColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                onSelected: (value) => _handleAction(context, ref, value, allocation, op),
-                itemBuilder: (context) => [
-                  if (op.isOpen)
-                    const PopupMenuItem(
-                      value: 'sell',
-                      child: Row(
-                        children: [
-                          Icon(LucideIcons.banknote, size: 16),
-                          SizedBox(width: 8),
-                          Text('Registrar Venta'),
-                        ],
-                      ),
-                    )
-                  else
-                    const PopupMenuItem(
-                      value: 'reopen',
-                      child: Row(
-                        children: [
-                          Icon(LucideIcons.rotateCcw, size: 16),
-                          SizedBox(width: 8),
-                          Text('Reabrir Operación'),
-                        ],
-                      ),
-                    ),
-                  const PopupMenuItem(
-                    value: 'edit',
-                    child: Row(
-                      children: [
-                        Icon(LucideIcons.pencil, size: 16),
-                        SizedBox(width: 8),
-                        Text('Editar'),
-                      ],
-                    ),
-                  ),
-                  if (op.url != null && op.url!.isNotEmpty)
-                    const PopupMenuItem(
-                      value: 'url',
-                      child: Row(
-                        children: [
-                          Icon(LucideIcons.externalLink, size: 16),
-                          SizedBox(width: 8),
-                          Text('Ver Referencia'),
-                        ],
-                      ),
-                    ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(LucideIcons.trash2, size: 16, color: glassTheme.negative),
-                        const SizedBox(width: 8),
-                        Text('Eliminar', style: TextStyle(color: glassTheme.negative)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -730,7 +835,9 @@ class AccountDetailScreen extends ConsumerWidget {
     } else if (action == 'delete') {
       _showDeleteDialogForOperation(context, ref, allocation.id, op.id);
     } else if (action == 'reopen') {
-      ref.read(operationsControllerProvider(allocation.id).notifier).reopenOperation(op.id);
+      ref
+          .read(operationsControllerProvider(allocation.id).notifier)
+          .reopenOperation(op.id);
     } else if (action == 'sell') {
       _showRegisterSaleDialog(context, ref, allocation.id, op.id);
     } else if (action == 'url') {
@@ -800,7 +907,13 @@ class AccountDetailScreen extends ConsumerWidget {
                       ),
                       onPressed: () {
                         Navigator.of(ctx).pop();
-                        ref.read(operationsControllerProvider(allocationId).notifier).delete(operationId);
+                        ref
+                            .read(
+                              operationsControllerProvider(
+                                allocationId,
+                              ).notifier,
+                            )
+                            .delete(operationId);
                       },
                       child: const Text('Eliminar'),
                     ),
@@ -824,11 +937,9 @@ class AccountDetailScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => RegisterSaleDialog(
         onConfirm: (soldAt, sellPrice) {
-          ref.read(operationsControllerProvider(allocationId).notifier).registerSale(
-            operationId,
-            soldAt: soldAt,
-            sellPrice: sellPrice,
-          );
+          ref
+              .read(operationsControllerProvider(allocationId).notifier)
+              .registerSale(operationId, soldAt: soldAt, sellPrice: sellPrice);
         },
       ),
     );

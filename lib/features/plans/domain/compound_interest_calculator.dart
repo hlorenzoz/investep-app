@@ -40,5 +40,3 @@ class CompoundInterestPeriodResult {
     return 'PeriodResult($periodIndex, $label, Start: $startBalance, Yield: $yieldAmount, End: $endBalance, Date: $date)';
   }
 }
-
-

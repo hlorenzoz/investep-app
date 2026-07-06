@@ -21,6 +21,10 @@ import '../features/setup/presentation/broker_setup_flow.dart';
 import '../features/setup/presentation/setup_mode.dart';
 import '../features/operations/presentation/operation_detail_screen.dart';
 import '../features/operations/presentation/operation_form_screen.dart';
+import '../features/store/domain/product.dart';
+import '../features/store/presentation/store_catalog_screen.dart';
+import '../features/store/presentation/admin_store_screen.dart';
+import '../features/store/presentation/admin_store_form_screen.dart';
 import 'main_shell.dart';
 
 /// Decisión de redirección a partir del estado del gate y la ubicación actual.
@@ -107,11 +111,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/account/:id/operations/:operationId/edit',
         name: 'operation_edit',
-        builder: (context, state) =>
-            OperationFormScreen(
-              allocationId: state.pathParameters['id']!,
-              operationId: state.pathParameters['operationId']!,
-            ),
+        builder: (context, state) => OperationFormScreen(
+          allocationId: state.pathParameters['id']!,
+          operationId: state.pathParameters['operationId']!,
+        ),
       ),
       // Menú de navegación global responsivo con persistencia de estado por rama
       StatefulShellRoute.indexedStack(
@@ -143,6 +146,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/relations',
                 name: 'relations',
                 builder: (context, state) => const RelationsScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/store',
+                name: 'store',
+                builder: (context, state) => const StoreCatalogScreen(),
               ),
             ],
           ),
@@ -215,6 +227,43 @@ final routerProvider = Provider<GoRouter>((ref) {
                       }
                       return '/admin';
                     },
+                  ),
+                  GoRoute(
+                    path: 'store',
+                    name: 'admin_store',
+                    builder: (context, state) => const AdminStoreScreen(),
+                    redirect: (context, state) {
+                      final gate = ref.read(authGateProvider);
+                      if (gate is GateAuthenticated) {
+                        final role = gate.user.role;
+                        if (role == 'admin') {
+                          return null;
+                        }
+                      }
+                      return '/admin';
+                    },
+                    routes: [
+                      GoRoute(
+                        path: 'new',
+                        name: 'admin_store_new',
+                        builder: (context, state) =>
+                            const AdminStoreFormScreen(),
+                      ),
+                      GoRoute(
+                        path: 'edit/:id',
+                        name: 'admin_store_edit',
+                        builder: (context, state) {
+                          final productId = int.parse(
+                            state.pathParameters['id']!,
+                          );
+                          final product = state.extra as Product?;
+                          return AdminStoreFormScreen(
+                            productId: productId,
+                            product: product,
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),

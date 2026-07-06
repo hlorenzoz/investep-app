@@ -11,14 +11,18 @@ class OperationsController extends AsyncNotifier<List<Operation>> {
 
   @override
   Future<List<Operation>> build() {
-    return ref.read(operationsRepositoryProvider).getOperations(allocationId: allocationId);
+    return ref
+        .read(operationsRepositoryProvider)
+        .getOperations(allocationId: allocationId);
   }
 
   /// Recarga la lista de operaciones desde el backend.
   Future<void> refresh() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
-      () => ref.read(operationsRepositoryProvider).getOperations(allocationId: allocationId),
+      () => ref
+          .read(operationsRepositoryProvider)
+          .getOperations(allocationId: allocationId),
     );
   }
 
@@ -28,26 +32,20 @@ class OperationsController extends AsyncNotifier<List<Operation>> {
     required DateTime soldAt,
     required double sellPrice,
   }) async {
-    await ref.read(operationsRepositoryProvider).patchOperation(
-      operationId,
-      {
-        // Fecha sola (YYYY-MM-DD); el backend compara "venta ≥ compra" por día.
-        'soldAt': operationApiDate(soldAt),
-        'sellPrice': sellPrice,
-      },
-    );
+    await ref.read(operationsRepositoryProvider).patchOperation(operationId, {
+      // Fecha sola (YYYY-MM-DD); el backend compara "venta ≥ compra" por día.
+      'soldAt': operationApiDate(soldAt),
+      'sellPrice': sellPrice,
+    });
     await refresh();
   }
 
   /// Reabre una operación cerrada (estableciendo `soldAt` y `sellPrice` en null).
   Future<void> reopenOperation(String operationId) async {
-    await ref.read(operationsRepositoryProvider).patchOperation(
-      operationId,
-      {
-        'soldAt': null,
-        'sellPrice': null,
-      },
-    );
+    await ref.read(operationsRepositoryProvider).patchOperation(operationId, {
+      'soldAt': null,
+      'sellPrice': null,
+    });
     await refresh();
   }
 

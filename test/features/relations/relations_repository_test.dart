@@ -116,9 +116,7 @@ void main() {
 
       await expectLater(
         repo.fetchRelationsOverview(),
-        throwsA(
-          isA<ApiException>().having((e) => e.status, 'status', 401),
-        ),
+        throwsA(isA<ApiException>().having((e) => e.status, 'status', 401)),
       );
       expect(calls, 1);
     });

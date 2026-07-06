@@ -61,7 +61,7 @@ void main() {
             'startBalance': 18750,
             'yieldAmount': 4687.5,
             'endBalance': 23437.5,
-          }
+          },
         ],
       }),
     );
@@ -90,11 +90,12 @@ void main() {
 
     final captured =
         verify(
-          () => dio.get<Map<String, dynamic>>(
-            '/projections',
-            queryParameters: captureAny(named: 'queryParameters'),
-          ),
-        ).captured.single as Map;
+              () => dio.get<Map<String, dynamic>>(
+                '/projections',
+                queryParameters: captureAny(named: 'queryParameters'),
+              ),
+            ).captured.single
+            as Map;
     expect(captured['planId'], 3);
     expect(captured['baseAmount'], 15000.0);
     expect(captured['startDate'], '2026-07-01');
@@ -138,10 +139,7 @@ void main() {
     ).thenAnswer((_) async {
       calls++;
       if (calls == 1) throw dioErr(503, 'SERVICE_UNAVAILABLE', 'caído');
-      return ok({
-        'planId': 3,
-        'periods': <dynamic>[],
-      });
+      return ok({'planId': 3, 'periods': <dynamic>[]});
     });
 
     await repo.getProjection(

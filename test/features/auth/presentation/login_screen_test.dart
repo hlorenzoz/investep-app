@@ -94,8 +94,11 @@ void main() {
 
       final validator = passwordFormField.validator;
       expect(validator, isNotNull);
-      
-      expect(validator!('12345'), 'La contraseña debe tener al menos 6 caracteres');
+
+      expect(
+        validator!('12345'),
+        'La contraseña debe tener al menos 6 caracteres',
+      );
       expect(validator('123456'), isNull);
       expect(validator(''), 'Por favor ingresá tu contraseña');
     },
@@ -117,7 +120,7 @@ void main() {
 
       final validator = passwordFormField.validator;
       expect(validator, isNotNull);
-      
+
       expect(validator!('demo'), isNull);
       expect(validator('123'), isNull);
       expect(validator(''), 'Por favor ingresá tu contraseña');

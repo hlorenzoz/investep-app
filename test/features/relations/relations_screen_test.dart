@@ -72,9 +72,7 @@ void main() {
   );
 
   // Override por defecto: sin favoritos (la sección se auto-oculta).
-  final noFavorites = favoriteTickersProvider.overrideWith(
-    (ref) => <Ticker>[],
-  );
+  final noFavorites = favoriteTickersProvider.overrideWith((ref) => <Ticker>[]);
 
   testWidgets('renderiza ambas tablas con activos y sectores', (tester) async {
     await tester.pumpWidget(
@@ -205,7 +203,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('No hay activos con relaciones cargadas.'), findsOneWidget);
+    expect(
+      find.text('No hay activos con relaciones cargadas.'),
+      findsOneWidget,
+    );
     expect(find.text('No hay sectores cargados.'), findsOneWidget);
   });
 

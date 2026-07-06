@@ -6,10 +6,7 @@ import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
 
 class RegisterSaleDialog extends StatefulWidget {
-  const RegisterSaleDialog({
-    super.key,
-    required this.onConfirm,
-  });
+  const RegisterSaleDialog({super.key, required this.onConfirm});
 
   final void Function(DateTime soldAt, double sellPrice) onConfirm;
 
@@ -76,7 +73,11 @@ class _RegisterSaleDialogState extends State<RegisterSaleDialog> {
             children: [
               Row(
                 children: [
-                  Icon(LucideIcons.banknote, color: theme.colorScheme.primary, size: 24),
+                  Icon(
+                    LucideIcons.banknote,
+                    color: theme.colorScheme.primary,
+                    size: 24,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Registrar Venta',
@@ -98,8 +99,13 @@ class _RegisterSaleDialogState extends State<RegisterSaleDialog> {
                   decoration: InputDecoration(
                     labelText: 'Fecha de Venta',
                     labelStyle: TextStyle(color: glassTheme.textSecondary),
-                    prefixIcon: Icon(LucideIcons.calendar, color: glassTheme.textSecondary),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    prefixIcon: Icon(
+                      LucideIcons.calendar,
+                      color: glassTheme.textSecondary,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: glassTheme.glassBorder),
@@ -117,12 +123,19 @@ class _RegisterSaleDialogState extends State<RegisterSaleDialog> {
               TextFormField(
                 controller: _priceController,
                 style: TextStyle(color: glassTheme.textPrimary),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Precio de Venta (unitario)',
                   labelStyle: TextStyle(color: glassTheme.textSecondary),
-                  prefixIcon: Icon(LucideIcons.dollarSign, color: glassTheme.textSecondary),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  prefixIcon: Icon(
+                    LucideIcons.dollarSign,
+                    color: glassTheme.textSecondary,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(color: glassTheme.glassBorder),
