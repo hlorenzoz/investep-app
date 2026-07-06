@@ -24,6 +24,76 @@ class StoreCatalogScreen extends ConsumerWidget {
       publicCategoryFilterProvider,
     );
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isLargeScreen = screenWidth >= 600;
+
+    Widget bodyContent = Column(
+      children: [
+        // Filtros de categoría (Pills premium)
+        _CategoryFiltersRow(
+          activeFilter: activeFilter,
+          onFilterChanged: (filter) {
+            ref.read(publicCategoryFilterProvider.notifier).setFilter(filter);
+          },
+        ),
+        Expanded(
+          child: productsAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => _ErrorState(
+              error: err,
+              onRetry: () => ref.invalidate(publicProductsProvider),
+            ),
+            data: (products) {
+              if (products.isEmpty) {
+                return Center(
+                  child: Text(
+                    l10n.storeEmpty,
+                    style: TextStyle(color: glassTheme.textSecondary),
+                  ),
+                );
+              }
+
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  // Determinar número de columnas responsivo
+                  final width = constraints.maxWidth;
+                  final crossAxisCount = width < 600
+                      ? 1
+                      : width < 1000
+                      ? 2
+                      : 3;
+
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(20),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
+                      childAspectRatio: crossAxisCount == 1 ? 1.3 : 0.8,
+                    ),
+                    itemCount: products.length,
+                    itemBuilder: (context, index) {
+                      final product = products[index];
+                      return _ProductGridCard(product: product);
+                    },
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+
+    if (isLargeScreen) {
+      bodyContent = Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: screenWidth * 0.8),
+          child: bodyContent,
+        ),
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(gradient: glassTheme.backgroundGradient),
       child: Scaffold(
@@ -38,71 +108,7 @@ class StoreCatalogScreen extends ConsumerWidget {
             ],
           ),
         ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              // Filtros de categoría (Pills premium)
-              _CategoryFiltersRow(
-                activeFilter: activeFilter,
-                onFilterChanged: (filter) {
-                  ref
-                      .read(publicCategoryFilterProvider.notifier)
-                      .setFilter(filter);
-                },
-              ),
-              Expanded(
-                child: productsAsync.when(
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  error: (err, stack) => _ErrorState(
-                    error: err,
-                    onRetry: () => ref.invalidate(publicProductsProvider),
-                  ),
-                  data: (products) {
-                    if (products.isEmpty) {
-                      return Center(
-                        child: Text(
-                          l10n.storeEmpty,
-                          style: TextStyle(color: glassTheme.textSecondary),
-                        ),
-                      );
-                    }
-
-                    return LayoutBuilder(
-                      builder: (context, constraints) {
-                        // Determinar número de columnas responsivo
-                        final width = constraints.maxWidth;
-                        final crossAxisCount = width < 600
-                            ? 1
-                            : width < 1000
-                            ? 2
-                            : 3;
-
-                        return GridView.builder(
-                          padding: const EdgeInsets.all(20),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: crossAxisCount,
-                                crossAxisSpacing: 20,
-                                mainAxisSpacing: 20,
-                                childAspectRatio: crossAxisCount == 1
-                                    ? 1.3
-                                    : 0.8,
-                              ),
-                          itemCount: products.length,
-                          itemBuilder: (context, index) {
-                            final product = products[index];
-                            return _ProductGridCard(product: product);
-                          },
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
+        body: SafeArea(child: bodyContent),
       ),
     );
   }
@@ -168,11 +174,42 @@ class _ProductGridCard extends StatelessWidget {
 
   final Product product;
 
-  Future<void> _handleAction() async {
+  Future<void> _handleAction(BuildContext context) async {
     if (product.amazonUrl != null && product.amazonUrl!.isNotEmpty) {
-      final uri = Uri.tryParse(product.amazonUrl!);
-      if (uri != null) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      try {
+        final uri = Uri.parse(product.amazonUrl!.trim());
+        if (await canLaunchUrl(uri)) {
+          final success = await launchUrl(
+            uri,
+            mode: LaunchMode.externalApplication,
+          );
+          if (!success && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('No se pudo abrir el enlace de Amazon.'),
+                backgroundColor: AppColors.negative,
+              ),
+            );
+          }
+        } else if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'El enlace de Amazon no es válido o no se puede abrir.',
+              ),
+              backgroundColor: AppColors.negative,
+            ),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Ocurrió un error al intentar abrir el enlace.'),
+              backgroundColor: AppColors.negative,
+            ),
+          );
+        }
       }
     }
   }
@@ -289,23 +326,25 @@ class _ProductGridCard extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        if (hasPrice)
-                          Text(
-                            '\$${product.price!.toStringAsFixed(2)} ${product.currency}',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w800,
-                              color: Theme.of(context).colorScheme.secondary,
+                        if (!hasAmazonUrl) ...[
+                          if (hasPrice)
+                            Text(
+                              '\$${product.price!.toStringAsFixed(2)} ${product.currency}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            )
+                          else
+                            Text(
+                              '--',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: glassTheme.textSecondary,
+                              ),
                             ),
-                          )
-                        else
-                          Text(
-                            '--',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: glassTheme.textSecondary,
-                            ),
-                          ),
+                        ],
                         if (product.category == ProductCategory.tshirt &&
                             (product.gender != null || product.theme != null))
                           Row(
@@ -334,7 +373,7 @@ class _ProductGridCard extends StatelessWidget {
                     const SizedBox(height: 12),
                     if (hasAmazonUrl)
                       ElevatedButton.icon(
-                        onPressed: _handleAction,
+                        onPressed: () => _handleAction(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.amber.shade700,
                           foregroundColor: Colors.white,

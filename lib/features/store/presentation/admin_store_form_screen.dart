@@ -36,22 +36,48 @@ class _AdminStoreFormScreenState extends ConsumerState<AdminStoreFormScreen> {
   ProductTheme? _theme;
   bool _active = true;
   bool _isLoading = false;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
     final p = widget.product;
-    _slugController = TextEditingController(text: p?.slug ?? '');
-    _nameController = TextEditingController(text: p?.name ?? '');
-    _descriptionController = TextEditingController(text: p?.description ?? '');
-    _priceController = TextEditingController(text: p?.price?.toString() ?? '');
-    _currencyController = TextEditingController(text: p?.currency ?? 'USD');
-    _amazonUrlController = TextEditingController(text: p?.amazonUrl ?? '');
-    _imageController = TextEditingController(text: p?.image ?? '');
-    _category = p?.category ?? ProductCategory.book;
-    _gender = p?.gender;
-    _theme = p?.theme;
-    _active = p?.active ?? true;
+    if (p != null) {
+      _slugController = TextEditingController(text: p.slug);
+      _nameController = TextEditingController(text: p.name);
+      _descriptionController = TextEditingController(text: p.description ?? '');
+      _priceController = TextEditingController(text: p.price?.toString() ?? '');
+      _currencyController = TextEditingController(text: p.currency);
+      _amazonUrlController = TextEditingController(text: p.amazonUrl ?? '');
+      _imageController = TextEditingController(text: p.image ?? '');
+      _category = p.category;
+      _gender = p.gender;
+      _theme = p.theme;
+      _active = p.active;
+      _isInitialized = true;
+    } else {
+      _slugController = TextEditingController();
+      _nameController = TextEditingController();
+      _descriptionController = TextEditingController();
+      _priceController = TextEditingController();
+      _currencyController = TextEditingController(text: 'USD');
+      _amazonUrlController = TextEditingController();
+      _imageController = TextEditingController();
+    }
+  }
+
+  void _initializeWith(Product p) {
+    _slugController.text = p.slug;
+    _nameController.text = p.name;
+    _descriptionController.text = p.description ?? '';
+    _priceController.text = p.price?.toString() ?? '';
+    _currencyController.text = p.currency;
+    _amazonUrlController.text = p.amazonUrl ?? '';
+    _imageController.text = p.image ?? '';
+    _category = p.category;
+    _gender = p.gender;
+    _theme = p.theme;
+    _active = p.active;
   }
 
   @override
@@ -144,6 +170,67 @@ class _AdminStoreFormScreenState extends ConsumerState<AdminStoreFormScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isLargeScreen = screenWidth >= 600;
 
+    // Escuchar el controlador admin para mostrar Snackbars de error
+    ref.listen<AsyncValue<void>>(storeAdminControllerProvider, (prev, next) {
+      next.whenOrNull(
+        error: (err, _) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: $err'),
+              backgroundColor: AppColors.negative,
+            ),
+          );
+        },
+      );
+    });
+
+    final productAsync = widget.productId != null && widget.product == null
+        ? ref.watch(productDetailProvider(widget.productId!.toString()))
+        : null;
+
+    if (productAsync != null) {
+      return productAsync.when(
+        loading: () =>
+            const Scaffold(body: Center(child: CircularProgressIndicator())),
+        error: (err, _) => Scaffold(
+          appBar: AppBar(title: const Text('Error')),
+          body: Center(child: Text('Error al cargar producto: $err')),
+        ),
+        data: (loadedProduct) {
+          if (!_isInitialized) {
+            _initializeWith(loadedProduct);
+            _isInitialized = true;
+          }
+          return _buildForm(
+            context,
+            l10n,
+            glassTheme,
+            isEdit,
+            isLargeScreen,
+            screenWidth,
+          );
+        },
+      );
+    }
+
+    return _buildForm(
+      context,
+      l10n,
+      glassTheme,
+      isEdit,
+      isLargeScreen,
+      screenWidth,
+    );
+  }
+
+  Widget _buildForm(
+    BuildContext context,
+    AppLocalizations l10n,
+    GlassThemeExtension glassTheme,
+    bool isEdit,
+    bool isLargeScreen,
+    double screenWidth,
+  ) {
     Widget formContent = Form(
       key: _formKey,
       child: ListView(
@@ -364,7 +451,9 @@ class _AdminStoreFormScreenState extends ConsumerState<AdminStoreFormScreen> {
             validator: (value) {
               if (value != null && value.trim().isNotEmpty) {
                 final uri = Uri.tryParse(value.trim());
-                if (uri == null || !uri.isAbsolute) {
+                if (uri == null ||
+                    !uri.isAbsolute ||
+                    (uri.scheme != 'http' && uri.scheme != 'https')) {
                   return 'Debe ser un enlace URL absoluto válido.';
                 }
               }
