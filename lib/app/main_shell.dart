@@ -33,54 +33,34 @@ class MainShell extends ConsumerWidget {
     final isAdminOrManager = role == 'admin' || role == 'manager';
 
     // Índices de rama (StatefulShellRoute):
-    //   0 Portafolio · 1 Academia · 2 Relaciones · 3 Tienda · 4 Admin · 5 Configuración
-    // Admin (rama 4) se oculta si el usuario no es admin/manager, por eso el
+    //   0 Dashboard · 1 Portafolio · 2 Academia · 3 Relaciones · 4 Tienda · 5 Libros (Books) · 6 Admin · 7 Configuración
+    // Admin (rama 6) se oculta si el usuario no es admin/manager, por eso el
     // mapeo entre índices de UI e índices de rama es manual.
 
-    // Mapeo para NavigationBar (Móvil)
-    int branchToUiIndex(int branchIndex) {
-      if (isAdminOrManager) return branchIndex;
-      // Sin Admin: Configuración (rama 5) baja un lugar en la UI.
-      if (branchIndex >= 5) return branchIndex - 1;
-      return branchIndex;
+    int mobileSelectedIndex() {
+      final currentBranch = navigationShell.currentIndex;
+      if (currentBranch == 0) return 0;
+      if (currentBranch == 1) return 1;
+      return 2;
     }
 
-    void onDestinationSelected(int uiIndex) {
-      int branchIndex = uiIndex;
-      if (!isAdminOrManager) {
-        // Sin Admin visible, la UI a partir de Configuración (uiIndex 4) salta la rama 4 (Admin).
-        if (uiIndex >= 4) {
-          branchIndex = uiIndex + 1;
-        }
+    void onMobileDestinationSelected(int uiIndex) {
+      if (uiIndex == 0) {
+        navigationShell.goBranch(
+          0,
+          initialLocation: 0 == navigationShell.currentIndex,
+        );
+      } else if (uiIndex == 1) {
+        navigationShell.goBranch(
+          1,
+          initialLocation: 1 == navigationShell.currentIndex,
+        );
+      } else if (uiIndex == 2) {
+        _showMobileMenu(context, ref, navigationShell, isAdminOrManager);
       }
-      navigationShell.goBranch(
-        branchIndex,
-        initialLocation: branchIndex == navigationShell.currentIndex,
-      );
     }
 
-    // Mapeo para bottom NavigationRail (Tablet/Desktop): rama 4 Admin + rama 5 Config.
-    final int? bottomRailSelectedIndex;
-    if (isAdminOrManager) {
-      bottomRailSelectedIndex = navigationShell.currentIndex >= 4
-          ? navigationShell.currentIndex - 4
-          : null;
-    } else {
-      bottomRailSelectedIndex = navigationShell.currentIndex == 5 ? 0 : null;
-    }
-
-    void onBottomRailSelected(int uiIndex) {
-      final int targetBranch;
-      if (isAdminOrManager) {
-        targetBranch = uiIndex + 4;
-      } else {
-        targetBranch = 5; // Solo Configuración está disponible
-      }
-      navigationShell.goBranch(
-        targetBranch,
-        initialLocation: targetBranch == navigationShell.currentIndex,
-      );
-    }
+    // No bottomRailSelectedIndex/onBottomRailSelected needed, handled directly via _RailButton below.
 
     return Container(
       decoration: BoxDecoration(gradient: glassTheme.backgroundGradient),
@@ -99,33 +79,20 @@ class MainShell extends ConsumerWidget {
                   ),
                 ),
                 child: NavigationBar(
-                  selectedIndex: branchToUiIndex(navigationShell.currentIndex),
-                  onDestinationSelected: onDestinationSelected,
+                  selectedIndex: mobileSelectedIndex(),
+                  onDestinationSelected: onMobileDestinationSelected,
                   destinations: [
                     NavigationDestination(
-                      icon: const Icon(LucideIcons.pieChart),
+                      icon: const Icon(LucideIcons.chartPie),
+                      label: l10n.navDashboard,
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(LucideIcons.chartCandlestick),
                       label: l10n.navPortfolio,
                     ),
                     NavigationDestination(
-                      icon: const Icon(LucideIcons.graduationCap),
-                      label: l10n.navAcademy,
-                    ),
-                    NavigationDestination(
-                      icon: const Icon(LucideIcons.waypoints),
-                      label: l10n.navRelations,
-                    ),
-                    NavigationDestination(
-                      icon: const Icon(LucideIcons.shoppingBag),
-                      label: l10n.navStore,
-                    ),
-                    if (isAdminOrManager)
-                      NavigationDestination(
-                        icon: const Icon(LucideIcons.shieldAlert),
-                        label: l10n.navAdmin,
-                      ),
-                    NavigationDestination(
-                      icon: const Icon(LucideIcons.settings),
-                      label: l10n.navSettings,
+                      icon: const Icon(LucideIcons.menu),
+                      label: l10n.navMenu,
                     ),
                   ],
                 ),
@@ -157,7 +124,7 @@ class MainShell extends ConsumerWidget {
                         const SizedBox(height: 20),
                         Expanded(
                           child: NavigationRail(
-                            selectedIndex: navigationShell.currentIndex < 4
+                            selectedIndex: navigationShell.currentIndex < 6
                                 ? navigationShell.currentIndex
                                 : null,
                             onDestinationSelected: (idx) {
@@ -170,7 +137,11 @@ class MainShell extends ConsumerWidget {
                             labelType: NavigationRailLabelType.all,
                             destinations: [
                               NavigationRailDestination(
-                                icon: const Icon(LucideIcons.pieChart),
+                                icon: const Icon(LucideIcons.chartPie),
+                                label: Text(l10n.navDashboard),
+                              ),
+                              NavigationRailDestination(
+                                icon: const Icon(LucideIcons.chartCandlestick),
                                 label: Text(l10n.navPortfolio),
                               ),
                               NavigationRailDestination(
@@ -185,6 +156,10 @@ class MainShell extends ConsumerWidget {
                                 icon: const Icon(LucideIcons.shoppingBag),
                                 label: Text(l10n.navStore),
                               ),
+                              NavigationRailDestination(
+                                icon: const Icon(LucideIcons.library),
+                                label: Text(l10n.navBooks),
+                              ),
                             ],
                           ),
                         ),
@@ -193,23 +168,30 @@ class MainShell extends ConsumerWidget {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              NavigationRail(
-                                selectedIndex: bottomRailSelectedIndex,
-                                onDestinationSelected: onBottomRailSelected,
-                                labelType: NavigationRailLabelType.all,
-                                destinations: [
-                                  if (isAdminOrManager)
-                                    NavigationRailDestination(
-                                      icon: const Icon(LucideIcons.shieldAlert),
-                                      label: Text(l10n.navAdmin),
-                                    ),
-                                  NavigationRailDestination(
-                                    icon: const Icon(LucideIcons.settings),
-                                    label: Text(l10n.navSettings),
+                              if (isAdminOrManager) ...[
+                                _RailButton(
+                                  icon: LucideIcons.shieldAlert,
+                                  label: l10n.navAdmin,
+                                  isSelected: navigationShell.currentIndex == 6,
+                                  onTap: () => navigationShell.goBranch(
+                                    6,
+                                    initialLocation:
+                                        6 == navigationShell.currentIndex,
                                   ),
-                                ],
+                                ),
+                                const SizedBox(height: 16),
+                              ],
+                              _RailButton(
+                                icon: LucideIcons.settings,
+                                label: l10n.navSettings,
+                                isSelected: navigationShell.currentIndex == 7,
+                                onTap: () => navigationShell.goBranch(
+                                  7,
+                                  initialLocation:
+                                      7 == navigationShell.currentIndex,
+                                ),
                               ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 16),
                               const _LogoutButton(),
                             ],
                           ),
@@ -327,4 +309,278 @@ void _showSignOutDialog(BuildContext context, WidgetRef ref) {
       ),
     ),
   );
+}
+
+class _RailButton extends StatelessWidget {
+  const _RailButton({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final glassTheme = context.glass;
+    final color = isSelected
+        ? (theme.navigationRailTheme.selectedIconTheme?.color ??
+            theme.colorScheme.primary)
+        : (theme.navigationRailTheme.unselectedIconTheme?.color ??
+            glassTheme.textSecondary);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 72,
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void _showMobileMenu(
+  BuildContext context,
+  WidgetRef ref,
+  StatefulNavigationShell navigationShell,
+  bool isAdminOrManager,
+) {
+  final l10n = AppLocalizations.of(context);
+  final currentBranch = navigationShell.currentIndex;
+
+  showGeneralDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: 'MobileMenu',
+    barrierColor: Colors.black.withValues(alpha: 0.25),
+    transitionDuration: const Duration(milliseconds: 250),
+    transitionBuilder: (ctx, anim1, anim2, child) {
+      return FadeTransition(
+        opacity: anim1,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.05, 0.05),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(parent: anim1, curve: Curves.easeOutQuad)),
+          child: child,
+        ),
+      );
+    },
+    pageBuilder: (ctx, anim1, anim2) {
+      final isWide = MediaQuery.of(ctx).size.width >= 600;
+      if (isWide) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (ctx.mounted) {
+            Navigator.of(ctx).pop();
+          }
+        });
+      }
+
+      final paddingBottom = MediaQuery.of(ctx).padding.bottom;
+      final bottomInset = 80.0 + paddingBottom + 8;
+
+      return Stack(
+        children: [
+          Positioned(
+            right: 16,
+            bottom: bottomInset,
+            child: Material(
+              color: Colors.transparent,
+              child: GlassCard(
+                borderRadius: 16,
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                child: SizedBox(
+                  width: 220,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _MobileMenuItem(
+                        icon: LucideIcons.graduationCap,
+                        label: l10n.navAcademy,
+                        isSelected: currentBranch == 2,
+                        onTap: () {
+                          Navigator.of(ctx).pop();
+                          navigationShell.goBranch(
+                            2,
+                            initialLocation: 2 == currentBranch,
+                          );
+                        },
+                      ),
+                      _MobileMenuItem(
+                        icon: LucideIcons.waypoints,
+                        label: l10n.navRelations,
+                        isSelected: currentBranch == 3,
+                        onTap: () {
+                          Navigator.of(ctx).pop();
+                          navigationShell.goBranch(
+                            3,
+                            initialLocation: 3 == currentBranch,
+                          );
+                        },
+                      ),
+                      _MobileMenuItem(
+                        icon: LucideIcons.shoppingBag,
+                        label: l10n.navStore,
+                        isSelected: currentBranch == 4,
+                        onTap: () {
+                          Navigator.of(ctx).pop();
+                          navigationShell.goBranch(
+                            4,
+                            initialLocation: 4 == currentBranch,
+                          );
+                        },
+                      ),
+                      _MobileMenuItem(
+                        icon: LucideIcons.library,
+                        label: l10n.navBooks,
+                        isSelected: currentBranch == 5,
+                        onTap: () {
+                          Navigator.of(ctx).pop();
+                          navigationShell.goBranch(
+                            5,
+                            initialLocation: 5 == currentBranch,
+                          );
+                        },
+                      ),
+                      if (isAdminOrManager)
+                        _MobileMenuItem(
+                          icon: LucideIcons.shieldAlert,
+                          label: l10n.navAdmin,
+                          isSelected: currentBranch == 6,
+                          onTap: () {
+                            Navigator.of(ctx).pop();
+                            navigationShell.goBranch(
+                              6,
+                              initialLocation: 6 == currentBranch,
+                            );
+                          },
+                        ),
+                      _MobileMenuItem(
+                        icon: LucideIcons.settings,
+                        label: l10n.navSettings,
+                        isSelected: currentBranch == 7,
+                        onTap: () {
+                          Navigator.of(ctx).pop();
+                          navigationShell.goBranch(
+                            7,
+                            initialLocation: 7 == currentBranch,
+                          );
+                        },
+                      ),
+                      const Divider(height: 16, thickness: 0.5),
+                      _MobileMenuItem(
+                        icon: LucideIcons.logOut,
+                        label: l10n.settingsSignOut,
+                        isSelected: false,
+                        onTap: () {
+                          Navigator.of(ctx).pop();
+                          _showSignOutDialog(context, ref);
+                        },
+                        isNegative: true,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+class _MobileMenuItem extends StatelessWidget {
+  const _MobileMenuItem({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+    this.isNegative = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final bool isNegative;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final glassTheme = context.glass;
+
+    final color = isNegative
+        ? glassTheme.negative
+        : (isSelected
+            ? (theme.navigationBarTheme.iconTheme?.resolve({WidgetState.selected})?.color ??
+                theme.colorScheme.primary)
+            : glassTheme.textSecondary);
+
+    final textColor = isNegative
+        ? glassTheme.negative
+        : (isSelected
+            ? (theme.navigationBarTheme.iconTheme?.resolve({WidgetState.selected})?.color ??
+                theme.colorScheme.primary)
+            : glassTheme.textPrimary);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: isSelected
+                  ? color.withValues(alpha: 0.12)
+                  : Colors.transparent,
+            ),
+            child: Row(
+              children: [
+                Icon(icon, color: color, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 14,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

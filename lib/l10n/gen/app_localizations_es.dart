@@ -200,6 +200,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get navRelations => 'Relaciones';
 
   @override
+  String get navDashboard => 'Dashboard';
+
+  @override
+  String get navMenu => 'Menú';
+
+  @override
+  String get navBooks => 'Books';
+
+  @override
   String get relationsTitle => 'Relaciones entre activos';
 
   @override

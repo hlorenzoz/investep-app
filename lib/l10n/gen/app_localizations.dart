@@ -476,6 +476,24 @@ abstract class AppLocalizations {
   /// **'Relaciones'**
   String get navRelations;
 
+  /// No description provided for @navDashboard.
+  ///
+  /// In es, this message translates to:
+  /// **'Dashboard'**
+  String get navDashboard;
+
+  /// No description provided for @navMenu.
+  ///
+  /// In es, this message translates to:
+  /// **'Menú'**
+  String get navMenu;
+
+  /// No description provided for @navBooks.
+  ///
+  /// In es, this message translates to:
+  /// **'Books'**
+  String get navBooks;
+
   /// No description provided for @relationsTitle.
   ///
   /// In es, this message translates to:

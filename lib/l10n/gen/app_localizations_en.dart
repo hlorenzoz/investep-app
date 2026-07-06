@@ -199,6 +199,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navRelations => 'Relations';
 
   @override
+  String get navDashboard => 'Dashboard';
+
+  @override
+  String get navMenu => 'Menu';
+
+  @override
+  String get navBooks => 'Books';
+
+  @override
   String get relationsTitle => 'Asset relationships';
 
   @override

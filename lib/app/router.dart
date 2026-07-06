@@ -25,6 +25,8 @@ import '../features/store/domain/product.dart';
 import '../features/store/presentation/store_catalog_screen.dart';
 import '../features/store/presentation/admin_store_screen.dart';
 import '../features/store/presentation/admin_store_form_screen.dart';
+import '../features/dashboard/presentation/dashboard_screen.dart';
+import '../features/books/presentation/books_screen.dart';
 import 'main_shell.dart';
 
 /// Decisión de redirección a partir del estado del gate y la ubicación actual.
@@ -126,6 +128,15 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/',
+                name: 'dashboard',
+                builder: (context, state) => const DashboardScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/brokers',
                 name: 'portfolio',
                 builder: (context, state) => const PortfolioScreen(),
               ),
@@ -155,6 +166,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/store',
                 name: 'store',
                 builder: (context, state) => const StoreCatalogScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/books',
+                name: 'books',
+                builder: (context, state) => const BooksScreen(),
               ),
             ],
           ),
