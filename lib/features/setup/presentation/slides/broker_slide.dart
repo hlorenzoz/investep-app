@@ -81,7 +81,9 @@ class _BrokerSlideState extends ConsumerState<BrokerSlide> {
                   _BrokerTile(
                     broker: broker,
                     selected: data.brokerId == broker.id,
-                    configuredTypes: _configuredTypes(allocations, broker.id),
+                    allocations: allocations
+                        .where((a) => a.brokerId == broker.id)
+                        .toList(),
                     onTap: () => ref
                         .read(wizardControllerProvider(widget.mode).notifier)
                         .setBroker(broker.id),
@@ -93,15 +95,37 @@ class _BrokerSlideState extends ConsumerState<BrokerSlide> {
       ],
     );
   }
+}
 
-  Set<AccountType> _configuredTypes(
-    List<Allocation> allocations,
-    int brokerId,
-  ) {
-    return {
-      for (final a in allocations)
-        if (a.brokerId == brokerId) a.accountType,
-    };
+class _AccountTypeBadge extends StatelessWidget {
+  const _AccountTypeBadge({required this.label, required this.count});
+
+  final String label;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final glassTheme = context.glass;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.25),
+          width: 0.5,
+        ),
+      ),
+      child: Text(
+        '$label ($count)',
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: glassTheme.textSecondary,
+        ),
+      ),
+    );
   }
 }
 
@@ -109,22 +133,51 @@ class _BrokerTile extends StatelessWidget {
   const _BrokerTile({
     required this.broker,
     required this.selected,
-    required this.configuredTypes,
+    required this.allocations,
     required this.onTap,
   });
 
   final Broker broker;
   final bool selected;
-  final Set<AccountType> configuredTypes;
+  final List<Allocation> allocations;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final glassTheme = context.glass;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    // Deshabilitado sólo si TODAS las combinaciones (equity+options) ya existen.
-    final fullyConfigured = configuredTypes.length >= AccountType.values.length;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final equityCount = allocations
+        .where((a) => a.accountType == AccountType.equity)
+        .length;
+    final optionsCount = allocations
+        .where((a) => a.accountType == AccountType.options)
+        .length;
+
+    Widget? subtitle;
+    if (allocations.isNotEmpty) {
+      subtitle = Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: [
+            if (equityCount > 0)
+              _AccountTypeBadge(
+                label: l10n.accountTypeEquity,
+                count: equityCount,
+              ),
+            if (optionsCount > 0)
+              _AccountTypeBadge(
+                label: l10n.accountTypeOptions,
+                count: optionsCount,
+              ),
+          ],
+        ),
+      );
+    }
 
     return Card(
       color: selected
@@ -138,33 +191,20 @@ class _BrokerTile extends StatelessWidget {
       ),
       elevation: 0,
       child: ListTile(
-        enabled: !fullyConfigured,
+        enabled: true,
         leading: BrokerLogo(broker: broker),
         title: Text(
           broker.name,
-          style: TextStyle(
-            color: fullyConfigured
-                ? glassTheme.textSecondary.withValues(alpha: 0.5)
-                : glassTheme.textPrimary,
-          ),
+          style: TextStyle(color: glassTheme.textPrimary),
         ),
-        subtitle: configuredTypes.isNotEmpty
-            ? Text(
-                l10n.alreadyConfigured,
-                style: TextStyle(
-                  color: fullyConfigured
-                      ? glassTheme.textSecondary.withValues(alpha: 0.5)
-                      : glassTheme.textSecondary,
-                ),
-              )
-            : null,
+        subtitle: subtitle,
         trailing: selected
             ? Icon(
                 LucideIcons.circleCheck,
                 color: isDark ? AppColors.accent : Colors.black,
               )
             : null,
-        onTap: fullyConfigured ? null : onTap,
+        onTap: onTap,
       ),
     );
   }
