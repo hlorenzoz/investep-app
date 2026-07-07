@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
@@ -75,7 +76,15 @@ class StoreCatalogScreen extends ConsumerWidget {
                     itemCount: products.length,
                     itemBuilder: (context, index) {
                       final product = products[index];
-                      return _ProductGridCard(product: product);
+                      return _ProductGridCard(
+                        product: product,
+                        onTapCard: () {
+                          context.push(
+                            '/store/${product.slug}',
+                            extra: product,
+                          );
+                        },
+                      );
                     },
                   );
                 },
@@ -172,9 +181,10 @@ class _CategoryFiltersRow extends StatelessWidget {
 }
 
 class _ProductGridCard extends StatelessWidget {
-  const _ProductGridCard({required this.product});
+  const _ProductGridCard({required this.product, required this.onTapCard});
 
   final Product product;
+  final VoidCallback onTapCard;
 
   Future<void> _handleAction(BuildContext context) async {
     if (product.amazonUrl != null && product.amazonUrl!.isNotEmpty) {
@@ -225,25 +235,40 @@ class _ProductGridCard extends StatelessWidget {
     final hasAmazonUrl =
         product.amazonUrl != null && product.amazonUrl!.isNotEmpty;
 
-    return GlassCard(
-      padding: EdgeInsets.zero,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final isHorizontal = constraints.maxWidth > constraints.maxHeight;
+    return InkWell(
+      onTap: onTapCard,
+      borderRadius: BorderRadius.circular(16),
+      child: GlassCard(
+        padding: EdgeInsets.zero,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isHorizontal = constraints.maxWidth > constraints.maxHeight;
 
-          final imageWidget = AspectRatio(
-            aspectRatio: isHorizontal ? 1.0 : 1.4,
-            child: Container(
-              color: Colors.black.withValues(alpha: 0.15),
-              child: product.imageUrl.isNotEmpty
-                  ? Image.network(
-                      product.imageUrl,
-                      fit: BoxFit.contain,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return const Center(child: CircularProgressIndicator());
-                      },
-                      errorBuilder: (context, error, stackTrace) => Center(
+            final imageWidget = AspectRatio(
+              aspectRatio: isHorizontal ? 1.0 : 1.4,
+              child: Container(
+                color: Colors.black.withValues(alpha: 0.15),
+                child: product.imageUrl.isNotEmpty
+                    ? Image.network(
+                        product.imageUrl,
+                        fit: BoxFit.contain,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) => Center(
+                          child: Icon(
+                            _getCategoryIcon(product.category),
+                            size: 40,
+                            color: glassTheme.textSecondary.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                        ),
+                      )
+                    : Center(
                         child: Icon(
                           _getCategoryIcon(product.category),
                           size: 40,
@@ -252,180 +277,175 @@ class _ProductGridCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                    )
-                  : Center(
-                      child: Icon(
-                        _getCategoryIcon(product.category),
-                        size: 40,
-                        color: glassTheme.textSecondary.withValues(alpha: 0.5),
-                      ),
-                    ),
-            ),
-          );
+              ),
+            );
 
-          final detailsWidget = Padding(
-            padding: EdgeInsets.all(isHorizontal ? 12 : 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Categoría Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.secondary.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    _getCategoryLabel(context, product.category),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+            final detailsWidget = Padding(
+              padding: EdgeInsets.all(isHorizontal ? 12 : 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Categoría Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
                     ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                // Título
-                Text(
-                  product.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: glassTheme.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                // Descripción
-                if (product.description != null)
-                  Flexible(
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.secondary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: Text(
-                      product.description!,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                      _getCategoryLabel(context, product.category),
                       style: TextStyle(
-                        fontSize: 12,
-                        color: glassTheme.textSecondary,
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                const Spacer(),
-                const SizedBox(height: 8),
-                // Precio e info de compra
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        if (!hasAmazonUrl) ...[
-                          if (hasPrice)
-                            Text(
-                              '\$${product.price!.toStringAsFixed(2)} ${product.currency}',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: Theme.of(context).colorScheme.secondary,
+                  const SizedBox(height: 8),
+                  // Título
+                  Text(
+                    product.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: glassTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  // Descripción
+                  if (product.description != null)
+                    Flexible(
+                      child: Text(
+                        product.description!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: glassTheme.textSecondary,
+                        ),
+                      ),
+                    ),
+                  const Spacer(),
+                  const SizedBox(height: 8),
+                  // Precio e info de compra
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (!hasAmazonUrl) ...[
+                            if (hasPrice)
+                              Text(
+                                '\$${product.price!.toStringAsFixed(2)} ${product.currency}',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.secondary,
+                                ),
+                              )
+                            else
+                              Text(
+                                '--',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: glassTheme.textSecondary,
+                                ),
                               ),
-                            )
-                          else
-                            Text(
-                              '--',
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: glassTheme.textSecondary,
-                              ),
+                          ],
+                          if (product.category == ProductCategory.tshirt &&
+                              (product.gender != null || product.theme != null))
+                            Row(
+                              children: [
+                                if (product.gender != null)
+                                  Icon(
+                                    product.gender == ProductGender.men
+                                        ? LucideIcons.user
+                                        : LucideIcons.user2,
+                                    size: 14,
+                                    color: glassTheme.textSecondary,
+                                  ),
+                                const SizedBox(width: 4),
+                                if (product.theme != null)
+                                  Icon(
+                                    product.theme == ProductTheme.light
+                                        ? LucideIcons.sun
+                                        : LucideIcons.moon,
+                                    size: 14,
+                                    color: glassTheme.textSecondary,
+                                  ),
+                              ],
                             ),
                         ],
-                        if (product.category == ProductCategory.tshirt &&
-                            (product.gender != null || product.theme != null))
-                          Row(
-                            children: [
-                              if (product.gender != null)
-                                Icon(
-                                  product.gender == ProductGender.men
-                                      ? LucideIcons.user
-                                      : LucideIcons.user2,
-                                  size: 14,
-                                  color: glassTheme.textSecondary,
-                                ),
-                              const SizedBox(width: 4),
-                              if (product.theme != null)
-                                Icon(
-                                  product.theme == ProductTheme.light
-                                      ? LucideIcons.sun
-                                      : LucideIcons.moon,
-                                  size: 14,
-                                  color: glassTheme.textSecondary,
-                                ),
-                            ],
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    if (hasAmazonUrl)
-                      ElevatedButton.icon(
-                        onPressed: () => _handleAction(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber.shade700,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        icon: const Icon(LucideIcons.externalLink, size: 14),
-                        label: Text(
-                          l10n.storeBuyAmazon,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      )
-                    else
-                      ElevatedButton(
-                        onPressed: null,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text(
-                          l10n.storeBuyNow,
-                          style: const TextStyle(fontSize: 12),
-                        ),
                       ),
-                  ],
-                ),
-              ],
-            ),
-          );
+                      const SizedBox(height: 12),
+                      if (hasAmazonUrl)
+                        ElevatedButton.icon(
+                          onPressed: () => _handleAction(context),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber.shade700,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          icon: const Icon(LucideIcons.externalLink, size: 14),
+                          label: Text(
+                            l10n.storeBuyAmazon,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      else
+                        ElevatedButton(
+                          onPressed: null,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            l10n.storeBuyNow,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            );
 
-          if (isHorizontal) {
-            return Row(
-              children: [
-                imageWidget,
-                Expanded(child: detailsWidget),
-              ],
-            );
-          } else {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                imageWidget,
-                Expanded(child: detailsWidget),
-              ],
-            );
-          }
-        },
+            if (isHorizontal) {
+              return Row(
+                children: [
+                  imageWidget,
+                  Expanded(child: detailsWidget),
+                ],
+              );
+            } else {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  imageWidget,
+                  Expanded(child: detailsWidget),
+                ],
+              );
+            }
+          },
+        ),
       ),
     );
   }

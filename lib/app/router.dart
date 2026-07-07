@@ -25,6 +25,7 @@ import '../features/store/domain/product.dart';
 import '../features/store/presentation/store_catalog_screen.dart';
 import '../features/store/presentation/admin_store_screen.dart';
 import '../features/store/presentation/admin_store_form_screen.dart';
+import '../features/store/presentation/product_detail_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/books/presentation/books_screen.dart';
 import '../features/books/presentation/book_detail_screen.dart';
@@ -172,6 +173,27 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/store',
                 name: 'store',
                 builder: (context, state) => const StoreCatalogScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':idOrSlug',
+                    name: 'product_detail',
+                    builder: (context, state) {
+                      final idOrSlug = state.pathParameters['idOrSlug']!;
+                      final extra = state.extra;
+                      final product = extra is Product
+                          ? extra
+                          : (extra is Map
+                                ? Product.fromJson(
+                                    Map<String, dynamic>.from(extra),
+                                  )
+                                : null);
+                      return ProductDetailScreen(
+                        idOrSlug: idOrSlug,
+                        product: product,
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
