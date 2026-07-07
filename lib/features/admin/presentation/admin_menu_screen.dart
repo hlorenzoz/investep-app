@@ -71,6 +71,15 @@ class AdminMenuScreen extends ConsumerWidget {
             route: '/admin/store',
             enabled: true,
           ),
+          const SizedBox(height: 16),
+          _buildMenuCard(
+            context,
+            title: 'Gestión de Libros Recomendados',
+            subtitle: 'Gestionar el catálogo de libros recomendados.',
+            icon: LucideIcons.bookOpen,
+            route: '/admin/books',
+            enabled: true,
+          ),
         ],
         const SizedBox(height: 16),
         _buildMenuCard(

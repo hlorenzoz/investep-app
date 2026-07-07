@@ -473,7 +473,7 @@ abstract class AppLocalizations {
   /// No description provided for @navRelations.
   ///
   /// In es, this message translates to:
-  /// **'Relaciones'**
+  /// **'Activos'**
   String get navRelations;
 
   /// No description provided for @navDashboard.

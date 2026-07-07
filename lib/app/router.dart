@@ -27,6 +27,10 @@ import '../features/store/presentation/admin_store_screen.dart';
 import '../features/store/presentation/admin_store_form_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/books/presentation/books_screen.dart';
+import '../features/books/presentation/book_detail_screen.dart';
+import '../features/books/domain/recommended_book.dart';
+import '../features/books/presentation/admin_books_screen.dart';
+import '../features/books/presentation/admin_book_form_screen.dart';
 import 'main_shell.dart';
 
 /// Decisión de redirección a partir del estado del gate y la ubicación actual.
@@ -79,9 +83,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/setup',
         name: 'setup',
-        builder: (context, state) => BrokerSetupFlow(
-          mode: state.extra as SetupMode? ?? SetupMode.initialSetup,
-        ),
+        builder: (context, state) {
+          final extra = state.extra;
+          final mode = extra is SetupMode ? extra : SetupMode.initialSetup;
+          return BrokerSetupFlow(mode: mode);
+        },
       ),
       // Sub-rutas de detalle fuera del shell para que se abran a pantalla completa
       GoRoute(
@@ -175,6 +181,24 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/books',
                 name: 'books',
                 builder: (context, state) => const BooksScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':idOrSlug',
+                    name: 'book_detail',
+                    builder: (context, state) {
+                      final idOrSlug = state.pathParameters['idOrSlug']!;
+                      final extra = state.extra;
+                      final book = extra is RecommendedBook
+                          ? extra
+                          : (extra is Map
+                                ? RecommendedBook.fromJson(
+                                    Map<String, dynamic>.from(extra),
+                                  )
+                                : null);
+                      return BookDetailScreen(idOrSlug: idOrSlug, book: book);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -276,10 +300,59 @@ final routerProvider = Provider<GoRouter>((ref) {
                           final productId = int.parse(
                             state.pathParameters['id']!,
                           );
-                          final product = state.extra as Product?;
+                          final extra = state.extra;
+                          final product = extra is Product
+                              ? extra
+                              : (extra is Map
+                                    ? Product.fromJson(
+                                        Map<String, dynamic>.from(extra),
+                                      )
+                                    : null);
                           return AdminStoreFormScreen(
                             productId: productId,
                             product: product,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'books',
+                    name: 'admin_books',
+                    builder: (context, state) => const AdminBooksScreen(),
+                    redirect: (context, state) {
+                      final gate = ref.read(authGateProvider);
+                      if (gate is GateAuthenticated) {
+                        final role = gate.user.role;
+                        if (role == 'admin') {
+                          return null;
+                        }
+                      }
+                      return '/admin';
+                    },
+                    routes: [
+                      GoRoute(
+                        path: 'new',
+                        name: 'admin_books_new',
+                        builder: (context, state) =>
+                            const AdminBookFormScreen(),
+                      ),
+                      GoRoute(
+                        path: 'edit/:id',
+                        name: 'admin_books_edit',
+                        builder: (context, state) {
+                          final bookId = int.parse(state.pathParameters['id']!);
+                          final extra = state.extra;
+                          final book = extra is RecommendedBook
+                              ? extra
+                              : (extra is Map
+                                    ? RecommendedBook.fromJson(
+                                        Map<String, dynamic>.from(extra),
+                                      )
+                                    : null);
+                          return AdminBookFormScreen(
+                            bookId: bookId,
+                            book: book,
                           );
                         },
                       ),
