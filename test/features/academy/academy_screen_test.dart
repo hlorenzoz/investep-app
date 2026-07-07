@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:investep_app/core/auth/auth_gate.dart';
+import 'package:investep_app/features/auth/domain/auth_user.dart';
 import 'package:investep_app/features/academy/domain/academy_models.dart';
 import 'package:investep_app/features/academy/presentation/academy_screen.dart';
 import 'package:investep_app/features/academy/presentation/providers/academy_providers.dart';
@@ -35,6 +37,14 @@ class MockUrlLauncher extends UrlLauncherPlatform
   }
 }
 
+class FakeAuthGate extends AuthGate {
+  final AuthGateState initialState;
+  FakeAuthGate(this.initialState);
+
+  @override
+  AuthGateState build() => initialState;
+}
+
 void main() {
   late MockUrlLauncher mockUrlLauncher;
 
@@ -43,12 +53,28 @@ void main() {
     UrlLauncherPlatform.instance = mockUrlLauncher;
   });
 
-  Widget createAcademyScreen() {
-    return const MaterialApp(
-      locale: Locale('es'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: AcademyScreen(),
+  Widget createAcademyScreen({
+    List<AcademyPlan>? dummyPlans,
+    AuthUser? mockUser,
+  }) {
+    return ProviderScope(
+      overrides: [
+        authGateProvider.overrideWith(
+          () => FakeAuthGate(
+            mockUser != null
+                ? GateAuthenticated(mockUser)
+                : const GateNoSession(),
+          ),
+        ),
+        if (dummyPlans != null)
+          academyPlansProvider.overrideWith((ref) => dummyPlans),
+      ],
+      child: const MaterialApp(
+        locale: Locale('es'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: AcademyScreen(),
+      ),
     );
   }
 
@@ -69,12 +95,7 @@ void main() {
         ),
       ];
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [academyPlansProvider.overrideWith((ref) => dummyPlans)],
-          child: createAcademyScreen(),
-        ),
-      );
+      await tester.pumpWidget(createAcademyScreen(dummyPlans: dummyPlans));
 
       await tester.pumpAndSettle();
 
@@ -97,12 +118,7 @@ void main() {
         ),
       ];
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [academyPlansProvider.overrideWith((ref) => dummyPlans)],
-          child: createAcademyScreen(),
-        ),
-      );
+      await tester.pumpWidget(createAcademyScreen(dummyPlans: dummyPlans));
 
       await tester.pumpAndSettle();
 
@@ -147,12 +163,7 @@ void main() {
           ),
         ];
 
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [academyPlansProvider.overrideWith((ref) => dummyPlans)],
-            child: createAcademyScreen(),
-          ),
-        );
+        await tester.pumpWidget(createAcademyScreen(dummyPlans: dummyPlans));
 
         await tester.pumpAndSettle();
 
@@ -196,12 +207,7 @@ void main() {
         ),
       ];
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [academyPlansProvider.overrideWith((ref) => dummyPlans)],
-          child: createAcademyScreen(),
-        ),
-      );
+      await tester.pumpWidget(createAcademyScreen(dummyPlans: dummyPlans));
 
       await tester.pumpAndSettle();
 
@@ -218,5 +224,40 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets(
+      'Caso 3: Si el usuario tiene plan activo, deshabilita el botón y muestra "Tu Plan Actual"',
+      (WidgetTester tester) async {
+        final dummyPlans = [
+          const AcademyPlan(
+            id: 1,
+            slug: 'gold',
+            name: 'Plan Oro',
+            priceRegular: 10000,
+            currency: 'USD',
+            features: [],
+            url: 'https://checkout.stripe.com/pay/gold',
+          ),
+        ];
+
+        final mockUser = AuthUser(
+          id: 'user-123',
+          email: 'gold@hlorenzoz.com',
+          role: 'user',
+          mustResetPassword: false,
+          planSlug: 'gold', // active plan gold
+        );
+
+        await tester.pumpWidget(
+          createAcademyScreen(dummyPlans: dummyPlans, mockUser: mockUser),
+        );
+
+        await tester.pumpAndSettle();
+
+        // El botón de inscribirse debe estar deshabilitado y decir "Tu Plan Actual"
+        expect(find.text('Tu Plan Actual'), findsOneWidget);
+        expect(find.text('Inscribirme Ahora'), findsNothing);
+      },
+    );
   });
 }

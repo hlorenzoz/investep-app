@@ -3,7 +3,7 @@
 /// se pasan al construir/ejecutar y quedan fuera del control de versiones.
 ///
 /// Ejemplo:
-//    flutter run --dart-define=API_BASE_URL=https://api.investepacademy.com \
+///    flutter run --dart-define=API_BASE_URL=https://api.investepacademy.com \
 ///   flutter run --dart-define=API_BASE_URL=https://api-investep.hlorenzoz.com \
 ///               --dart-define=SUPABASE_URL=... \
 ///               --dart-define=SUPABASE_ANON_KEY=...

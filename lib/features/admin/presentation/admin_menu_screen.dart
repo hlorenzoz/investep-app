@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../core/auth/auth_gate.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 
 class AdminMenuScreen extends ConsumerWidget {
   const AdminMenuScreen({super.key});
@@ -37,8 +38,7 @@ class AdminMenuScreen extends ConsumerWidget {
           _buildMenuCard(
             context,
             title: 'Gestión de Usuarios',
-            subtitle:
-                'Visualizar perfiles de usuario, roles y aprovisionar.',
+            subtitle: 'Visualizar perfiles de usuario, roles y aprovisionar.',
             icon: LucideIcons.users2,
             route: '/admin/users',
             enabled: true,
@@ -106,6 +106,7 @@ class AdminMenuScreen extends ConsumerWidget {
               Text('Panel de Administración'),
             ],
           ),
+          actions: buildAppBarActions(context),
         ),
         body: SafeArea(child: bodyContent),
       ),

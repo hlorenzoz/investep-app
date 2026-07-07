@@ -13,6 +13,7 @@ analyzer:
     # Tratamos como ERROR (no warning) lo que rompe convenciones del proyecto.
     invalid_annotation_target: error
     todo: ignore
+    deprecated_member_use: ignore
   exclude:
     - "**/*.g.dart" # código generado (build_runner)
     - "**/*.freezed.dart"

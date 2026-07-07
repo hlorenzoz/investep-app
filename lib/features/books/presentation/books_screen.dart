@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 
 class BooksScreen extends StatelessWidget {
   const BooksScreen({super.key});
@@ -25,6 +26,7 @@ class BooksScreen extends StatelessWidget {
               Text(l10n.navBooks),
             ],
           ),
+          actions: buildAppBarActions(context),
         ),
         body: SafeArea(
           child: Center(

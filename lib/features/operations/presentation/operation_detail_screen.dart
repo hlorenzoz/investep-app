@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../shared/format/money.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 import '../../capital/domain/account_type.dart';
 import '../../capital/domain/allocation.dart';
 import '../../capital/presentation/capital_controller.dart';
@@ -63,16 +64,22 @@ class OperationDetailScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: const Text('Detalle del Trade'),
-          actions: [
-            if (op != null)
-              IconButton(
-                icon: Icon(LucideIcons.pencil, color: glassTheme.textSecondary),
-                tooltip: 'Editar',
-                onPressed: () => context.push(
-                  '/account/$allocationId/operations/$operationId/edit',
+          actions: buildAppBarActions(
+            context,
+            extraActions: [
+              if (op != null)
+                IconButton(
+                  icon: Icon(
+                    LucideIcons.pencil,
+                    color: glassTheme.textSecondary,
+                  ),
+                  tooltip: 'Editar',
+                  onPressed: () => context.push(
+                    '/account/$allocationId/operations/$operationId/edit',
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
         body: SafeArea(child: _buildBody(context, allocation, op, glassTheme)),
       ),

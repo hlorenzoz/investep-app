@@ -7,6 +7,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/favorite_star_button.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 import '../../tickers/domain/ticker.dart';
 import '../../tickers/presentation/favorites_controller.dart';
 import '../domain/relations_overview.dart';
@@ -39,6 +40,7 @@ class RelationsScreen extends ConsumerWidget {
               Text(l10n.relationsTitle),
             ],
           ),
+          actions: buildAppBarActions(context),
         ),
         body: SafeArea(
           child: overviewAsync.when(

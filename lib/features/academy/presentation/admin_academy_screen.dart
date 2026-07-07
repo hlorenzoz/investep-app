@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 import '../domain/academy_models.dart';
 import 'providers/academy_providers.dart';
 
@@ -34,6 +35,7 @@ class AdminAcademyScreen extends ConsumerWidget {
                 Text('Administración de Academia'),
               ],
             ),
+            actions: buildAppBarActions(context),
             bottom: const TabBar(
               tabs: [
                 Tab(text: 'Planes'),

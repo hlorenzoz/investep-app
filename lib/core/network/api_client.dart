@@ -33,11 +33,15 @@ final apiClientProvider = Provider<Dio>((ref) {
 
   String resolvedBaseUrl = AppConfig.apiBaseUrl;
   if (kIsWeb) {
-    final uri = Uri.tryParse(resolvedBaseUrl);
-    if (uri != null &&
-        (uri.host == 'localhost' || uri.host == '127.0.0.1') &&
-        uri.port == 8787) {
-      resolvedBaseUrl = '/api';
+    // Solo usamos el proxy '/api' si la app está siendo servida en el puerto del proxy (8080).
+    // Si se corre localmente con `just web` (puerto dinámico de Chrome), le pegamos directo a la API en el 8787.
+    if (Uri.base.port == 8080) {
+      final uri = Uri.tryParse(resolvedBaseUrl);
+      if (uri != null &&
+          (uri.host == 'localhost' || uri.host == '127.0.0.1') &&
+          uri.port == 8787) {
+        resolvedBaseUrl = '/api';
+      }
     }
   }
 

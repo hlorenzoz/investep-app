@@ -7,8 +7,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../core/config/app_config.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
-import '../../../shared/widgets/language_selector.dart';
-import '../../../shared/widgets/theme_selector.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 import 'last_email_provider.dart';
 import 'login_controller.dart';
 
@@ -76,11 +75,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Text('Investep Auth'),
             ],
           ),
-          actions: const [
-            LanguageSelector(),
-            ThemeSelector(),
-            SizedBox(width: 16),
-          ],
+          actions: buildAppBarActions(context),
         ),
         body: SafeArea(
           child: Center(

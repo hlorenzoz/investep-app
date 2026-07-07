@@ -7,15 +7,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthUser;
 
+import 'package:investep_app/core/auth/auth_gate.dart';
 import 'package:investep_app/core/providers/supabase_provider.dart';
+import 'package:investep_app/features/auth/domain/auth_user.dart';
 import 'package:investep_app/features/settings/presentation/settings_screen.dart';
 import 'package:investep_app/l10n/gen/app_localizations.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}
 
 class MockGoTrueClient extends Mock implements GoTrueClient {}
+
+class FakeAuthGate extends AuthGate {
+  final AuthGateState initialState;
+  FakeAuthGate(this.initialState);
+
+  @override
+  AuthGateState build() => initialState;
+}
 
 void main() {
   late MockSupabaseClient mockSupabase;
@@ -41,13 +51,27 @@ void main() {
           builder: (context, state) =>
               const Scaffold(body: Text('CHANGE_PASSWORD_ROUTE')),
         ),
+        GoRoute(
+          path: '/academy',
+          builder: (context, state) =>
+              const Scaffold(body: Text('ACADEMY_ROUTE')),
+        ),
       ],
     );
   }
 
-  Widget createTestWidget(GoRouter router) {
+  Widget createTestWidget(GoRouter router, {AuthUser? mockUser}) {
     return ProviderScope(
-      overrides: [supabaseClientProvider.overrideWithValue(mockSupabase)],
+      overrides: [
+        supabaseClientProvider.overrideWithValue(mockSupabase),
+        authGateProvider.overrideWith(
+          () => FakeAuthGate(
+            mockUser != null
+                ? GateAuthenticated(mockUser)
+                : const GateNoSession(),
+          ),
+        ),
+      ],
       child: MaterialApp.router(
         locale: const Locale('es'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -57,13 +81,17 @@ void main() {
     );
   }
 
-  testWidgets('debe renderizar todos los elementos de la interfaz en español', (
-    tester,
-  ) async {
+  void setupViewport(WidgetTester tester) {
     tester.view.physicalSize = const Size(800, 1200);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
+  }
+
+  testWidgets('debe renderizar todos los elementos de la interfaz en español', (
+    tester,
+  ) async {
+    setupViewport(tester);
 
     final router = createRouter();
     await tester.pumpWidget(createTestWidget(router));
@@ -86,6 +114,8 @@ void main() {
   testWidgets(
     'al presionar Cambiar contraseña debe navegar a /change-password',
     (tester) async {
+      setupViewport(tester);
+
       final router = createRouter();
       await tester.pumpWidget(createTestWidget(router));
       await tester.pumpAndSettle();
@@ -102,10 +132,7 @@ void main() {
   testWidgets(
     'al presionar cerrar sesión debe mostrar el diálogo y llamar a signOut en confirmación',
     (tester) async {
-      tester.view.physicalSize = const Size(800, 1200);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
+      setupViewport(tester);
 
       final router = createRouter();
       await tester.pumpWidget(createTestWidget(router));
@@ -113,6 +140,7 @@ void main() {
 
       // Presionar el botón de cerrar sesión
       final signOutBtn = find.text('Cerrar sesión');
+      await tester.scrollUntilVisible(signOutBtn, 100.0);
       await tester.tap(signOutBtn);
       await tester.pumpAndSettle();
 
@@ -133,16 +161,14 @@ void main() {
   testWidgets(
     'al presionar cancelar en el diálogo de cerrar sesión no debe llamar a signOut',
     (tester) async {
-      tester.view.physicalSize = const Size(800, 1200);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
+      setupViewport(tester);
 
       final router = createRouter();
       await tester.pumpWidget(createTestWidget(router));
       await tester.pumpAndSettle();
 
       final signOutBtn = find.text('Cerrar sesión');
+      await tester.scrollUntilVisible(signOutBtn, 100.0);
       await tester.tap(signOutBtn);
       await tester.pumpAndSettle();
 
@@ -154,4 +180,98 @@ void main() {
       verifyNever(() => mockAuth.signOut());
     },
   );
+
+  group('Sección Plan de la Academia', () {
+    testWidgets(
+      'debe mostrar "Sin plan activo" y botón "Ver Planes" si el usuario no tiene plan',
+      (tester) async {
+        setupViewport(tester);
+
+        final mockUser = AuthUser(
+          id: 'user-1',
+          email: 'test@example.com',
+          role: 'user',
+          mustResetPassword: false,
+          planSlug: null,
+        );
+
+        final router = createRouter();
+        await tester.pumpWidget(createTestWidget(router, mockUser: mockUser));
+        await tester.pumpAndSettle();
+
+        expect(find.text('PLAN DE LA ACADEMIA'), findsOneWidget);
+        expect(find.text('Sin plan activo'), findsOneWidget);
+        expect(find.text('Ver Planes'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'debe mostrar "Plan Oro" y botón "Actualizar Plan" si el usuario tiene plan gold',
+      (tester) async {
+        setupViewport(tester);
+
+        final mockUser = AuthUser(
+          id: 'user-1',
+          email: 'test@example.com',
+          role: 'user',
+          mustResetPassword: false,
+          planSlug: 'gold',
+        );
+
+        final router = createRouter();
+        await tester.pumpWidget(createTestWidget(router, mockUser: mockUser));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Plan Oro'), findsOneWidget);
+        expect(find.text('Actualizar Plan'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'debe mostrar "Administrador (Todos los planes)" y botón "Actualizar Plan" si el usuario es admin',
+      (tester) async {
+        setupViewport(tester);
+
+        final mockUser = AuthUser(
+          id: 'user-admin',
+          email: 'admin@example.com',
+          role: 'admin',
+          mustResetPassword: false,
+          planSlug: null,
+        );
+
+        final router = createRouter();
+        await tester.pumpWidget(createTestWidget(router, mockUser: mockUser));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Administrador (Todos los planes)'), findsOneWidget);
+        expect(find.text('Actualizar Plan'), findsOneWidget);
+      },
+    );
+
+    testWidgets('al presionar el botón de plan debe navegar a /academy', (
+      tester,
+    ) async {
+      setupViewport(tester);
+
+      final mockUser = AuthUser(
+        id: 'user-1',
+        email: 'test@example.com',
+        role: 'user',
+        mustResetPassword: false,
+        planSlug: 'silver',
+      );
+
+      final router = createRouter();
+      await tester.pumpWidget(createTestWidget(router, mockUser: mockUser));
+      await tester.pumpAndSettle();
+
+      final btn = find.text('Actualizar Plan');
+      await tester.scrollUntilVisible(btn, 100.0);
+      await tester.tap(btn);
+      await tester.pumpAndSettle();
+
+      expect(find.text('ACADEMY_ROUTE'), findsOneWidget);
+    });
+  });
 }

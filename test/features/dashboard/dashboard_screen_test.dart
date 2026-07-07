@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:investep_app/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:investep_app/l10n/gen/app_localizations.dart';
 
-Widget _app() => const MaterialApp(
-  locale: Locale('es'),
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
-  supportedLocales: AppLocalizations.supportedLocales,
-  home: DashboardScreen(),
+Widget _app() => const ProviderScope(
+  child: MaterialApp(
+    locale: Locale('es'),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    home: DashboardScreen(),
+  ),
 );
 
 void main() {

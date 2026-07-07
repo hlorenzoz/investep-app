@@ -7,7 +7,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/format/money.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
-import '../../../shared/widgets/theme_selector.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 import '../../capital/domain/account_type.dart';
 import '../../capital/domain/allocation.dart';
 import '../../capital/domain/capital_overview.dart';
@@ -45,7 +45,7 @@ class PortfolioScreen extends ConsumerWidget {
               Text(l10n.dashboardTitle),
             ],
           ),
-          actions: const [ThemeSelector(), SizedBox(width: 16)],
+          actions: buildAppBarActions(context),
         ),
         floatingActionButton: showFab
             ? FloatingActionButton.extended(

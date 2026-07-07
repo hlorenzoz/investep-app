@@ -11,15 +11,15 @@ deps:
 
 # Ejecuta en el dispositivo/target por defecto.
 run:
-    flutter run
+    flutter run --dart-define-from-file=config/devel.json
 
 # Ejecuta la versión web (la app, no el sitio público).
 web:
-    flutter run -d chrome
+    flutter run -d chrome --dart-define-from-file=config/devel.json
 
 # Ejecuta en escritorio (override: just desktop windows | linux).
 desktop target="macos":
-    flutter run -d {{target}}
+    flutter run -d {{target}} --dart-define-from-file=config/devel.json
 
 # Corre los tests (unit + widget + integration).
 test:

@@ -7,8 +7,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
-import '../../../shared/widgets/language_selector.dart';
-import '../../../shared/widgets/theme_selector.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 import '../domain/password_policy.dart';
 import 'change_password_controller.dart';
 import 'login_controller.dart';
@@ -85,11 +84,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
               Text('Cambiar contraseña'),
             ],
           ),
-          actions: const [
-            LanguageSelector(),
-            ThemeSelector(),
-            SizedBox(width: 16),
-          ],
+          actions: buildAppBarActions(context),
         ),
         body: SafeArea(
           child: Center(

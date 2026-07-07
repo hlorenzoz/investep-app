@@ -28,8 +28,9 @@ class OperationsRepository {
     return retryWithBackoff(
       () async {
         final queryParameters = <String, dynamic>{};
-        if (allocationId != null)
+        if (allocationId != null) {
           queryParameters['allocationId'] = allocationId;
+        }
         if (status != null) queryParameters['status'] = status;
 
         final res = await _dio.get<Map<String, dynamic>>(

@@ -7,6 +7,8 @@ import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
+import '../../../core/auth/auth_gate.dart';
 import '../domain/academy_models.dart';
 import 'providers/academy_providers.dart';
 
@@ -18,6 +20,11 @@ class AcademyScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final glassTheme = context.glass;
     final plansAsync = ref.watch(academyPlansProvider);
+    final gate = ref.watch(authGateProvider);
+    final user = gate is GateAuthenticated ? gate.user : null;
+    final userPlanSlug = (user?.role == 'admin' || user?.role == 'manager')
+        ? null
+        : user?.planSlug;
 
     return Container(
       decoration: BoxDecoration(gradient: glassTheme.backgroundGradient),
@@ -32,6 +39,7 @@ class AcademyScreen extends ConsumerWidget {
               Text(l10n.navAcademy),
             ],
           ),
+          actions: buildAppBarActions(context),
         ),
         body: SafeArea(
           child: plansAsync.when(
@@ -63,7 +71,8 @@ class AcademyScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            data: (plans) => _AcademyContent(plans: plans),
+            data: (plans) =>
+                _AcademyContent(plans: plans, userPlanSlug: userPlanSlug),
           ),
         ),
       ),
@@ -72,9 +81,10 @@ class AcademyScreen extends ConsumerWidget {
 }
 
 class _AcademyContent extends StatelessWidget {
-  const _AcademyContent({required this.plans});
+  const _AcademyContent({required this.plans, this.userPlanSlug});
 
   final List<AcademyPlan> plans;
+  final String? userPlanSlug;
 
   @override
   Widget build(BuildContext context) {
@@ -93,9 +103,15 @@ class _AcademyContent extends StatelessWidget {
           LayoutBuilder(
             builder: (context, constraints) {
               if (constraints.maxWidth >= 900) {
-                return _DesktopPlanGrid(plans: plans);
+                return _DesktopPlanGrid(
+                  plans: plans,
+                  userPlanSlug: userPlanSlug,
+                );
               } else {
-                return _MobilePlanList(plans: plans);
+                return _MobilePlanList(
+                  plans: plans,
+                  userPlanSlug: userPlanSlug,
+                );
               }
             },
           ),
@@ -215,9 +231,10 @@ class _PromotionalHeader extends StatelessWidget {
 }
 
 class _DesktopPlanGrid extends StatelessWidget {
-  const _DesktopPlanGrid({required this.plans});
+  const _DesktopPlanGrid({required this.plans, this.userPlanSlug});
 
   final List<AcademyPlan> plans;
+  final String? userPlanSlug;
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +244,7 @@ class _DesktopPlanGrid extends StatelessWidget {
         return Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: _PlanCard(plan: plan),
+            child: _PlanCard(plan: plan, userPlanSlug: userPlanSlug),
           ),
         );
       }).toList(),
@@ -236,9 +253,10 @@ class _DesktopPlanGrid extends StatelessWidget {
 }
 
 class _MobilePlanList extends StatelessWidget {
-  const _MobilePlanList({required this.plans});
+  const _MobilePlanList({required this.plans, this.userPlanSlug});
 
   final List<AcademyPlan> plans;
+  final String? userPlanSlug;
 
   @override
   Widget build(BuildContext context) {
@@ -246,7 +264,7 @@ class _MobilePlanList extends StatelessWidget {
       children: plans.map((plan) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 20),
-          child: _PlanCard(plan: plan),
+          child: _PlanCard(plan: plan, userPlanSlug: userPlanSlug),
         );
       }).toList(),
     );
@@ -254,9 +272,10 @@ class _MobilePlanList extends StatelessWidget {
 }
 
 class _PlanCard extends StatelessWidget {
-  const _PlanCard({required this.plan});
+  const _PlanCard({required this.plan, this.userPlanSlug});
 
   final AcademyPlan plan;
+  final String? userPlanSlug;
 
   Color _getBadgeColor() {
     switch (plan.slug.toLowerCase()) {
@@ -283,6 +302,8 @@ class _PlanCard extends StatelessWidget {
     final badgeColor = _getBadgeColor();
     final isPopular =
         plan.slug.toLowerCase() == 'gold' || plan.slug.toLowerCase() == 'oro';
+
+    final activeSlug = userPlanSlug;
 
     return GlassCard(
       padding: const EdgeInsets.all(20),
@@ -422,7 +443,13 @@ class _PlanCard extends StatelessWidget {
           ),
 
           const SizedBox(height: 16),
-          _SubscribeButton(plan: plan, isPopular: isPopular),
+          _SubscribeButton(
+            plan: plan,
+            isPopular: isPopular,
+            isCurrentPlan:
+                activeSlug != null &&
+                plan.slug.toLowerCase() == activeSlug.toLowerCase(),
+          ),
         ],
       ),
     );
@@ -430,10 +457,15 @@ class _PlanCard extends StatelessWidget {
 }
 
 class _SubscribeButton extends StatefulWidget {
-  const _SubscribeButton({required this.plan, required this.isPopular});
+  const _SubscribeButton({
+    required this.plan,
+    required this.isPopular,
+    required this.isCurrentPlan,
+  });
 
   final AcademyPlan plan;
   final bool isPopular;
+  final bool isCurrentPlan;
 
   @override
   State<_SubscribeButton> createState() => _SubscribeButtonState();
@@ -530,6 +562,23 @@ class _SubscribeButtonState extends State<_SubscribeButton> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.isCurrentPlan) {
+      return ElevatedButton(
+        onPressed: null,
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          backgroundColor: Colors.transparent,
+          disabledBackgroundColor: context.glass.glassFill.withOpacity(0.08),
+          disabledForegroundColor: context.glass.textSecondary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: context.glass.glassBorder, width: 0.5),
+          ),
+        ),
+        child: const Text('Tu Plan Actual'),
+      );
+    }
+
     return ElevatedButton(
       onPressed: _isLoading ? null : _handleSubscription,
       style: ElevatedButton.styleFrom(

@@ -62,6 +62,33 @@ class MainShell extends ConsumerWidget {
 
     // No bottomRailSelectedIndex/onBottomRailSelected needed, handled directly via _RailButton below.
 
+    int? railSelectedIndex() {
+      final currentBranch = navigationShell.currentIndex;
+      return switch (currentBranch) {
+        0 => 0,
+        1 => 1,
+        3 => 2,
+        4 => 3,
+        5 => 4,
+        _ => null,
+      };
+    }
+
+    void onRailDestinationSelected(int uiIndex) {
+      final targetBranch = switch (uiIndex) {
+        0 => 0,
+        1 => 1,
+        2 => 3,
+        3 => 4,
+        4 => 5,
+        _ => 0,
+      };
+      navigationShell.goBranch(
+        targetBranch,
+        initialLocation: targetBranch == navigationShell.currentIndex,
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(gradient: glassTheme.backgroundGradient),
       child: LayoutBuilder(
@@ -124,16 +151,8 @@ class MainShell extends ConsumerWidget {
                         const SizedBox(height: 20),
                         Expanded(
                           child: NavigationRail(
-                            selectedIndex: navigationShell.currentIndex < 6
-                                ? navigationShell.currentIndex
-                                : null,
-                            onDestinationSelected: (idx) {
-                              navigationShell.goBranch(
-                                idx,
-                                initialLocation:
-                                    idx == navigationShell.currentIndex,
-                              );
-                            },
+                            selectedIndex: railSelectedIndex(),
+                            onDestinationSelected: onRailDestinationSelected,
                             labelType: NavigationRailLabelType.all,
                             destinations: [
                               NavigationRailDestination(
@@ -143,10 +162,6 @@ class MainShell extends ConsumerWidget {
                               NavigationRailDestination(
                                 icon: const Icon(LucideIcons.chartCandlestick),
                                 label: Text(l10n.navPortfolio),
-                              ),
-                              NavigationRailDestination(
-                                icon: const Icon(LucideIcons.graduationCap),
-                                label: Text(l10n.navAcademy),
                               ),
                               NavigationRailDestination(
                                 icon: const Icon(LucideIcons.waypoints),
@@ -330,9 +345,9 @@ class _RailButton extends StatelessWidget {
     final glassTheme = context.glass;
     final color = isSelected
         ? (theme.navigationRailTheme.selectedIconTheme?.color ??
-            theme.colorScheme.primary)
+              theme.colorScheme.primary)
         : (theme.navigationRailTheme.unselectedIconTheme?.color ??
-            glassTheme.textSecondary);
+              glassTheme.textSecondary);
 
     return InkWell(
       onTap: onTap,
@@ -417,18 +432,6 @@ void _showMobileMenu(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _MobileMenuItem(
-                        icon: LucideIcons.graduationCap,
-                        label: l10n.navAcademy,
-                        isSelected: currentBranch == 2,
-                        onTap: () {
-                          Navigator.of(ctx).pop();
-                          navigationShell.goBranch(
-                            2,
-                            initialLocation: 2 == currentBranch,
-                          );
-                        },
-                      ),
                       _MobileMenuItem(
                         icon: LucideIcons.waypoints,
                         label: l10n.navRelations,
@@ -536,16 +539,20 @@ class _MobileMenuItem extends StatelessWidget {
     final color = isNegative
         ? glassTheme.negative
         : (isSelected
-            ? (theme.navigationBarTheme.iconTheme?.resolve({WidgetState.selected})?.color ??
-                theme.colorScheme.primary)
-            : glassTheme.textSecondary);
+              ? (theme.navigationBarTheme.iconTheme?.resolve({
+                      WidgetState.selected,
+                    })?.color ??
+                    theme.colorScheme.primary)
+              : glassTheme.textSecondary);
 
     final textColor = isNegative
         ? glassTheme.negative
         : (isSelected
-            ? (theme.navigationBarTheme.iconTheme?.resolve({WidgetState.selected})?.color ??
-                theme.colorScheme.primary)
-            : glassTheme.textPrimary);
+              ? (theme.navigationBarTheme.iconTheme?.resolve({
+                      WidgetState.selected,
+                    })?.color ??
+                    theme.colorScheme.primary)
+              : glassTheme.textPrimary);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
@@ -572,7 +579,9 @@ class _MobileMenuItem extends StatelessWidget {
                     style: TextStyle(
                       color: textColor,
                       fontSize: 14,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w500,
                     ),
                   ),
                 ),

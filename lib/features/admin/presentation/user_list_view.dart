@@ -8,6 +8,7 @@ import '../../../shared/widgets/glass/glass_card.dart';
 import '../domain/user_admin.dart';
 import 'providers/admin_users_provider.dart';
 import 'widgets/user_form_dialog.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 
 /// Pantalla administrativa para la gestión de usuarios (CRUD).
 ///
@@ -33,6 +34,7 @@ class UserListView extends ConsumerWidget {
             Text('Gestión de Usuarios'),
           ],
         ),
+        actions: buildAppBarActions(context),
       ),
       body: SafeArea(
         child: usersAsync.when(

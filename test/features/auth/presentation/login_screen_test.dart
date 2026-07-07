@@ -53,13 +53,38 @@ void main() {
   }
 
   testWidgets(
-    'LoginScreen renderiza el selector de tema e idioma en el AppBar',
+    'LoginScreen renderiza el selector de tema e idioma en el AppBar en desktop',
     (tester) async {
+      tester.view.physicalSize = const Size(800, 600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       expect(find.byType(ThemeSelector), findsOneWidget);
       expect(find.byType(LanguageSelector), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'LoginScreen no renderiza el selector de tema e idioma en el AppBar en móvil',
+    (tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ThemeSelector), findsNothing);
+      expect(find.byType(LanguageSelector), findsNothing);
     },
   );
 

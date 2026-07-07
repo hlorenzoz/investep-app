@@ -3,12 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../app/theme/theme_provider.dart';
+import '../../../core/auth/auth_gate.dart';
 import '../../../core/l10n/locale_provider.dart';
 import '../../../core/providers/supabase_provider.dart';
+import '../../../features/auth/domain/auth_user.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 
 /// Pantalla de Configuración de Usuario.
 ///
@@ -16,6 +20,43 @@ import '../../../shared/widgets/glass/glass_card.dart';
 /// y realizar acciones de cuenta de forma segura (cambio de contraseña y logout).
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
+
+  String _getPlanDisplayName(AuthUser? user) {
+    if (user == null) return 'Cargando...';
+    if (user.role == 'admin' || user.role == 'manager') {
+      return 'Administrador (Todos los planes)';
+    }
+    final slug = user.planSlug;
+    if (slug == null) return 'Sin plan activo';
+    switch (slug.toLowerCase()) {
+      case 'bronze':
+        return 'Plan Bronce';
+      case 'silver':
+        return 'Plan Plata';
+      case 'gold':
+        return 'Plan Oro';
+      case 'platinum':
+        return 'Plan Platino';
+      default:
+        return 'Plan ${slug[0].toUpperCase()}${slug.substring(1)}';
+    }
+  }
+
+  Color _getPlanColor(String? slug) {
+    if (slug == null) return Colors.grey;
+    switch (slug.toLowerCase()) {
+      case 'bronze':
+        return const Color(0xFFCD7F32);
+      case 'silver':
+        return const Color(0xFFC0C0C0);
+      case 'gold':
+        return const Color(0xFFFFD700);
+      case 'platinum':
+        return const Color(0xFFE5E4E2);
+      default:
+        return AppColors.accent;
+    }
+  }
 
   void _showSignOutDialog(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
@@ -91,6 +132,8 @@ class SettingsScreen extends ConsumerWidget {
     final glassTheme = context.glass;
     final themeMode = ref.watch(themeModeProvider);
     final locale = ref.watch(localeProvider);
+    final gate = ref.watch(authGateProvider);
+    final user = gate is GateAuthenticated ? gate.user : null;
 
     return Container(
       decoration: BoxDecoration(gradient: glassTheme.backgroundGradient),
@@ -105,6 +148,7 @@ class SettingsScreen extends ConsumerWidget {
               Text(l10n.navSettings),
             ],
           ),
+          actions: buildAppBarActions(context),
         ),
         body: SafeArea(
           child: Center(
@@ -221,7 +265,57 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 28),
 
-
+                  // --- SECCIÓN PLAN ---
+                  const _SectionHeader(title: 'Plan de la Academia'),
+                  const SizedBox(height: 10),
+                  GlassCard(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              LucideIcons.award,
+                              size: 20,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Tu Plan Actual',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: glassTheme.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          _getPlanDisplayName(user),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: _getPlanColor(user?.planSlug),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed: () => context.go('/academy'),
+                          icon: const Icon(LucideIcons.graduationCap, size: 18),
+                          label: Text(
+                            user?.planSlug == null &&
+                                    user?.role != 'admin' &&
+                                    user?.role != 'manager'
+                                ? 'Ver Planes'
+                                : 'Actualizar Plan',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 28),
 
                   // --- SECCIÓN CUENTA ---
                   _SectionHeader(title: l10n.settingsAccount),

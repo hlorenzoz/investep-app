@@ -25,6 +25,7 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
   final _passwordController = TextEditingController();
 
   String _selectedRole = 'user';
+  String? _selectedPlanSlug;
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -38,6 +39,7 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
       _emailController.text = user.email;
       _fullNameController.text = user.fullName;
       _selectedRole = user.role.toLowerCase();
+      _selectedPlanSlug = user.planSlug;
     }
   }
 
@@ -61,6 +63,7 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
       'email': _emailController.text.trim(),
       'fullName': _fullNameController.text.trim(),
       'role': _selectedRole,
+      'planSlug': _selectedPlanSlug,
     };
 
     if (_passwordController.text.isNotEmpty) {
@@ -216,6 +219,40 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
                               _selectedRole = val;
                             });
                           }
+                        },
+                ),
+                const SizedBox(height: 16),
+                // Plan de la Academia
+                DropdownButtonFormField<String?>(
+                  value: _selectedPlanSlug,
+                  decoration: const InputDecoration(
+                    labelText: 'Plan de la Academia',
+                    prefixIcon: Icon(LucideIcons.award, size: 20),
+                  ),
+                  dropdownColor: Theme.of(context).colorScheme.surface,
+                  style: TextStyle(color: glassTheme.textPrimary),
+                  items: const [
+                    DropdownMenuItem(value: null, child: Text('Sin Plan')),
+                    DropdownMenuItem(
+                      value: 'bronze',
+                      child: Text('Paquete Bronce'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'silver',
+                      child: Text('Paquete Silver'),
+                    ),
+                    DropdownMenuItem(value: 'gold', child: Text('Paquete Oro')),
+                    DropdownMenuItem(
+                      value: 'platinum',
+                      child: Text('Paquete Platino'),
+                    ),
+                  ],
+                  onChanged: _isLoading
+                      ? null
+                      : (val) {
+                          setState(() {
+                            _selectedPlanSlug = val;
+                          });
                         },
                 ),
                 const SizedBox(height: 16),

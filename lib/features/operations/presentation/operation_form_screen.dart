@@ -10,6 +10,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../core/auth/auth_gate.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 import '../../capital/domain/account_type.dart';
 import '../../capital/domain/allocation.dart';
 import '../../capital/presentation/capital_controller.dart';
@@ -197,14 +198,20 @@ class _OperationFormScreenState extends ConsumerState<OperationFormScreen> {
                 ? l10n.operationEditTitle
                 : l10n.operationNewTitle,
           ),
-          actions: [
-            if (widget.operationId != null)
-              IconButton(
-                icon: const Icon(LucideIcons.trash2, color: AppColors.negative),
-                tooltip: l10n.operationDelete,
-                onPressed: () => _confirmDelete(context),
-              ),
-          ],
+          actions: buildAppBarActions(
+            context,
+            extraActions: [
+              if (widget.operationId != null)
+                IconButton(
+                  icon: const Icon(
+                    LucideIcons.trash2,
+                    color: AppColors.negative,
+                  ),
+                  tooltip: l10n.operationDelete,
+                  onPressed: () => _confirmDelete(context),
+                ),
+            ],
+          ),
         ),
         body: SafeArea(
           child: Center(

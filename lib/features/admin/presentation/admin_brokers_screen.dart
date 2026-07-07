@@ -6,6 +6,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 import '../../brokers/data/broker_repository.dart';
 import '../../brokers/domain/broker.dart';
 import '../../brokers/presentation/broker_logo.dart';
@@ -39,6 +40,7 @@ class AdminBrokersScreen extends ConsumerWidget {
             ),
           ],
         ),
+        actions: buildAppBarActions(context),
       ),
       body: SafeArea(
         child: brokersAsync.when(

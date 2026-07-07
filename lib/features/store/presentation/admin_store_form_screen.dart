@@ -8,6 +8,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../domain/product.dart';
 import 'store_providers.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 
 class AdminStoreFormScreen extends ConsumerStatefulWidget {
   const AdminStoreFormScreen({super.key, this.productId, this.product});
@@ -531,6 +532,7 @@ class _AdminStoreFormScreenState extends ConsumerState<AdminStoreFormScreen> {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Text(isEdit ? 'Editar Producto' : 'Crear Producto'),
+          actions: buildAppBarActions(context),
         ),
         body: SafeArea(child: formContent),
       ),

@@ -7,6 +7,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 import '../../academy/presentation/providers/academy_providers.dart';
 import '../../tickers/data/ticker_repository.dart';
 import '../../tickers/domain/ticker.dart';
@@ -53,6 +54,7 @@ class AdminTickersScreen extends ConsumerWidget {
             ),
           ],
         ),
+        actions: buildAppBarActions(context),
       ),
       body: SafeArea(
         child: Column(
@@ -1116,7 +1118,7 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
             Expanded(
               child: DropdownButtonFormField<String>(
                 isExpanded: true,
-                value: _selectedAssetClass,
+                initialValue: _selectedAssetClass,
                 decoration: InputDecoration(
                   labelText: 'Clase de Activo',
                   labelStyle: TextStyle(color: glassTheme.textSecondary),
@@ -1645,7 +1647,7 @@ class _TickerFormDialogState extends ConsumerState<_TickerFormDialog> {
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           isExpanded: true,
-                          value: _selectedRelationType,
+                          initialValue: _selectedRelationType,
                           decoration: InputDecoration(
                             labelText: 'Tipo Relación',
                             labelStyle: TextStyle(

@@ -7,6 +7,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 import '../domain/product.dart';
 import 'store_providers.dart';
 
@@ -89,13 +90,16 @@ class AdminStoreScreen extends ConsumerWidget {
               Text(l10n.storeAdminTitle),
             ],
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(LucideIcons.plus),
-              onPressed: () => context.push('/admin/store/new'),
-              tooltip: 'Crear Producto',
-            ),
-          ],
+          actions: buildAppBarActions(
+            context,
+            extraActions: [
+              IconButton(
+                icon: const Icon(LucideIcons.plus),
+                onPressed: () => context.push('/admin/store/new'),
+                tooltip: 'Crear Producto',
+              ),
+            ],
+          ),
         ),
         body: SafeArea(child: bodyContent),
       ),

@@ -5,6 +5,7 @@ class UserAdmin {
   final String fullName;
   final DateTime createdAt;
   final bool mustResetPassword;
+  final String? planSlug;
 
   UserAdmin({
     required this.id,
@@ -13,6 +14,7 @@ class UserAdmin {
     required this.fullName,
     required this.createdAt,
     required this.mustResetPassword,
+    this.planSlug,
   });
 
   /// Construye una instancia a partir del JSON retornado por la API de admin.
@@ -24,6 +26,7 @@ class UserAdmin {
       fullName: json['fullName'] as String? ?? '',
       createdAt: DateTime.parse(json['createdAt'] as String),
       mustResetPassword: json['mustResetPassword'] as bool? ?? false,
+      planSlug: json['planSlug'] as String?,
     );
   }
 
@@ -35,6 +38,7 @@ class UserAdmin {
       'fullName': fullName,
       'createdAt': createdAt.toIso8601String(),
       'mustResetPassword': mustResetPassword,
+      'planSlug': planSlug,
     };
   }
 }

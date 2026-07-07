@@ -8,6 +8,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/forms/deposit_field.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
+import '../../../shared/widgets/app_bar_actions.dart';
 import '../../capital/domain/account_type.dart';
 import '../../capital/domain/allocation.dart';
 import '../../capital/presentation/capital_controller.dart';
@@ -39,18 +40,21 @@ class EditAllocationScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Text(l10n.editAccount),
-          actions: [
-            IconButton(
-              icon: const Icon(LucideIcons.trash2, color: AppColors.negative),
-              tooltip: l10n.deleteAccount,
-              onPressed: () {
-                final notifier = ref.read(
-                  editAllocationControllerProvider(allocationId).notifier,
-                );
-                _showDeleteDialog(context, notifier);
-              },
-            ),
-          ],
+          actions: buildAppBarActions(
+            context,
+            extraActions: [
+              IconButton(
+                icon: const Icon(LucideIcons.trash2, color: AppColors.negative),
+                tooltip: l10n.deleteAccount,
+                onPressed: () {
+                  final notifier = ref.read(
+                    editAllocationControllerProvider(allocationId).notifier,
+                  );
+                  _showDeleteDialog(context, notifier);
+                },
+              ),
+            ],
+          ),
         ),
         body: SafeArea(
           child: Center(
