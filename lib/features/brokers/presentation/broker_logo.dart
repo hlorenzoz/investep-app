@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../app/theme/app_colors.dart';
+import '../../../core/config/app_config.dart';
 import '../domain/broker.dart';
 
 /// Logo de un broker. Los assets pueden ser URL http(s) o un `data:` URI
@@ -40,16 +42,39 @@ class _BrokerLogoState extends State<BrokerLogo> {
     }
   }
 
+  String _resolveImageUrl(String path) {
+    if (path.isEmpty) return '';
+    if (path.startsWith('http://') ||
+        path.startsWith('https://') ||
+        path.startsWith('data:')) {
+      return path;
+    }
+
+    if (kIsWeb && AppConfig.r2AssetsBaseUrl.isEmpty) {
+      return 'assets/images/$path';
+    }
+
+    final baseUrl = AppConfig.r2AssetsBaseUrl.isEmpty
+        ? 'https://assets.investepacademy.com'
+        : AppConfig.r2AssetsBaseUrl;
+    return '$baseUrl/$path';
+  }
+
   void _initSources() {
+    final List<String> rawSources = [
+      widget.broker.favicon,
+      widget.broker.icon,
+      widget.broker.logo,
+    ].whereType<String>().where((s) => s.isNotEmpty).toList();
+
+    _sources = rawSources
+        .map(_resolveImageUrl)
+        .where((s) => s.isNotEmpty)
+        .toList();
+
     final localSvg = _getLocalSvg(widget.broker.slug);
     if (localSvg != null) {
-      _sources = [localSvg];
-    } else {
-      _sources = [
-        widget.broker.logo,
-        widget.broker.icon,
-        widget.broker.favicon,
-      ].whereType<String>().where((s) => s.isNotEmpty).toList();
+      _sources.add(localSvg);
     }
     _currentIndex = 0;
   }

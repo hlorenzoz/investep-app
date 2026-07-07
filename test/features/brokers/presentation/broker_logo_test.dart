@@ -87,4 +87,62 @@ void main() {
       expect(find.byType(SvgPicture), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'prioriza el favicon remoto de la API y lo resuelve a URL absoluta',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const BrokerLogo(
+            broker: Broker(
+              id: 1,
+              slug: 'x',
+              name: 'X',
+              logo: 'brokers/logo.png',
+              icon: 'brokers/icon.png',
+              favicon: 'brokers/favicon.png',
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(Image), findsOneWidget);
+      final imageWidget = tester.widget<Image>(find.byType(Image));
+      final networkImage = imageWidget.image as NetworkImage;
+      expect(
+        networkImage.url,
+        'https://assets.investepacademy.com/brokers/favicon.png',
+      );
+    },
+  );
+
+  testWidgets('cae a localSvg si las fuentes remotas fallan al cargar', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const BrokerLogo(
+          broker: Broker(
+            id: 1,
+            slug: 'ibkr',
+            name: 'Interactive Brokers',
+            favicon: 'brokers/broken-favicon.png',
+          ),
+        ),
+      ),
+    );
+
+    // Primer frame: intenta cargar el favicon remoto (.png), se renderiza Image
+    expect(find.byType(Image), findsOneWidget);
+    expect(find.byType(SvgPicture), findsNothing);
+
+    // Disparar el frame asíncrono para que se ejecute el errorBuilder y _onError
+    await tester.pump();
+    await tester
+        .pump(); // Procesar addPostFrameCallback y setState del fallback
+
+    // Tras la falla, debe avanzar al localSvg y renderizar SvgPicture
+    expect(find.byType(SvgPicture), findsOneWidget);
+    expect(find.byType(Image), findsNothing);
+  });
 }
