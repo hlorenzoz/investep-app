@@ -12,7 +12,7 @@ class AccountDetailState {
   const AccountDetailState({
     this.grouping = CompoundInterestGrouping.monthly,
     this.drillDownDate,
-    this.activeTab = 1,
+    this.activeTab = 0,
   });
 
   AccountDetailState copyWith({

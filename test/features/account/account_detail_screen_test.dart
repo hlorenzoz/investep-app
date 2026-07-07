@@ -128,10 +128,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('ibkr'), findsOneWidget); // título del AppBar (vivo)
 
-    // Por defecto se abre la pestaña "Plan". Hacemos tap en "Registros" para ver el listado
-    await tester.tap(find.text('Registros'));
-    await tester.pumpAndSettle();
+    // Por defecto se abre la pestaña "Registros". Verificamos que se muestre el listado
     expect(find.text('Registro de Trades'), findsOneWidget);
+
+    // Hacemos tap en "Plan" para ver la proyección
+    await tester.tap(find.text('Plan'));
+    await tester.pumpAndSettle();
+    expect(find.text('Registro de Trades'), findsNothing);
 
     await tester.tap(find.byTooltip('Editar cuenta'));
     await tester.pumpAndSettle();
