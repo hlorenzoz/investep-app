@@ -190,6 +190,10 @@ class _UserCard extends ConsumerWidget {
                 Row(
                   children: [
                     _buildRoleTag(context, user.role),
+                    if (user.planSlug != null) ...[
+                      const SizedBox(width: 8),
+                      _buildPlanTag(context, user.planSlug!),
+                    ],
                     if (user.mustResetPassword) ...[
                       const SizedBox(width: 8),
                       _buildResetBadge(),
@@ -283,6 +287,58 @@ class _UserCard extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPlanTag(BuildContext context, String planSlug) {
+    final Color bgColor;
+    final Color textColor;
+    final String label;
+
+    switch (planSlug.toLowerCase()) {
+      case 'bronze':
+        bgColor = const Color(0xFFCD7F32).withValues(alpha: 0.15);
+        textColor = const Color(0xFFCD7F32);
+        label = 'Bronze';
+        break;
+      case 'silver':
+        bgColor = const Color(0xFFC0C0C0).withValues(alpha: 0.15);
+        textColor = const Color(0xFFC0C0C0);
+        label = 'Silver';
+        break;
+      case 'gold':
+        bgColor = const Color(0xFFFFD700).withValues(alpha: 0.15);
+        textColor = const Color(0xFFB8860B);
+        label = 'Gold';
+        break;
+      case 'platinum':
+        bgColor = const Color(0xFFE5E4E2).withValues(alpha: 0.15);
+        textColor = const Color(0xFF708090);
+        label = 'Platinum';
+        break;
+      default:
+        bgColor = Theme.of(
+          context,
+        ).colorScheme.secondary.withValues(alpha: 0.15);
+        textColor = Theme.of(context).colorScheme.secondary;
+        label = planSlug.toUpperCase();
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

@@ -29,6 +29,11 @@ void main() {
       verifyNever(() => goTrue.signOut());
     });
 
+    test('429 → NO signOut (transitorio, no desloguea)', () async {
+      await handleAuthError(supabase, 429);
+      verifyNever(() => goTrue.signOut());
+    });
+
     test('404 → NO signOut', () async {
       await handleAuthError(supabase, 404);
       verifyNever(() => goTrue.signOut());

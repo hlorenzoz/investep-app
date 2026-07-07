@@ -137,6 +137,23 @@ void main() {
       verifyNever(() => goTrue.signOut());
     });
 
+    test('429 → GateRetrying503 SIN signOut (no desloguear)', () async {
+      when(() => repo.getMe()).thenAnswer(
+        (_) async => throw const ApiException(
+          429,
+          'RATE_LIMITED',
+          'Demasiadas solicitudes',
+        ),
+      );
+
+      await notifier().evaluate();
+
+      final s = state();
+      expect(s, isA<GateRetrying503>());
+      expect((s as GateRetrying503).message, 'Demasiadas solicitudes');
+      verifyNever(() => goTrue.signOut());
+    });
+
     test('error no-retryable inesperado (404) → GateNoSession', () async {
       when(() => repo.getMe()).thenAnswer(
         (_) async => throw const ApiException(404, 'NOT_FOUND', 'No está'),
@@ -171,6 +188,7 @@ void main() {
     test('evento con sesión null → GateNoSession', () async {
       final event = MockAuthState();
       when(() => event.session).thenReturn(null);
+      when(() => event.event).thenReturn(AuthChangeEvent.signedOut);
 
       authStream.add(event);
       await Future<void>.delayed(Duration.zero);
@@ -182,6 +200,7 @@ void main() {
       when(() => repo.getMe()).thenAnswer((_) async => user);
       final event = MockAuthState();
       when(() => event.session).thenReturn(MockSession());
+      when(() => event.event).thenReturn(AuthChangeEvent.signedIn);
 
       authStream.add(event);
       await Future<void>.delayed(Duration.zero);

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
@@ -52,7 +53,7 @@ class GateAuthenticated extends AuthGateState {
 /// evaluación. Eventos posteriores (signIn / signOut / tokenRefreshed) la
 /// re-disparan. La navegación NO vive acá: el `redirect` de go_router observa
 /// este estado vía un `refreshListenable`.
-class AuthGate extends Notifier<AuthGateState> {
+class AuthGate extends Notifier<AuthGateState> with WidgetsBindingObserver {
   StreamSubscription<supabase.AuthState>? _sub;
   bool _evaluating = false;
   bool _dirty = false;
@@ -63,11 +64,21 @@ class AuthGate extends Notifier<AuthGateState> {
     ref.onDispose(() {
       _disposed = true;
       _sub?.cancel();
+      try {
+        WidgetsBinding.instance.removeObserver(this);
+      } catch (_) {
+        // En tests de unidad puros el binding no se inicializa
+      }
     });
 
     try {
       final client = ref.read(supabaseClientProvider);
       _sub = client.auth.onAuthStateChange.listen(_onAuthChanged);
+      try {
+        WidgetsBinding.instance.addObserver(this);
+      } catch (_) {
+        // En tests de unidad puros el binding no se inicializa
+      }
     } catch (_) {
       // Supabase no inicializado (config inválida): no podemos gatear, mandamos
       // a /login (que muestra el aviso de configuración).
@@ -75,6 +86,13 @@ class AuthGate extends Notifier<AuthGateState> {
     }
 
     return const GateChecking();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(forceRefresh());
+    }
   }
 
   void _set(AuthGateState next) {
@@ -86,7 +104,19 @@ class AuthGate extends Notifier<AuthGateState> {
     if (data.session == null) {
       _set(const GateNoSession());
     } else {
-      unawaited(evaluate());
+      final event = data.event;
+      final isRelevantEvent =
+          event == supabase.AuthChangeEvent.signedIn ||
+          event == supabase.AuthChangeEvent.initialSession ||
+          event == supabase.AuthChangeEvent.passwordRecovery ||
+          event == supabase.AuthChangeEvent.userUpdated;
+
+      final alreadyAuthenticated =
+          state is GateAuthenticated || state is GateNeedsPasswordReset;
+
+      if (!alreadyAuthenticated || isRelevantEvent) {
+        unawaited(evaluate());
+      }
     }
   }
 
@@ -111,6 +141,20 @@ class AuthGate extends Notifier<AuthGateState> {
     }
   }
 
+  /// Forzar refresco de sesión en Supabase y evaluación de /auth/me.
+  /// Útil ante transiciones a primer plano (foreground) o cambios inmediatos de rol/plan.
+  Future<void> forceRefresh() async {
+    final client = ref.read(supabaseClientProvider);
+    if (client.auth.currentSession != null) {
+      try {
+        await client.auth.refreshSession();
+      } catch (_) {
+        // Ignoramos fallos de red durante el refresh
+      }
+    }
+    await evaluate();
+  }
+
   Future<void> _runOnce() async {
     final client = ref.read(supabaseClientProvider);
     if (client.auth.currentSession == null) {
@@ -118,7 +162,14 @@ class AuthGate extends Notifier<AuthGateState> {
       return;
     }
 
-    _set(const GateChecking());
+    final wasAuthenticated =
+        state is GateAuthenticated || state is GateNeedsPasswordReset;
+    final previousState = state;
+
+    if (!wasAuthenticated) {
+      _set(const GateChecking());
+    }
+
     final repo = ref.read(authRepositoryProvider);
     try {
       final user = await repo.getMe();
@@ -135,18 +186,28 @@ class AuthGate extends Notifier<AuthGateState> {
         // interceptor de Dio (handleAuthError); acá sólo reflejamos el gating.
         _set(const GateNoSession());
       } else if (e.isRetryable) {
-        // 503/500 → transitorio: NO desloguear, ofrecer reintento.
-        _set(GateRetrying503(e.message));
+        if (wasAuthenticated) {
+          // Si ya estaba autenticado, no lo pateamos a la pantalla de error.
+          // Mantenemos el estado previo para no arruinar la UX.
+          _set(previousState);
+        } else {
+          // 503/429 → transitorio: NO desloguear, ofrecer reintento.
+          _set(GateRetrying503(e.message));
+        }
       } else {
         // 4xx inesperado: lo más seguro es re-login.
         _set(const GateNoSession());
       }
     } catch (_) {
-      _set(const GateNoSession());
+      if (wasAuthenticated) {
+        _set(previousState);
+      } else {
+        _set(const GateNoSession());
+      }
     }
   }
 
-  /// Reintenta el gate tras un 503 (lo dispara el botón "Reintentar" del splash).
+  /// Reintenta el gate tras un 503/429 (lo dispara el botón "Reintentar" del splash).
   Future<void> retry503() => evaluate();
 }
 

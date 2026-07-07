@@ -5,7 +5,9 @@ import '../../tickers/data/ticker_repository.dart';
 
 /// Provider que asocia la sesión autenticada actual con el conteo de activos
 /// accesibles para el plan del usuario.
-final dashboardAssetsCountProvider = FutureProvider.autoDispose<int>((ref) async {
+final dashboardAssetsCountProvider = FutureProvider.autoDispose<int>((
+  ref,
+) async {
   final gateState = ref.watch(authGateProvider);
   if (gateState is! GateAuthenticated) {
     return 0;
@@ -19,10 +21,9 @@ final dashboardAssetsCountProvider = FutureProvider.autoDispose<int>((ref) async
       : user.planSlug;
 
   try {
-    final tickersData = await ref.watch(tickerRepositoryProvider).getTickers(
-          planSlug: planSlug,
-          limit: 1,
-        );
+    final tickersData = await ref
+        .watch(tickerRepositoryProvider)
+        .getTickers(planSlug: planSlug, limit: 1);
     return tickersData.total;
   } catch (e) {
     // Registramos el error de red para producción y retornamos un fallback seguro (0)

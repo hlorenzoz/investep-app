@@ -27,12 +27,12 @@ class AuthUser {
   ///   }
   /// }
   factory AuthUser.fromJson(Map<String, dynamic> json) {
-    final userMap = json['user'] as Map<String, dynamic>;
+    final userMap = (json['user'] ?? json) as Map<String, dynamic>;
     return AuthUser(
-      id: userMap['id'] as String,
-      email: userMap['email'] as String,
+      id: userMap['id'] as String? ?? '',
+      email: userMap['email'] as String? ?? '',
       role: userMap['role'] as String? ?? 'user',
-      mustResetPassword: userMap['mustResetPassword'] as bool,
+      mustResetPassword: userMap['mustResetPassword'] as bool? ?? false,
       planSlug: userMap['planSlug'] as String?,
     );
   }

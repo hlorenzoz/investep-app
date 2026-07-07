@@ -88,7 +88,10 @@ class _DoughnutChartState extends State<DoughnutChart>
         angle += 2 * pi;
       }
 
-      final total = widget.segments.fold<double>(0, (sum, item) => sum + item.value);
+      final total = widget.segments.fold<double>(
+        0,
+        (sum, item) => sum + item.value,
+      );
       if (total == 0) return;
 
       double startAngle = -pi / 2; // Empezamos a dibujar en las 12 en punto
@@ -99,7 +102,7 @@ class _DoughnutChartState extends State<DoughnutChart>
       } else {
         for (int i = 0; i < widget.segments.length; i++) {
           final sweepAngle = (widget.segments[i].value / total) * 2 * pi;
-          double endAngle = startAngle + sweepAngle;
+          final endAngle = startAngle + sweepAngle;
 
           // Normalizar ángulos para la comparación en el rango [0, 2*pi)
           double normalizedStart = startAngle % (2 * pi);
@@ -163,7 +166,8 @@ class _DoughnutChartState extends State<DoughnutChart>
           onHover: (event) => _handleTapOrHover(event.localPosition, chartSize),
           onExit: (_) => setState(() => _hoveredIndex = -1),
           child: GestureDetector(
-            onTapDown: (details) => _handleTapOrHover(details.localPosition, chartSize),
+            onTapDown: (details) =>
+                _handleTapOrHover(details.localPosition, chartSize),
             child: AnimatedBuilder(
               animation: _animation,
               builder: (context, child) {
@@ -230,7 +234,8 @@ class _DoughnutChartPainter extends CustomPainter {
         ..color = segment.color
         ..style = PaintingStyle.stroke
         ..strokeWidth = paintStrokeWidth
-        ..strokeCap = StrokeCap.butt; // Sin redondeo en bordes interiores para que encajen perfectos
+        ..strokeCap = StrokeCap
+            .butt; // Sin redondeo en bordes interiores para que encajen perfectos
 
       final rect = Rect.fromCircle(
         center: center,
@@ -291,7 +296,10 @@ class _DoughnutChartPainter extends CustomPainter {
     titlePainter.layout(maxWidth: innerRadius * 1.8);
     titlePainter.paint(
       canvas,
-      Offset(center.dx - titlePainter.width / 2, center.dy - titlePainter.height / 2 - 8),
+      Offset(
+        center.dx - titlePainter.width / 2,
+        center.dy - titlePainter.height / 2 - 8,
+      ),
     );
 
     final subPainter = TextPainter(
@@ -364,10 +372,7 @@ class DistributionProgressBar extends StatelessWidget {
                 if (widthFactor == 0) return const SizedBox.shrink();
                 return Expanded(
                   flex: max(1, (widthFactor * 1000).round()),
-                  child: Container(
-                    height: height,
-                    color: segment.color,
-                  ),
+                  child: Container(height: height, color: segment.color),
                 );
               }).toList(),
             ),

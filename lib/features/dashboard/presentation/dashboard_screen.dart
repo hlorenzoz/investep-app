@@ -96,14 +96,12 @@ class _Content extends ConsumerWidget {
               Text(
                 'Definí tu capital inicial y vinculá tus cuentas de bróker para empezar a monitorear tu portfolio.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: glassTheme.textSecondary,
-                ),
+                style: TextStyle(fontSize: 15, color: glassTheme.textSecondary),
               ),
               const SizedBox(height: 32),
               ElevatedButton.icon(
-                onPressed: () => context.go('/setup', extra: SetupMode.initialSetup),
+                onPressed: () =>
+                    context.go('/setup', extra: SetupMode.initialSetup),
                 icon: const Icon(LucideIcons.settings, size: 20),
                 label: Text(l10n.configureCapitalCta),
                 style: ElevatedButton.styleFrom(
@@ -136,7 +134,8 @@ class _Content extends ConsumerWidget {
     final Map<String, double> brokerSaldos = {};
     for (final a in overview.allocations) {
       final double currentBalance = a.initialDeposit * 1.06;
-      brokerSaldos[a.brokerSlug] = (brokerSaldos[a.brokerSlug] ?? 0) + currentBalance;
+      brokerSaldos[a.brokerSlug] =
+          (brokerSaldos[a.brokerSlug] ?? 0) + currentBalance;
     }
 
     final List<ChartSegment> brokerSegments = [];
@@ -163,11 +162,9 @@ class _Content extends ConsumerWidget {
         colorIdx++;
       }
 
-      brokerSegments.add(ChartSegment(
-        label: broker.toUpperCase(),
-        value: saldo,
-        color: color,
-      ));
+      brokerSegments.add(
+        ChartSegment(label: broker.toUpperCase(), value: saldo, color: color),
+      );
     });
 
     // Agrupar saldos por Tipo de Cuenta (Acciones vs Opciones)
@@ -184,23 +181,29 @@ class _Content extends ConsumerWidget {
 
     final List<ChartSegment> accountTypeSegments = [];
     if (totalEquity > 0) {
-      accountTypeSegments.add(ChartSegment(
-        label: l10n.accountTypeEquity,
-        value: totalEquity,
-        color: const Color(0xFF14B8A6), // Teal
-      ));
+      accountTypeSegments.add(
+        ChartSegment(
+          label: l10n.accountTypeEquity,
+          value: totalEquity,
+          color: const Color(0xFF14B8A6), // Teal
+        ),
+      );
     }
     if (totalOptions > 0) {
-      accountTypeSegments.add(ChartSegment(
-        label: l10n.accountTypeOptions,
-        value: totalOptions,
-        color: const Color(0xFF6366F1), // Indigo
-      ));
+      accountTypeSegments.add(
+        ChartSegment(
+          label: l10n.accountTypeOptions,
+          value: totalOptions,
+          color: const Color(0xFF6366F1), // Indigo
+        ),
+      );
     }
 
     final String planName = user?.planSlug != null
         ? user!.planSlug!.toUpperCase()
-        : (user?.role == 'admin' || user?.role == 'manager' ? 'PLATINUM' : 'BRONZE');
+        : (user?.role == 'admin' || user?.role == 'manager'
+              ? 'PLATINUM'
+              : 'BRONZE');
 
     return ListView(
       padding: const EdgeInsets.all(20.0),
@@ -238,18 +241,29 @@ class _Content extends ConsumerWidget {
                     ],
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.24),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.24),
                       ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(LucideIcons.shieldCheck, size: 14, color: Color(0xFFF59E0B)),
+                        const Icon(
+                          LucideIcons.shieldCheck,
+                          size: 14,
+                          color: Color(0xFFF59E0B),
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           planName,
@@ -271,7 +285,11 @@ class _Content extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(LucideIcons.activity, color: glassTheme.positive, size: 16),
+                      Icon(
+                        LucideIcons.activity,
+                        color: glassTheme.positive,
+                        size: 16,
+                      ),
                       const SizedBox(width: 8),
                       assetsCountAsync.when(
                         data: (count) => Text(
@@ -288,7 +306,7 @@ class _Content extends ConsumerWidget {
                             fontSize: 13,
                           ),
                         ),
-                        error: (_, __) => Text(
+                        error: (_, _) => Text(
                           'Activos ilimitados',
                           style: TextStyle(
                             color: glassTheme.textSecondary,
@@ -302,7 +320,10 @@ class _Content extends ConsumerWidget {
                     onTap: () => context.go('/relations'),
                     borderRadius: BorderRadius.circular(8),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 4,
+                      ),
                       child: Row(
                         children: [
                           Text(
@@ -366,9 +387,7 @@ class _Content extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                DistributionProgressBar(
-                  segments: accountTypeSegments,
-                ),
+                DistributionProgressBar(segments: accountTypeSegments),
               ],
             ),
           ),
@@ -403,18 +422,22 @@ class _Content extends ConsumerWidget {
 
             final List<ChartSegment> brokerTypeSegments = [];
             if (brokerEquity > 0) {
-              brokerTypeSegments.add(ChartSegment(
-                label: l10n.accountTypeEquity,
-                value: brokerEquity,
-                color: const Color(0xFF14B8A6),
-              ));
+              brokerTypeSegments.add(
+                ChartSegment(
+                  label: l10n.accountTypeEquity,
+                  value: brokerEquity,
+                  color: const Color(0xFF14B8A6),
+                ),
+              );
             }
             if (brokerOptions > 0) {
-              brokerTypeSegments.add(ChartSegment(
-                label: l10n.accountTypeOptions,
-                value: brokerOptions,
-                color: const Color(0xFF6366F1),
-              ));
+              brokerTypeSegments.add(
+                ChartSegment(
+                  label: l10n.accountTypeOptions,
+                  value: brokerOptions,
+                  color: const Color(0xFF6366F1),
+                ),
+              );
             }
 
             return Padding(
@@ -475,7 +498,11 @@ class _Content extends ConsumerWidget {
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                Icon(LucideIcons.building2, size: 44, color: Theme.of(context).colorScheme.secondary),
+                Icon(
+                  LucideIcons.building2,
+                  size: 44,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   'No tenés cuentas de bróker configuradas',
@@ -497,7 +524,8 @@ class _Content extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
-                  onPressed: () => context.go('/setup', extra: SetupMode.addBroker),
+                  onPressed: () =>
+                      context.go('/setup', extra: SetupMode.addBroker),
                   icon: const Icon(LucideIcons.plus, size: 18),
                   label: Text(l10n.addBrokerAccount),
                 ),
