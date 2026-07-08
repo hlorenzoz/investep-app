@@ -294,13 +294,6 @@ class _DoughnutChartPainter extends CustomPainter {
       ),
     );
     titlePainter.layout(maxWidth: innerRadius * 1.8);
-    titlePainter.paint(
-      canvas,
-      Offset(
-        center.dx - titlePainter.width / 2,
-        center.dy - titlePainter.height / 2 - 8,
-      ),
-    );
 
     final subPainter = TextPainter(
       textAlign: TextAlign.center,
@@ -316,9 +309,24 @@ class _DoughnutChartPainter extends CustomPainter {
       ),
     );
     subPainter.layout(maxWidth: innerRadius * 1.8);
+
+    // Centrado vertical dinámico del bloque (Título + Subtítulo) para evitar solapamientos
+    const double spacing = 8.0;
+    final double totalHeight =
+        titlePainter.height + subPainter.height + spacing;
+    final double yStart = center.dy - totalHeight / 2;
+
+    titlePainter.paint(
+      canvas,
+      Offset(center.dx - titlePainter.width / 2, yStart),
+    );
+
     subPainter.paint(
       canvas,
-      Offset(center.dx - subPainter.width / 2, center.dy + 8),
+      Offset(
+        center.dx - subPainter.width / 2,
+        yStart + titlePainter.height + spacing,
+      ),
     );
   }
 

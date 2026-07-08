@@ -4,27 +4,26 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_theme.dart';
+import '../../../../core/auth/auth_gate.dart';
 import '../../../../core/config/countries.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../shared/widgets/forms/country_selector.dart';
-import '../../domain/user_admin.dart';
-import '../providers/admin_users_provider.dart';
+import '../../../auth/data/auth_repository.dart';
+import '../../../auth/domain/auth_user.dart';
 
-/// Formulario modal para crear (aprovisionar) y editar usuarios.
-class UserFormDialog extends ConsumerStatefulWidget {
-  const UserFormDialog({super.key, this.user});
+/// Diálogo modal interactivo para que el propio usuario edite su perfil.
+class ProfileEditDialog extends ConsumerStatefulWidget {
+  const ProfileEditDialog({super.key, required this.user});
 
-  final UserAdmin? user;
+  final AuthUser user;
 
   @override
-  ConsumerState<UserFormDialog> createState() => _UserFormDialogState();
+  ConsumerState<ProfileEditDialog> createState() => _ProfileEditDialogState();
 }
 
-class _UserFormDialogState extends ConsumerState<UserFormDialog> {
+class _ProfileEditDialogState extends ConsumerState<ProfileEditDialog> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
   final _fullNameController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
   final _countryController = TextEditingController();
 
@@ -33,41 +32,32 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
   bool _isUpdatingFromPhone = false;
   bool _isUpdatingFromCountry = false;
 
-  String _selectedRole = 'user';
-  String? _selectedPlanSlug;
   bool _isLoading = false;
   String? _errorMessage;
-
-  bool get _isEditing => widget.user != null;
 
   @override
   void initState() {
     super.initState();
-    if (_isEditing) {
-      final user = widget.user!;
-      _emailController.text = user.email;
-      _fullNameController.text = user.fullName;
-      _selectedRole = user.role.toLowerCase();
-      _selectedPlanSlug = user.planSlug;
-      _phoneController.text = user.phone ?? '';
+    _fullNameController.text = widget.user.fullName ?? '';
+    _phoneController.text = widget.user.phone ?? '';
 
-      // Buscar país inicial por nombre
-      final initialCountryName = user.country ?? '';
-      Country? initialCountry;
-      for (final c in countriesList) {
-        if (c.name.toLowerCase() == initialCountryName.toLowerCase()) {
-          initialCountry = c;
-          break;
-        }
-      }
-      _selectedCountry = initialCountry;
-      if (_selectedCountry != null) {
-        _countryController.text = _selectedCountry!.displayName;
-      } else {
-        _countryController.text = initialCountryName;
+    // Buscar país inicial por nombre
+    final initialCountryName = widget.user.country ?? '';
+    Country? initialCountry;
+    for (final c in countriesList) {
+      if (c.name.toLowerCase() == initialCountryName.toLowerCase()) {
+        initialCountry = c;
+        break;
       }
     }
+    _selectedCountry = initialCountry;
+    if (_selectedCountry != null) {
+      _countryController.text = _selectedCountry!.displayName;
+    } else {
+      _countryController.text = initialCountryName;
+    }
 
+    // Escuchar cambios en el teléfono para preselección
     _phoneController.addListener(_onPhoneChanged);
     _onPhoneChanged();
   }
@@ -75,9 +65,7 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
   @override
   void dispose() {
     _phoneController.removeListener(_onPhoneChanged);
-    _emailController.dispose();
     _fullNameController.dispose();
-    _passwordController.dispose();
     _phoneController.dispose();
     _countryController.dispose();
     super.dispose();
@@ -176,59 +164,26 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
       _errorMessage = null;
     });
 
+    final phoneTrimmed = _phoneController.text.trim();
+    final countryName =
+        _selectedCountry?.name ?? _countryController.text.trim();
+
     final data = <String, dynamic>{
-      'email': _emailController.text.trim(),
       'fullName': _fullNameController.text.trim(),
-      'role': _selectedRole,
-      'planSlug': _selectedPlanSlug,
+      'phone': phoneTrimmed.isNotEmpty ? phoneTrimmed : null,
+      'country': countryName.isNotEmpty ? countryName : null,
     };
 
-    if (_passwordController.text.isNotEmpty) {
-      data['password'] = _passwordController.text;
-    }
-
-    // phone & country — lógica de null explícito para PATCH.
-    // Creación: solo incluir si el campo tiene texto.
-    // Edición: campo vacío con valor previo → null explícito (borrar).
-    //          campo vacío sin valor previo → omitir (no tocar).
-    final phoneTrimmed = _phoneController.text.trim();
-    final countryTrimmed = (_selectedCountry?.name ?? _countryController.text)
-        .trim();
-
-    if (_isEditing) {
-      if (phoneTrimmed.isNotEmpty) {
-        data['phone'] = phoneTrimmed;
-      } else if (widget.user!.phone != null) {
-        data['phone'] = null;
-      }
-      if (countryTrimmed.isNotEmpty) {
-        data['country'] = countryTrimmed;
-      } else if (widget.user!.country != null) {
-        data['country'] = null;
-      }
-    } else {
-      if (phoneTrimmed.isNotEmpty) data['phone'] = phoneTrimmed;
-      if (countryTrimmed.isNotEmpty) data['country'] = countryTrimmed;
-    }
-
     try {
-      if (_isEditing) {
-        await ref
-            .read(adminUsersProvider.notifier)
-            .updateUser(widget.user!.id, data);
-      } else {
-        await ref.read(adminUsersProvider.notifier).createUser(data);
-      }
+      await ref.read(authRepositoryProvider).updateProfile(data);
+      // Forzar el refresco en el gate para que recargue GET /auth/me y actualice la UI
+      await ref.read(authGateProvider.notifier).forceRefresh();
 
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              _isEditing
-                  ? 'Usuario actualizado con éxito.'
-                  : 'Usuario aprovisionado y creado con éxito.',
-            ),
+          const SnackBar(
+            content: Text('Tu perfil ha sido actualizado con éxito.'),
             backgroundColor: AppColors.positive,
           ),
         );
@@ -266,13 +221,13 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
                 Row(
                   children: [
                     Icon(
-                      _isEditing ? LucideIcons.edit3 : LucideIcons.userPlus2,
+                      LucideIcons.user,
                       color: Theme.of(context).colorScheme.primary,
                       size: 24,
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      _isEditing ? 'Editar Usuario' : 'Aprovisionar Usuario',
+                      'Editar Perfil',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -299,34 +254,12 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
                   ),
                   const SizedBox(height: 16),
                 ],
-                // Email
-                TextFormField(
-                  controller: _emailController,
-                  enabled: !_isLoading,
-                  decoration: const InputDecoration(
-                    labelText: 'Correo Electrónico',
-                    prefixIcon: Icon(LucideIcons.mail, size: 20),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  style: TextStyle(color: glassTheme.textPrimary),
-                  validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return 'El correo es requerido';
-                    }
-                    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
-                    if (!emailRegex.hasMatch(val.trim())) {
-                      return 'Formato de correo inválido';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
                 // Nombre Completo
                 TextFormField(
                   controller: _fullNameController,
                   enabled: !_isLoading,
                   decoration: const InputDecoration(
-                    labelText: 'Nombre Completo',
+                    labelText: 'Nombre y apellidos',
                     prefixIcon: Icon(LucideIcons.user, size: 20),
                   ),
                   style: TextStyle(color: glassTheme.textPrimary),
@@ -336,65 +269,6 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
                     }
                     return null;
                   },
-                ),
-                const SizedBox(height: 16),
-                // Rol
-                DropdownButtonFormField<String>(
-                  initialValue: _selectedRole,
-                  decoration: const InputDecoration(
-                    labelText: 'Rol del Sistema',
-                    prefixIcon: Icon(LucideIcons.shield, size: 20),
-                  ),
-                  dropdownColor: Theme.of(context).colorScheme.surface,
-                  style: TextStyle(color: glassTheme.textPrimary),
-                  items: const [
-                    DropdownMenuItem(value: 'user', child: Text('User')),
-                    DropdownMenuItem(value: 'manager', child: Text('Manager')),
-                    DropdownMenuItem(value: 'admin', child: Text('Admin')),
-                  ],
-                  onChanged: _isLoading
-                      ? null
-                      : (val) {
-                          if (val != null) {
-                            setState(() {
-                              _selectedRole = val;
-                            });
-                          }
-                        },
-                ),
-                const SizedBox(height: 16),
-                // Plan de la Academia
-                DropdownButtonFormField<String?>(
-                  value: _selectedPlanSlug,
-                  decoration: const InputDecoration(
-                    labelText: 'Plan de la Academia',
-                    prefixIcon: Icon(LucideIcons.award, size: 20),
-                  ),
-                  dropdownColor: Theme.of(context).colorScheme.surface,
-                  style: TextStyle(color: glassTheme.textPrimary),
-                  items: const [
-                    DropdownMenuItem(value: null, child: Text('Sin Plan')),
-                    DropdownMenuItem(
-                      value: 'bronze',
-                      child: Text('Paquete Bronce'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'silver',
-                      child: Text('Paquete Silver'),
-                    ),
-                    DropdownMenuItem(value: 'gold', child: Text('Paquete Oro')),
-                    DropdownMenuItem(
-                      value: 'platinum',
-                      child: Text('Paquete Platino'),
-                    ),
-                  ],
-                  onChanged: _isLoading
-                      ? null
-                      : (val) {
-                          setState(() {
-                            _selectedPlanSlug = val;
-                          });
-                        },
                 ),
                 const SizedBox(height: 16),
                 // País
@@ -414,24 +288,6 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
                     prefixIcon: Icon(LucideIcons.phone, size: 20),
                   ),
                   keyboardType: TextInputType.phone,
-                  style: TextStyle(color: glassTheme.textPrimary),
-                ),
-                const SizedBox(height: 16),
-                // Contraseña
-                TextFormField(
-                  controller: _passwordController,
-                  enabled: !_isLoading,
-                  decoration: InputDecoration(
-                    labelText: _isEditing
-                        ? 'Nueva Contraseña (Opcional)'
-                        : 'Contraseña (Opcional)',
-                    prefixIcon: const Icon(LucideIcons.lock, size: 20),
-                    helperText: _isEditing
-                        ? 'Si se modifica, obligará a resetearla en su próximo login.'
-                        : 'Si se omite, se generará una clave aleatoria de alta entropía.',
-                    helperMaxLines: 2,
-                  ),
-                  obscureText: true,
                   style: TextStyle(color: glassTheme.textPrimary),
                 ),
                 const SizedBox(height: 24),
@@ -464,9 +320,7 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
                                 ),
                               ),
                             )
-                          : Text(
-                              _isEditing ? 'Guardar Cambios' : 'Aprovisionar',
-                            ),
+                          : const Text('Guardar'),
                     ),
                   ],
                 ),

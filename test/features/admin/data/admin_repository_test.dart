@@ -42,6 +42,12 @@ void main() {
     'mustResetPassword': false,
   };
 
+  final userRawWithPhoneCountry = {
+    ...userRaw,
+    'phone': '+54 11 5555-1234',
+    'country': 'Argentina',
+  };
+
   group('getUsers', () {
     test('200 → parsea lista de usuarios correctamente', () async {
       when(() => dio.get<Map<String, dynamic>>('/admin/users')).thenAnswer(
@@ -70,6 +76,21 @@ void main() {
         verify(() => dio.get<Map<String, dynamic>>('/admin/users')).called(3);
       },
     );
+
+    test(
+      '429 rate-limited → reintenta y arroja error tras 3 intentos',
+      () async {
+        when(
+          () => dio.get<Map<String, dynamic>>('/admin/users'),
+        ).thenThrow(dioErr(429, 'RATE_LIMITED', 'Demasiadas peticiones'));
+
+        await expectLater(
+          repo.getUsers(),
+          throwsA(isA<ApiException>().having((e) => e.status, 'status', 429)),
+        );
+        verify(() => dio.get<Map<String, dynamic>>('/admin/users')).called(3);
+      },
+    );
   });
 
   group('getUser', () {
@@ -81,6 +102,21 @@ void main() {
       final user = await repo.getUser('u-1');
       expect(user.id, 'u-1');
       expect(user.fullName, 'Test Admin');
+    });
+
+    test('404 → propaga ApiException con NOT_FOUND', () async {
+      when(
+        () => dio.get<Map<String, dynamic>>('/admin/users/no-existe'),
+      ).thenThrow(dioErr(404, 'NOT_FOUND', 'Usuario no encontrado'));
+
+      await expectLater(
+        repo.getUser('no-existe'),
+        throwsA(
+          isA<ApiException>()
+              .having((e) => e.status, 'status', 404)
+              .having((e) => e.code, 'code', 'NOT_FOUND'),
+        ),
+      );
     });
   });
 
@@ -114,6 +150,22 @@ void main() {
         ),
       );
     });
+
+    test('POST falla con 422 → propaga VALIDATION_ERROR', () async {
+      final input = {'email': 'invalid'};
+      when(
+        () => dio.post<Map<String, dynamic>>('/admin/users', data: input),
+      ).thenThrow(dioErr(422, 'VALIDATION_ERROR', 'Email inválido'));
+
+      await expectLater(
+        repo.createUser(input),
+        throwsA(
+          isA<ApiException>()
+              .having((e) => e.status, 'status', 422)
+              .having((e) => e.code, 'code', 'VALIDATION_ERROR'),
+        ),
+      );
+    });
   });
 
   group('updateUser', () {
@@ -129,6 +181,60 @@ void main() {
       final updated = await repo.updateUser('u-1', updateData);
       expect(updated.id, 'u-1');
     });
+
+    test('PATCH con null explícito en phone → pasa null al Dio', () async {
+      final updateData = <String, dynamic>{'phone': null};
+      when(
+        () => dio.patch<Map<String, dynamic>>(
+          '/admin/users/u-1',
+          data: updateData,
+        ),
+      ).thenAnswer((_) async => ok({'user': userRaw}));
+
+      await repo.updateUser('u-1', updateData);
+      verify(
+        () => dio.patch<Map<String, dynamic>>(
+          '/admin/users/u-1',
+          data: updateData,
+        ),
+      ).called(1);
+    });
+
+    test('401 → propaga ApiException con UNAUTHORIZED', () async {
+      when(
+        () => dio.patch<Map<String, dynamic>>(
+          '/admin/users/u-1',
+          data: any(named: 'data'),
+        ),
+      ).thenThrow(dioErr(401, 'UNAUTHORIZED', 'Token inválido o expirado.'));
+
+      await expectLater(
+        repo.updateUser('u-1', {'email': 'x@y.com'}),
+        throwsA(
+          isA<ApiException>()
+              .having((e) => e.status, 'status', 401)
+              .having((e) => e.code, 'code', 'UNAUTHORIZED'),
+        ),
+      );
+    });
+
+    test('403 → propaga ApiException con FORBIDDEN', () async {
+      when(
+        () => dio.patch<Map<String, dynamic>>(
+          '/admin/users/u-1',
+          data: any(named: 'data'),
+        ),
+      ).thenThrow(dioErr(403, 'FORBIDDEN', 'No tenés permisos de admin.'));
+
+      await expectLater(
+        repo.updateUser('u-1', {'email': 'x@y.com'}),
+        throwsA(
+          isA<ApiException>()
+              .having((e) => e.status, 'status', 403)
+              .having((e) => e.code, 'code', 'FORBIDDEN'),
+        ),
+      );
+    });
   });
 
   group('deleteUser', () {
@@ -142,5 +248,30 @@ void main() {
 
       await expectLater(repo.deleteUser('u-1'), completes);
     });
+  });
+
+  group('phone & country serialization', () {
+    test('fromJson parsea phone y country cuando están presentes', () async {
+      when(
+        () => dio.get<Map<String, dynamic>>('/admin/users/u-1'),
+      ).thenAnswer((_) async => ok({'user': userRawWithPhoneCountry}));
+
+      final user = await repo.getUser('u-1');
+      expect(user.phone, '+54 11 5555-1234');
+      expect(user.country, 'Argentina');
+    });
+
+    test(
+      'fromJson asigna null cuando phone y country están ausentes',
+      () async {
+        when(
+          () => dio.get<Map<String, dynamic>>('/admin/users/u-1'),
+        ).thenAnswer((_) async => ok({'user': userRaw}));
+
+        final user = await repo.getUser('u-1');
+        expect(user.phone, isNull);
+        expect(user.country, isNull);
+      },
+    );
   });
 }

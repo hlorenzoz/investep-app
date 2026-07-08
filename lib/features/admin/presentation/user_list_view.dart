@@ -186,6 +186,45 @@ class _UserCard extends ConsumerWidget {
                     color: glassTheme.textSecondary,
                   ),
                 ),
+                if (user.phone != null || user.country != null) ...[
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      if (user.phone != null) ...[
+                        Icon(
+                          LucideIcons.phone,
+                          size: 12,
+                          color: glassTheme.textSecondary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          user.phone!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: glassTheme.textSecondary,
+                          ),
+                        ),
+                      ],
+                      if (user.phone != null && user.country != null)
+                        const SizedBox(width: 12),
+                      if (user.country != null) ...[
+                        Icon(
+                          LucideIcons.globe,
+                          size: 12,
+                          color: glassTheme.textSecondary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          user.country!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: glassTheme.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 6),
                 Row(
                   children: [

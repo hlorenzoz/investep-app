@@ -18,6 +18,8 @@ void main() {
     fullName: 'Test User',
     createdAt: DateTime(2026, 7, 1),
     mustResetPassword: false,
+    phone: '+1 555-1234',
+    country: 'US',
   );
 
   setUp(() {

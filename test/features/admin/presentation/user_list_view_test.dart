@@ -23,6 +23,8 @@ void main() {
     fullName: 'Admin User',
     createdAt: DateTime(2026, 7, 1),
     mustResetPassword: true,
+    phone: '+54 11 5555-0001',
+    country: 'Argentina',
   );
 
   final userRegular = UserAdmin(
@@ -151,6 +153,62 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(() => repo.deleteUser('u-2')).called(1);
+    },
+  );
+
+  testWidgets(
+    'Renderiza phone y country en la tarjeta cuando están presentes',
+    (tester) async {
+      when(() => repo.getUsers()).thenAnswer((_) async => [userAdmin]);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('+54 11 5555-0001'), findsOneWidget);
+      expect(find.text('Argentina'), findsOneWidget);
+      expect(find.byIcon(LucideIcons.phone), findsOneWidget);
+      expect(find.byIcon(LucideIcons.globe), findsOneWidget);
+    },
+  );
+
+  testWidgets('No renderiza phone ni country cuando son null', (tester) async {
+    when(() => repo.getUsers()).thenAnswer((_) async => [userRegular]);
+
+    await tester.pumpWidget(createTestWidget());
+    await tester.pumpAndSettle();
+
+    // userRegular no tiene phone ni country
+    expect(find.byIcon(LucideIcons.phone), findsNothing);
+    expect(find.byIcon(LucideIcons.globe), findsNothing);
+  });
+
+  testWidgets(
+    'En UserFormDialog (Admin), la seleccion de pais y telefono sincronizan',
+    (tester) async {
+      when(() => repo.getUsers()).thenAnswer((_) async => [userRegular]);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Abrir formulario de aprovisionamiento
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+
+      // Debe abrir el dialogo
+      expect(find.byType(UserFormDialog), findsOneWidget);
+
+      final phoneInput = find.widgetWithText(
+        TextFormField,
+        'Teléfono (Opcional)',
+      );
+      expect(phoneInput, findsOneWidget);
+
+      // Escribir prefijo de España
+      await tester.enterText(phoneInput, '+34 600000000');
+      await tester.pumpAndSettle();
+
+      // Se debe haber autoseleccionado España en el Selector
+      expect(find.textContaining('España'), findsOneWidget);
     },
   );
 }

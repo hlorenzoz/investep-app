@@ -63,6 +63,20 @@ class AuthRepository {
       throw ApiException.fromDioException(e);
     }
   }
+
+  /// `PATCH /auth/profile` con body `{ fullName, phone, country }`.
+  /// Permite a cualquier usuario autenticado actualizar su propio perfil.
+  Future<AuthUser> updateProfile(Map<String, dynamic> data) async {
+    try {
+      final res = await _dio.patch<Map<String, dynamic>>(
+        '/auth/profile',
+        data: data,
+      );
+      return AuthUser.fromJson(res.data!);
+    } on DioException catch (e) {
+      throw ApiException.fromDioException(e);
+    }
+  }
 }
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {

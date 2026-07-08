@@ -6,6 +6,9 @@ class AuthUser {
   final String role;
   final bool mustResetPassword;
   final String? planSlug;
+  final String? fullName;
+  final String? phone;
+  final String? country;
 
   AuthUser({
     required this.id,
@@ -13,6 +16,9 @@ class AuthUser {
     required this.role,
     required this.mustResetPassword,
     this.planSlug,
+    this.fullName,
+    this.phone,
+    this.country,
   });
 
   /// Construye una instancia a partir del JSON retornado por la API de Investep.
@@ -23,7 +29,10 @@ class AuthUser {
   ///     "email": "...",
   ///     "role": "...",
   ///     "mustResetPassword": false,
-  ///     "planSlug": "gold"
+  ///     "planSlug": "gold",
+  ///     "fullName": "...",
+  ///     "phone": "...",
+  ///     "country": "..."
   ///   }
   /// }
   factory AuthUser.fromJson(Map<String, dynamic> json) {
@@ -34,6 +43,9 @@ class AuthUser {
       role: userMap['role'] as String? ?? 'user',
       mustResetPassword: userMap['mustResetPassword'] as bool? ?? false,
       planSlug: userMap['planSlug'] as String?,
+      fullName: userMap['fullName'] as String?,
+      phone: userMap['phone'] as String?,
+      country: userMap['country'] as String?,
     );
   }
 
@@ -45,6 +57,9 @@ class AuthUser {
         'role': role,
         'mustResetPassword': mustResetPassword,
         'planSlug': planSlug,
+        'fullName': fullName,
+        'phone': phone,
+        'country': country,
       },
     };
   }

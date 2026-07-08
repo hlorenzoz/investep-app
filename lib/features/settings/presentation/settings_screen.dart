@@ -13,6 +13,7 @@ import '../../../features/auth/domain/auth_user.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../shared/widgets/glass/glass_card.dart';
 import '../../../shared/widgets/app_bar_actions.dart';
+import 'widgets/profile_edit_dialog.dart';
 
 /// Pantalla de Configuración de Usuario.
 ///
@@ -123,6 +124,19 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _showEditProfileDialog(
+    BuildContext context,
+    WidgetRef ref,
+    AuthUser? user,
+  ) {
+    if (user == null) return;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => ProfileEditDialog(user: user),
     );
   }
 
@@ -317,6 +331,76 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 28),
 
+                  // --- SECCIÓN PERFIL ---
+                  const _SectionHeader(title: 'Datos Personales'),
+                  const SizedBox(height: 10),
+                  GlassCard(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _ProfileInfoRow(
+                          icon: LucideIcons.user,
+                          label: 'Nombre y apellidos',
+                          value:
+                              user?.fullName != null &&
+                                  user!.fullName!.isNotEmpty
+                              ? user.fullName!
+                              : 'No especificado',
+                        ),
+                        Divider(
+                          height: 24,
+                          thickness: 0.5,
+                          color: Theme.of(
+                            context,
+                          ).dividerColor.withOpacity(0.12),
+                        ),
+                        _ProfileInfoRow(
+                          icon: LucideIcons.mail,
+                          label: 'Email',
+                          value: user?.email ?? 'No especificado',
+                        ),
+                        Divider(
+                          height: 24,
+                          thickness: 0.5,
+                          color: Theme.of(
+                            context,
+                          ).dividerColor.withOpacity(0.12),
+                        ),
+                        _ProfileInfoRow(
+                          icon: LucideIcons.phone,
+                          label: 'Phone number',
+                          value: user?.phone != null && user!.phone!.isNotEmpty
+                              ? user.phone!
+                              : 'No especificado',
+                        ),
+                        Divider(
+                          height: 24,
+                          thickness: 0.5,
+                          color: Theme.of(
+                            context,
+                          ).dividerColor.withOpacity(0.12),
+                        ),
+                        _ProfileInfoRow(
+                          icon: LucideIcons.globe,
+                          label: 'Country',
+                          value:
+                              user?.country != null && user!.country!.isNotEmpty
+                              ? user.country!
+                              : 'No especificado',
+                        ),
+                        const SizedBox(height: 16),
+                        OutlinedButton.icon(
+                          onPressed: () =>
+                              _showEditProfileDialog(context, ref, user),
+                          icon: const Icon(LucideIcons.edit3, size: 18),
+                          label: const Text('Editar Perfil'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+
                   // --- SECCIÓN CUENTA ---
                   _SectionHeader(title: l10n.settingsAccount),
                   const SizedBox(height: 10),
@@ -372,6 +456,59 @@ class _SectionHeader extends StatelessWidget {
           letterSpacing: 1.2,
           color: context.glass.textSecondary,
         ),
+      ),
+    );
+  }
+}
+
+class _ProfileInfoRow extends StatelessWidget {
+  const _ProfileInfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final glassTheme = context.glass;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 18, color: theme.colorScheme.secondary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: glassTheme.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: glassTheme.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
