@@ -32,3 +32,14 @@ repos:
         language: system
         types: [dart]
         pass_filenames: false
+
+      # Deploy a Cloudflare Pages en el PUSH (no en el commit), solo en staging/main.
+      # Stage pre-push: pre-commit.ci (que corre en stage commit) lo ignora por diseño.
+      # Instalar el hook una vez con: pre-commit install --hook-type pre-push
+      - id: deploy-cloudflare
+        name: deploy → Cloudflare Pages (solo staging/main)
+        entry: bash scripts/deploy-cloudflare.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
