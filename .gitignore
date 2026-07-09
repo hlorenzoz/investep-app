@@ -64,5 +64,8 @@ app.*.map.json
 
 tmp/
 
+# Cache local de Wrangler (deploy a Cloudflare Pages) — NUNCA commitear.
+.wrangler/
+
 # Alchemist / Golden Tests failures
 **/failures/
