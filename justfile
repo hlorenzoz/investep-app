@@ -45,10 +45,13 @@ build target="apk":
 
 # Despliega la web a Cloudflare Pages: build local + subida directa con Wrangler.
 # Uso: just deploy staging  |  just deploy main
-# Requiere `npx wrangler login` una vez y un proyecto Pages Direct Upload por entorno.
+# Un solo proyecto `investep-app` (branch de producción = main). El flag --branch decide:
+#   main    -> deployment de PRODUCCIÓN (URL/dominio principal)
+#   staging -> deployment de PREVIEW    (URL staging.investep-app.pages.dev)
+# Requiere `npx wrangler login` una vez.
 deploy env="staging":
     flutter build web --release --dart-define-from-file=config/{{env}}.json
-    npx wrangler pages deploy build/web --project-name=investep-app-{{env}}
+    npx wrangler pages deploy build/web --project-name=investep-app --branch={{env}}
 
 # Corre todos los hooks de pre-commit sobre el repo.
 hooks:
